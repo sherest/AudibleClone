@@ -1,9 +1,19 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Text } from 'react-native';
+import { BottomTabBar } from '@react-navigation/bottom-tabs';
+import FloatingPlayer from '@/components/FloatingPlayer';
 
 export default function TabsLayout() {
   return (
-    <Tabs>
+    <Tabs
+      tabBar={(props) => (
+        <>
+          <FloatingPlayer />
+          <BottomTabBar {...props} />
+        </>
+      )}
+    >
       <Tabs.Screen
         name='index'
         options={{
