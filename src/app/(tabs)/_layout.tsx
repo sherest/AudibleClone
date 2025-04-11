@@ -1,7 +1,19 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '@clerk/clerk-expo';
+import { ActivityIndicator } from 'react-native';
 
 export default function TabsLayout() {
+  const { isSignedIn, isLoaded } = useAuth();
+
+  if (!isLoaded) {
+    return <ActivityIndicator />;
+  }
+
+  if (!isSignedIn) {
+    return <Redirect href='/sign-in' />;
+  }
+
   return (
     <Tabs>
       <Tabs.Screen
