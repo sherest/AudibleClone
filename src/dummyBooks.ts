@@ -23,7 +23,7 @@ export default [
     author: 'Arthur Conan Doyle',
     audio_url:
       'https://ia801501.us.archive.org/19/items/lostwarship_2504_librivox/lostwarship_01_williams_128kb.mp3',
-    thumbnail_url_url:
+    thumbnail_url:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Adventures_of_sherlock_holmes.jpg/330px-Adventures_of_sherlock_holmes.jpg',
   },
   {
@@ -32,7 +32,7 @@ export default [
     author: 'Mary Shelley',
     audio_url:
       'https://ia601501.us.archive.org/19/items/lostwarship_2504_librivox/lostwarship_02_williams_128kb.mp3',
-    thumbnail_url_url:
+    thumbnail_url:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Christie%27s_auction_scan_of_Frankenstein_1818.jpg/330px-Christie%27s_auction_scan_of_Frankenstein_1818.jpg',
   },
   {
@@ -41,7 +41,7 @@ export default [
     author: 'Bram Stoker',
     audio_url:
       'https://ia801501.us.archive.org/19/items/lostwarship_2504_librivox/lostwarship_03_williams_128kb.mp3',
-    thumbnail_url_url:
+    thumbnail_url:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Dracula_1st_ed_cover_reproduction.jpg/330px-Dracula_1st_ed_cover_reproduction.jpg',
   },
   {
@@ -50,7 +50,7 @@ export default [
     author: 'Oscar Wilde',
     audio_url:
       'https://ia801501.us.archive.org/19/items/lostwarship_2504_librivox/lostwarship_04_williams_128kb.mp3',
-    thumbnail_url_url:
+    thumbnail_url:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Lippincott_doriangray.jpg/330px-Lippincott_doriangray.jpg',
   },
   {
@@ -59,7 +59,7 @@ export default [
     author: 'Jim Collins',
     audio_url:
       'https://ia801501.us.archive.org/19/items/lostwarship_2504_librivox/lostwarship_05_williams_128kb.mp3',
-    thumbnail_url_url: 'https://m.media-amazon.com/images/I/51IPJiX34fL.jpg',
+    thumbnail_url: 'https://m.media-amazon.com/images/I/51IPJiX34fL.jpg',
   },
   {
     id: '8',
@@ -67,6 +67,7 @@ export default [
     author: 'Oscar Wilde',
     audio_url:
       'https://ia801501.us.archive.org/19/items/lostwarship_2504_librivox/lostwarship_06_williams_128kb.mp3',
+    thumbnail_url: 'https://m.media-amazon.com/images/I/51IPJiX34fL.jpg',
   },
   {
     id: '9',
@@ -74,5 +75,6 @@ export default [
     author: 'Oscar Wilde',
     audio_url:
       'https://ia801501.us.archive.org/19/items/lostwarship_2504_librivox/lostwarship_07_williams_128kb.mp3',
+    thumbnail_url: 'https://m.media-amazon.com/images/I/51IPJiX34fL.jpg',
   },
 ];
