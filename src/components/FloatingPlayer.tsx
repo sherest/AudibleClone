@@ -1,15 +1,14 @@
 import { Text, View, Image, Pressable } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { Link } from 'expo-router';
-
-import dummyBooks from '@/dummyBooks';
-import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
+import { useAudioPlayerStatus } from 'expo-audio';
+import { usePlayer } from '@/providers/PlayerProvider';
 
 export default function FloatingPlayer() {
-  const book = dummyBooks[0];
-
-  const player = useAudioPlayer({ uri: book.audio_url });
+  const { player, book } = usePlayer();
   const playerStatus = useAudioPlayerStatus(player);
+
+  if (!book) return null;
 
   return (
     <Link href='/player' asChild>
@@ -24,7 +23,13 @@ export default function FloatingPlayer() {
         </View>
 
         <AntDesign
-          name={playerStatus.playing ? 'pause' : 'playcircleo'}
+          name={
+            playerStatus.isBuffering
+              ? 'loading2'
+              : playerStatus.playing
+              ? 'pause'
+              : 'playcircleo'
+          }
           size={24}
           color='gainsboro'
           onPress={() =>
