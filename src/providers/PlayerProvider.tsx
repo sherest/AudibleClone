@@ -1,7 +1,7 @@
 import { AudioPlayer } from 'expo-audio';
 import { createContext, PropsWithChildren, useContext, useState } from 'react';
-import dummyBooks from '@/dummyBooks';
 import { useAudioPlayer } from 'expo-audio';
+import { useSupabase } from '@/lib/supabase';
 
 type PlayerContextType = {
   player: AudioPlayer;
@@ -12,8 +12,19 @@ type PlayerContextType = {
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
 export default function PlayerProvider({ children }: PropsWithChildren) {
+  const supabase = useSupabase();
   const [book, setBook] = useState<any | null>(null);
-  const player = useAudioPlayer({ uri: book?.audio_url });
+
+  let uri = book?.audio_url;
+
+  if (!uri && book?.audio_file) {
+    const { data } = supabase.storage
+      .from('audios')
+      .getPublicUrl(book.audio_file);
+    uri = data.publicUrl;
+  }
+
+  const player = useAudioPlayer({ uri });
 
   return (
     <PlayerContext.Provider value={{ player, book, setBook }}>
