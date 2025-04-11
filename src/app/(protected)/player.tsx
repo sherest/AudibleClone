@@ -15,7 +15,7 @@ export default function PlayerScreen() {
   const player = useAudioPlayer({ uri: book.audio_url });
   const playerStatus = useAudioPlayerStatus(player);
 
-  console.log(JSON.stringify(playerStatus, null, 2));
+  // console.log(JSON.stringify(playerStatus, null, 2));
 
   return (
     <SafeAreaView className='flex-1  p-4 py-10 gap-4'>
@@ -35,9 +35,11 @@ export default function PlayerScreen() {
         <Text className='text-white text-2xl font-bold text-center'>
           {book.title}
         </Text>
+
         <PlaybackBar
           currentTime={playerStatus.currentTime}
           duration={playerStatus.duration}
+          onSeek={(seconds: number) => player.seekTo(seconds)}
         />
 
         <View className='flex-row items-center justify-between'>
