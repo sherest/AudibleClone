@@ -7,8 +7,9 @@ import {
   useState,
 } from 'react';
 import { useAudioPlayer } from 'expo-audio';
-import { useSupabase } from '@/lib/supabase';
 import * as FileSystem from 'expo-file-system';
+// TODO: Import Firebase storage functions when implementing Firebase integration
+// import { storage } from '@/lib/firebase';
 
 type PlayerContextType = {
   player: AudioPlayer;
@@ -19,7 +20,10 @@ type PlayerContextType = {
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
 export default function PlayerProvider({ children }: PropsWithChildren) {
-  const supabase = useSupabase();
+  // TODO: Replace this with Firebase auth/storage logic
+  // const auth = getAuth();
+  // const storage = getStorage();
+  
   const [book, setBook] = useState<any | null>(null);
   const [audioUri, setAudioUri] = useState<string | undefined>();
 
@@ -35,20 +39,20 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
     const localUri = await getLocalAudioUri();
     if (localUri) {
       setAudioUri(localUri);
-
       console.log('Local audio file found');
     } else if (book?.audio_url) {
       setAudioUri(book.audio_url);
-
       console.log('External audio file found');
     } else if (book.audio_file) {
-      const { data } = supabase.storage
-        .from('audios')
-        .getPublicUrl(book.audio_file);
-
-      setAudioUri(data?.publicUrl);
-
-      console.log('Audio file found in supabase');
+      // TODO: Replace with Firebase Storage logic
+      // const storageRef = ref(storage, `audios/${book.audio_file}`);
+      // const downloadURL = await getDownloadURL(storageRef);
+      // setAudioUri(downloadURL);
+      
+      // DUMMY CODE: For now, use a placeholder or external URL
+      console.log('Audio file would be fetched from Firebase Storage');
+      // Fallback to external URL if available
+      setAudioUri(book.audio_url || undefined);
     }
   };
 
