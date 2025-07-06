@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Text } from 'react-native';
 import { BottomTabBar } from '@react-navigation/bottom-tabs';
 import FloatingPlayer from '@/components/FloatingPlayer';
 
@@ -14,8 +13,16 @@ export default function TabsLayout() {
         </>
       )}
     >
+      <Tabs.Screen 
+        name='index' 
+        options={{ 
+          title: 'Home',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name='home' size={size} color={color} />
+          ),
+        }} />
       <Tabs.Screen
-        name='index'
+        name='library'
         options={{
           title: 'Library',
           tabBarIcon: ({ color, size }) => (
@@ -33,11 +40,11 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name='profile'
+        name='settings'
         options={{
-          title: 'Profile',
+          title: 'Settings',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name='person' size={size} color={color} />
+            <Ionicons name='settings' size={size} color={color} />
           ),
         }}
       />

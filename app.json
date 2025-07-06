@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "AudibleClone",
+    "name": "Amrita Lahari",
     "slug": "AudibleClone",
     "scheme": "audibleclone",
     "version": "1.0.0",
@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.vadinsavin.AudibleClone"
+      "bundleIdentifier": "com.app.amritalahari"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,7 +28,7 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
-      "package": "com.vadinsavin.AudibleClone"
+      "package": "com.app.amritalahari"
     },
     "web": {
       "favicon": "./assets/favicon.png",
