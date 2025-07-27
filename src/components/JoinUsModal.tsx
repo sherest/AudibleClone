@@ -87,24 +87,52 @@ const JoinUsModal = () => {
 
     setLoading(true);
     try {
+      // First, save to Firebase Realtime Database
       const messagesRef = ref(realtimeDb, 'community/messages/data');
       const newMessageRef = push(messagesRef);
       
-      await set(newMessageRef, {
+      const messageData = {
         name: formData.name,
         email: formData.email,
-        phone: formData.mobile,
-        message: formData.comments,
+        mobile: formData.mobile,
+        comment: formData.comments,
         city: formData.city,
         country: formData.country,
         date: new Date().toISOString().split('T')[0],
         time: new Date().toTimeString().split(' ')[0]
+      };
+      
+      await set(newMessageRef, messageData);
+
+      // Then, send email via Cloud Function
+      const response = await fetch("https://us-central1-amrita-lahari.cloudfunctions.net/sendMail", {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify(messageData)
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to send email notification');
+      }
 
       Alert.alert(
         'Success', 
         'Thank you for joining us! We will keep you updated on our activities.',
-        [{ text: 'OK', onPress: () => handleClose() }]
+        [{ text: 'OK', onPress: () => {
+          handleClose();
+          // Reset form data
+          setFormData({
+            name: '',
+            email: '',
+            mobile: '',
+            comments: '',
+            city: '',
+            country: ''
+          });
+        }}]
       );
     } catch (error) {
       console.error('Error submitting form:', error);

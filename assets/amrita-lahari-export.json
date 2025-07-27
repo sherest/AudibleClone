@@ -67,6 +67,21 @@
       "lang": "eng"
     },
     "messages": {
+      "announcement": {
+        "ban": "একটি কমিউনিটি মেসেজিং বৈশিষ্ট্য শীঘ্রই উপলব্ধ হবে।",
+        "button": {
+          "ban": "ঠিক আছে",
+          "eng": "OK",
+          "hin": "ठीक है"
+        },
+        "eng": "A community messaging feature will be available soon.",
+        "hin": "सामुदायिक संदेश सुविधा जल्द ही उपलब्ध होगी।",
+        "title": {
+          "ban": "তথ্য",
+          "eng": "Information",
+          "hin": "सूचना"
+        }
+      },
       "data": [
         {
           "date": "2017-08-13",
@@ -99,6 +114,42 @@
         "eng": "Messages",
         "hin": "संदेश"
       }
+    }
+  },
+  "information": {
+    "app": {
+      "iOS": {
+        "ban": "অথবা iTunes - amrita lahari অনুসন্ধান করুন",
+        "eng": "or iTunes - search amrita lahari",
+        "hin": "या iTunes - amrita lahari खोजें"
+      }
+    },
+    "download": {
+      "ban": "গানগুলো ডাউনলোড করার জন্য:",
+      "eng": "For downloading the songs:",
+      "hin": "गाने डाउनलोड करने के लिए:"
+    },
+    "greeting": {
+      "ban": "আপনাকে স্বাগতম!",
+      "eng": "Welcome you!",
+      "hin": "आप का स्वागत है!"
+    },
+    "share": {
+      "email": "lahari.amrita@gmail.com",
+      "language": {
+        "ban": "গুরুজির কীর্তন, ছবি, গল্প এবং অন্যান্য অডিও ভিজ্যুয়াল সামগ্রী শেয়ার করতে:",
+        "eng": "To share kirtans, photos, stories and other Audio visual material of Guruji:",
+        "hin": "सामग्री साझा करने के लिए:"
+      }
+    },
+    "title": {
+      "ban": "তথ্য",
+      "eng": "Information",
+      "hin": "जानकारी"
+    },
+    "website": {
+      "href": "https://www.amritalahari.com",
+      "label": "www.amritalahari.com"
     }
   },
   "join_us": {
@@ -148,6 +199,16 @@
         "eng": "Submit",
         "hin": "निवेदन"
       }
+    },
+    "shortDescription": {
+      "ban": "সম্প্রদায়ের কার্যকলাপ সম্পর্কে আপডেট থাকুন",
+      "eng": "Stay updated on community activities",
+      "hin": "समुदाय की गतिविधियों के बारे में अपडेट रहें"
+    },
+    "titleDescription": {
+      "ban": "বর্ণনা",
+      "eng": "Description",
+      "hin": "विवरण"
     }
   },
   "kirtan": {
@@ -3995,7 +4056,7 @@
       }
     ],
     "fallbackBasePath": {
-      "audio": "http://www.amritalahari.com/upload/"
+      "audio": "https://www.amritalahari.com/upload/"
     },
     "isFirebaseAudio": false
   },
@@ -4006,11 +4067,11 @@
     },
     {
       "code": "hin",
-      "name": "Hindi"
+      "name": "हिंदी"
     },
     {
       "code": "ban",
-      "name": "Bengali"
+      "name": "বাংলা"
     }
   ],
   "latest": {
@@ -4071,6 +4132,11 @@
     "lang": "eng"
   },
   "menu": {
+    "about": {
+      "ban": "সম্পর্কে",
+      "eng": "About",
+      "hin": "बारे में"
+    },
     "amritaLahari": {
       "ban": "অমৃতা লাহারি",
       "eng": "Amrita Lahari",
@@ -4080,6 +4146,11 @@
       "ban": "সম্প্রদায়",
       "eng": "Community",
       "hin": "समुदाय"
+    },
+    "home": {
+      "ban": "প্রধান",
+      "eng": "Home",
+      "hin": "मुख्य"
     },
     "joinUs": {
       "ban": "আমাদের সাথে যোগ দাও",
@@ -4628,7 +4699,7 @@
       }
     ],
     "fallbackBasePath": {
-      "audio": "http://www.amritalahari.com/upload/"
+      "audio": "https://www.amritalahari.com/upload/"
     },
     "isFirebaseAudio": false
   }
