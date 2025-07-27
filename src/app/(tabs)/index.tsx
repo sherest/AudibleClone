@@ -6,6 +6,8 @@ import { ref, onValue } from 'firebase/database';
 import { FontAwesome5, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import SettingsModal from '../settings';
 import { useJoinUs } from '../../providers/JoinUsProvider';
+import HomeCarousel from '../../components/HomeCarousel';
+import SimpleCarousel from '../../components/SimpleCarousel';
 
 const { width } = Dimensions.get('window');
 
@@ -119,6 +121,9 @@ const SacredHomeScreen = () => {
         </View>
       <ScrollView style={styles.container}>
         
+        {/* Home Carousel */}
+        <HomeCarousel autoPlayInterval={5000} />
+        {/* <SimpleCarousel /> */}
 
         {/* Daily Wisdom Card */}
         {dailyWisdom && (
