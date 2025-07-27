@@ -5,6 +5,7 @@ import { realtimeDb } from '../lib/firebase';
 import { ref, onValue } from 'firebase/database';
 import { useLanguage } from '../providers/LanguageContext';
 import { FontAwesome5 } from '@expo/vector-icons';
+import SkeletonPlaceholder from './SkeletonPlaceholder';
 
 const { width } = Dimensions.get('window');
 
@@ -72,7 +73,23 @@ const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) 
   };
 
   if (carouselData.length === 0) {
-    return null; // Don't render carousel if no data
+    return (
+      <View style={{...styles.carouselContainer, marginHorizontal: 20}}>
+        <View style={styles.carouselItem}>
+          <View style={styles.carouselImage}>
+            <FontAwesome5 name="music" size={60} color="#e94560" style={styles.musicIcon} />
+          </View>
+          <View style={styles.carouselOverlay}>
+            <View style={styles.carouselContent}>
+              <SkeletonPlaceholder width={80} height={20} borderRadius={2} style={{ marginBottom: 8 }} />
+              <SkeletonPlaceholder width="90%" height={18} borderRadius={4} style={{ marginBottom: 5 }} />
+              <SkeletonPlaceholder width="70%" height={14} borderRadius={4} style={{ marginBottom: 8 }} />
+              <SkeletonPlaceholder width={120} height={12} borderRadius={4} />
+            </View>
+          </View>
+        </View>
+      </View>
+    );
   }
 
   return (
@@ -106,7 +123,7 @@ const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) 
 const styles = StyleSheet.create({
   carouselContainer: {
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 10
   },
   carouselItem: {
     width: width - 40,
