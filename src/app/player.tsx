@@ -53,17 +53,12 @@ export default function PlayerScreen() {
         {isTitleLoading ? (
           <SkeletonPlaceholder width="80%" height={32} borderRadius={4} style={{ alignSelf: 'center' }} />
         ) : (
-          <MarqueeText 
-            text={book.title}
-            style={{ 
-              color: '#ffffff', 
-              fontSize: 24, 
-              fontWeight: 'bold', 
-              textAlign: 'center' 
-            }}
-            speed={30}
-            delay={1500}
-          />
+          <Text className='text-white text-xl font-bold text-center'
+            numberOfLines={2}
+            ellipsizeMode='tail'
+          >
+            {book.title}
+          </Text>
         )}
 
         {/* Author */}
