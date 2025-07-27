@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, {Fragment, useState, useEffect} from 'react';
 import {View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, SafeAreaView, Linking} from 'react-native';
 import {useLanguage} from '../../providers/LanguageContext';
 import {FontAwesome5} from '@expo/vector-icons';
@@ -6,6 +6,8 @@ import SettingsModal from '../settings';
 import {useJoinUs} from '../../providers/JoinUsProvider';
 import HomeCarousel from '../../components/HomeCarousel';
 import Constants from 'expo-constants';
+import {realtimeDb} from '../../lib/firebase';
+import {ref, onValue} from 'firebase/database';
 
 const {width} = Dimensions.get('window');
 
@@ -13,6 +15,33 @@ const HomeScreen = () => {
     const {selectedLanguage} = useLanguage();
     const {showJoinUs} = useJoinUs();
     const [settingsVisible, setSettingsVisible] = useState(false);
+    const [menuData, setMenuData] = useState<any>({});
+    const [joinUsData, setJoinUsData] = useState<any>({});
+
+    useEffect(() => {
+        const fetchMenuData = () => {
+            const menuRef = ref(realtimeDb, 'menu');
+            onValue(menuRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    setMenuData(data);
+                }
+            });
+        };
+
+        const fetchJoinUsData = () => {
+            const joinUsRef = ref(realtimeDb, 'join_us');
+            onValue(joinUsRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    setJoinUsData(data);
+                }
+            });
+        };
+
+        fetchMenuData();
+        fetchJoinUsData();
+    }, [selectedLanguage]);
     return (
         <Fragment>
             <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
@@ -46,19 +75,17 @@ const HomeScreen = () => {
                         <View style={styles.joinUsCard}>
                             <View style={styles.joinUsContent}>
                                 <Text style={styles.joinUsTitle}>
-                                    {selectedLanguage?.code === 'hin' ? 'हमसे जुड़ें' : 'Join Us'}
+                                    {menuData?.joinUs?.[selectedLanguage?.code || 'eng'] || 'Join Us'}
                                 </Text>
                                 <Text style={styles.joinUsDescription}>
-                                    {selectedLanguage?.code === 'hin'
-                                        ? 'समुदाय की गतिविधियों के बारे में अपडेट रहें'
-                                        : 'Stay updated on community activities'}
+                                    {joinUsData?.shortDescription?.[selectedLanguage?.code || 'eng'] || 'Stay updated on community activities'}
                                 </Text>
                                 <TouchableOpacity
                                     style={styles.joinUsButton}
                                     onPress={showJoinUs}
                                 >
                                     <Text style={styles.joinUsButtonText}>
-                                        {selectedLanguage?.code === 'hin' ? 'शामिल हों' : 'Join Now'}
+                                        {menuData?.joinUs?.[selectedLanguage?.code || 'eng'] || 'Join Now'}
                                     </Text>
                                 </TouchableOpacity>
                             </View>
@@ -235,7 +262,7 @@ const styles = StyleSheet.create({
       color: '#8b8b8b',
     },
     versionContainer: {
-      marginTop: 20,
+      marginTop: 0,
       paddingTop: 15,
       borderTopWidth: 1,
       borderTopColor: '#333',
