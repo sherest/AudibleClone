@@ -143,14 +143,6 @@ const Kirtan = () => {
         <View style={styles.contentContainer}>
           <Text style={styles.title} numberOfLines={1}>{title}</Text>
           <Text style={styles.author}>By {author}</Text>
-          
-          {/* Progress Bar */}
-          <View style={styles.progressContainer}>
-            <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: '0%' }]} />
-            </View>
-            <Text style={styles.progressText}>Not started</Text>
-          </View>
         </View>
 
         {/* Right Side - Actions */}
@@ -184,9 +176,7 @@ const Kirtan = () => {
                 <SkeletonPlaceholder width={60} height={60} borderRadius={8} />
                 <View style={styles.contentContainer}>
                   <SkeletonPlaceholder width="80%" height={18} borderRadius={4} style={{ marginBottom: 8 }} />
-                  <SkeletonPlaceholder width="60%" height={14} borderRadius={4} style={{ marginBottom: 12 }} />
-                  <SkeletonPlaceholder width="100%" height={4} borderRadius={2} style={{ marginBottom: 4 }} />
-                  <SkeletonPlaceholder width="40%" height={12} borderRadius={4} />
+                  <SkeletonPlaceholder width="60%" height={14} borderRadius={4} />
                 </View>
                 <View style={styles.actionContainer}>
                   <SkeletonPlaceholder width={40} height={40} borderRadius={20} />
@@ -272,25 +262,6 @@ const styles = StyleSheet.create({
   },
   author: {
     fontSize: 14,
-    color: '#8b8b8b',
-    marginBottom: 12,
-  },
-  progressContainer: {
-    marginBottom: 4,
-  },
-  progressBar: {
-    height: 4,
-    backgroundColor: '#2a2a3e',
-    borderRadius: 2,
-    marginBottom: 4,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#e94560',
-    borderRadius: 2,
-  },
-  progressText: {
-    fontSize: 12,
     color: '#8b8b8b',
   },
   actionContainer: {
