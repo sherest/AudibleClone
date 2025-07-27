@@ -20,8 +20,8 @@ export default function FloatingPlayer() {
           className='w-16 aspect-square rounded-md'
         />
         <View className='gap-1 flex-1'>
-          <Text className='text-2xl text-gray-100 font-bold'>{book.title}</Text>
-          <Text className='text-gray-400'>{book.author}</Text>
+          <Text className='text-2xl text-gray-100 font-bold' numberOfLines={2} ellipsizeMode='tail'>{book.title}</Text>
+          <Text className='text-gray-400' numberOfLines={1} ellipsizeMode='tail'>{book.author}</Text>
         </View>
 
         <AntDesign
