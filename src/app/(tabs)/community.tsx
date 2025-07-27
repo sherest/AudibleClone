@@ -38,6 +38,7 @@ interface CommunityData {
     fields: {
       add_your_message: { [key: string]: string };
     };
+    announcement?: { [key: string]: string };
   };
   biography: {
     data: BiographyData[];
@@ -218,10 +219,19 @@ const CommunityScreen = () => {
           {renderContent()}
         </ScrollView>
 
-        {/* Floating Action Button */}
-        <TouchableOpacity style={styles.fab}>
-          <FontAwesome5 name="plus" size={20} color="#ffffff" />
-        </TouchableOpacity>
+        {/* Floating Action Button - Only visible in Messages tab */}
+        {activeTab === 'messages' && communityData?.messages?.announcement && (
+          <TouchableOpacity 
+            style={styles.fab}
+            onPress={() => {
+              const announcement = communityData.messages.announcement!;
+              const message = getLocalizedContent(announcement);
+              alert(message);
+            }}
+          >
+            <FontAwesome5 name="plus" size={20} color="#ffffff" />
+          </TouchableOpacity>
+        )}
       </SafeAreaView>
     </Fragment>
   );
