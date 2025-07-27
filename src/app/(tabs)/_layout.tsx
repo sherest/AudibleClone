@@ -72,7 +72,8 @@ export default function TabsLayout() {
                 options={{
                     title: menuData?.home?.[selectedLanguage?.code || 'eng'] || 'Home',
                     tabBarIcon: ({color, size}) => (
-                        <FontAwesome5 name='home' size={size} color={color}/>
+                        <FontAwesome5 name='praying-hands' size={size} color={color}/>
+                        
                     ),
                 }}/>
             <Tabs.Screen
