@@ -105,12 +105,13 @@ const SacredHomeScreen = () => {
             </Text>
           </View>
           <TouchableOpacity 
-            style={styles.languageButton}
+            style={styles.languageSelector}
             onPress={() => setSettingsVisible(true)}
           >
-            <Text style={styles.languageButtonText}>
-              {selectedLanguage?.code === 'hi' ? 'हिंदी' : 'EN'}
+            <Text style={styles.languageLabel}>
+              {selectedLanguage?.code === 'hi' ? 'हिंदी' : 'English'}
             </Text>
+            <FontAwesome5 name="chevron-down" size={12} color="#e94560" />
           </TouchableOpacity>
         </View>
 
@@ -239,18 +240,17 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     marginLeft: 10,
   },
-  languageButton: {
-    backgroundColor: '#e94560',
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#e94560',
+  languageSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
   },
-  languageButtonText: {
-    color: '#ffffff',
+  languageLabel: {
+    color: '#e94560',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    marginRight: 5,
   },
   wisdomCard: {
     backgroundColor: '#1a1a2e',
