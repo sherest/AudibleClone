@@ -110,6 +110,9 @@ const Kirtan = () => {
 
     // Set the album with the first song (index 0)
     setAlbum(albumWithBasePath, 0);
+    
+    // Don't auto-play - let user manually start playback from mini-player or full player
+    // This prevents the native shared object error
   };
 
   const renderKirtanItem = (kirtan: KirtanData, index: number) => {
