@@ -17,6 +17,7 @@ const HomeScreen = () => {
     const [settingsVisible, setSettingsVisible] = useState(false);
     const [menuData, setMenuData] = useState<any>({});
     const [joinUsData, setJoinUsData] = useState<any>({});
+    const [informationData, setInformationData] = useState<any>({});
 
     useEffect(() => {
         const fetchMenuData = () => {
@@ -39,8 +40,19 @@ const HomeScreen = () => {
             });
         };
 
+        const fetchInformationData = () => {
+            const informationRef = ref(realtimeDb, 'information');
+            onValue(informationRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    setInformationData(data);
+                }
+            });
+        };
+
         fetchMenuData();
         fetchJoinUsData();
+        fetchInformationData();
     }, [selectedLanguage]);
     return (
         <Fragment>
@@ -75,17 +87,17 @@ const HomeScreen = () => {
                         <View style={styles.joinUsCard}>
                             <View style={styles.joinUsContent}>
                                 <Text style={styles.joinUsTitle}>
-                                    {menuData?.joinUs?.[selectedLanguage?.code || 'eng'] || 'Join Us'}
+                                    {menuData?.joinUs?.[selectedLanguage?.code || 'eng']}
                                 </Text>
                                 <Text style={styles.joinUsDescription}>
-                                    {joinUsData?.shortDescription?.[selectedLanguage?.code || 'eng'] || 'Stay updated on community activities'}
+                                    {joinUsData?.shortDescription?.[selectedLanguage?.code || 'eng']}
                                 </Text>
                                 <TouchableOpacity
                                     style={styles.joinUsButton}
                                     onPress={showJoinUs}
                                 >
                                     <Text style={styles.joinUsButtonText}>
-                                        {menuData?.joinUs?.[selectedLanguage?.code || 'eng'] || 'Join Now'}
+                                        {menuData?.joinUs?.[selectedLanguage?.code || 'eng']}
                                     </Text>
                                 </TouchableOpacity>
                             </View>
@@ -96,20 +108,20 @@ const HomeScreen = () => {
                     <View style={styles.section}>
                         <View style={styles.infoCard}>
                             <Text style={styles.infoTitle}>
-                                {selectedLanguage?.code === 'hin' ? 'जानकारी' : 'Information'}
+                                {informationData?.title?.[selectedLanguage?.code || 'eng']}
                             </Text>
                             
                             <View style={styles.infoItem}>
                                 <FontAwesome5 name="download" size={16} color="#e94560" style={styles.infoIcon} />
                                 <View style={styles.infoContent}>
                                     <Text style={styles.infoLabel}>
-                                        {selectedLanguage?.code === 'hin' ? 'गाने डाउनलोड करने के लिए:' : 'For downloading the songs:'}
+                                        {informationData?.download?.[selectedLanguage?.code || 'eng']}
                                     </Text>
-                                    <TouchableOpacity onPress={() => Linking.openURL('https://www.amritalahari.com')}>
-                                        <Text style={styles.infoLink}>www.amritalahari.com</Text>
+                                    <TouchableOpacity onPress={() => Linking.openURL(informationData?.website?.href)}>
+                                        <Text style={styles.infoLink}>{informationData?.website?.label}</Text>
                                     </TouchableOpacity>
                                     <Text style={styles.infoText}>
-                                        {selectedLanguage?.code === 'hin' ? 'या iTunes - amrita lahari खोजें' : 'or iTunes - search amrita lahari'}
+                                        {informationData?.app?.iOS?.[selectedLanguage?.code || 'eng']}
                                     </Text>
                                 </View>
                             </View>
@@ -118,10 +130,10 @@ const HomeScreen = () => {
                                 <FontAwesome5 name="share" size={16} color="#e94560" style={styles.infoIcon} />
                                 <View style={styles.infoContent}>
                                     <Text style={styles.infoLabel}>
-                                        {selectedLanguage?.code === 'hin' ? 'सामग्री साझा करने के लिए:' : 'To share kirtans, photos, stories and other Audio visual material of Guruji:'}
+                                        {informationData?.share?.language?.[selectedLanguage?.code || 'eng']}
                                     </Text>
-                                    <TouchableOpacity onPress={() => Linking.openURL('mailto:lahari.amrita@gmail.com')}>
-                                        <Text style={styles.infoLink}>lahari.amrita@gmail.com</Text>
+                                    <TouchableOpacity onPress={() => Linking.openURL(`mailto:${informationData?.share?.email}`)}>
+                                        <Text style={styles.infoLink}>{informationData?.share?.email}</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
