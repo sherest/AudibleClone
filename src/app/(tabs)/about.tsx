@@ -5,6 +5,7 @@ import { ref, onValue } from 'firebase/database';
 import { realtimeDb } from '../../lib/firebase';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useJoinUs } from '../../providers/JoinUsProvider';
+import SkeletonPlaceholder from '../../components/SkeletonPlaceholder';
 
 interface AboutData {
   data: Array<{
@@ -67,9 +68,32 @@ const AboutScreen = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#e94560" />
-      </View>
+      <Fragment>
+        <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
+        <SafeAreaView style={styles.container}>
+          {/* Header Skeleton */}
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <FontAwesome5 name="info-circle" size={22} color="#e94560" />
+              <SkeletonPlaceholder width={150} height={22} borderRadius={4} style={{ marginLeft: 15 }} />
+            </View>
+          </View>
+
+          {/* Content Skeleton */}
+          <ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
+            <View style={styles.contentCard}>
+              {[1, 2, 3, 4].map((index) => (
+                <View key={index} style={styles.paragraphContainer}>
+                  <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                  <SkeletonPlaceholder width="95%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                  <SkeletonPlaceholder width="90%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                  <SkeletonPlaceholder width="85%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Fragment>
     );
   }
 
@@ -82,22 +106,38 @@ const AboutScreen = () => {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <FontAwesome5 name="info-circle" size={22} color="#e94560" />
-          <Text style={styles.headerTitle}>
-            {aboutData?.title && getLocalizedContent(aboutData.title)}
-          </Text>
+          {aboutData?.title ? (
+            <Text style={styles.headerTitle}>
+              {getLocalizedContent(aboutData.title)}
+            </Text>
+          ) : (
+            <SkeletonPlaceholder width={150} height={22} borderRadius={4} style={{ marginLeft: 15 }} />
+          )}
         </View>
       </View>
 
       {/* Content */}
       <ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
         <View style={styles.contentCard}>
-          {aboutData?.data.map((paragraph, index) => (
-            <View key={index} style={styles.paragraphContainer}>
-              <Text style={styles.paragraphText}>
-                {getLocalizedContent(paragraph)}
-              </Text>
-            </View>
-          ))}
+          {aboutData?.data ? (
+            aboutData.data.map((paragraph, index) => (
+              <View key={index} style={styles.paragraphContainer}>
+                <Text style={styles.paragraphText}>
+                  {getLocalizedContent(paragraph)}
+                </Text>
+              </View>
+            ))
+          ) : (
+            // Show skeleton placeholders for paragraphs
+            [1, 2, 3, 4].map((index) => (
+              <View key={index} style={styles.paragraphContainer}>
+                <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                <SkeletonPlaceholder width="95%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                <SkeletonPlaceholder width="90%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                <SkeletonPlaceholder width="85%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+              </View>
+            ))
+          )}
         </View>
       </ScrollView>
       </SafeAreaView>
@@ -110,12 +150,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0f3460',
   },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: '#0f3460',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   header: {
     backgroundColor: '#1a1a2e',
     paddingTop: 20,

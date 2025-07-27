@@ -8,6 +8,7 @@ import HomeCarousel from '../../components/HomeCarousel';
 import Constants from 'expo-constants';
 import {realtimeDb} from '../../lib/firebase';
 import {ref, onValue} from 'firebase/database';
+import SkeletonPlaceholder from '../../components/SkeletonPlaceholder';
 
 const {width} = Dimensions.get('window');
 
@@ -62,9 +63,13 @@ const HomeScreen = () => {
                 <View style={styles.header}>
                     <View style={styles.greetingContainer}>
                         <FontAwesome5 name="praying-hands" size={22} color="#e94560" style={{marginRight: 10}}/>
-                        <Text style={styles.greeting}>
-                            {informationData?.greeting?.[selectedLanguage?.code || 'eng']}
-                        </Text>
+                        {informationData?.greeting?.[selectedLanguage?.code || 'eng'] ? (
+                            <Text style={styles.greeting}>
+                                {informationData.greeting[selectedLanguage?.code || 'eng']}
+                            </Text>
+                        ) : (
+                            <SkeletonPlaceholder width={150} height={24} borderRadius={4} />
+                        )}
                     </View>
                     <TouchableOpacity
                         style={styles.languageSelector}
@@ -86,20 +91,34 @@ const HomeScreen = () => {
                     <View style={styles.section}>
                         <View style={styles.joinUsCard}>
                             <View style={styles.joinUsContent}>
-                                <Text style={styles.joinUsTitle}>
-                                    {menuData?.joinUs?.[selectedLanguage?.code || 'eng']}
-                                </Text>
-                                <Text style={styles.joinUsDescription}>
-                                    {joinUsData?.shortDescription?.[selectedLanguage?.code || 'eng']}
-                                </Text>
-                                <TouchableOpacity
-                                    style={styles.joinUsButton}
-                                    onPress={showJoinUs}
-                                >
-                                    <Text style={styles.joinUsButtonText}>
-                                        {menuData?.joinUs?.[selectedLanguage?.code || 'eng']}
+                                {menuData?.joinUs?.[selectedLanguage?.code || 'eng'] ? (
+                                    <Text style={styles.joinUsTitle}>
+                                        {menuData.joinUs[selectedLanguage?.code || 'eng']}
                                     </Text>
-                                </TouchableOpacity>
+                                ) : (
+                                    <SkeletonPlaceholder width={120} height={20} borderRadius={4} style={{ marginBottom: 10 }} />
+                                )}
+                                
+                                {joinUsData?.shortDescription?.[selectedLanguage?.code || 'eng'] ? (
+                                    <Text style={styles.joinUsDescription}>
+                                        {joinUsData.shortDescription[selectedLanguage?.code || 'eng']}
+                                    </Text>
+                                ) : (
+                                    <SkeletonPlaceholder width="80%" height={16} borderRadius={4} style={{ marginBottom: 20 }} />
+                                )}
+                                
+                                {menuData?.joinUs?.[selectedLanguage?.code || 'eng'] ? (
+                                    <TouchableOpacity
+                                        style={styles.joinUsButton}
+                                        onPress={showJoinUs}
+                                    >
+                                        <Text style={styles.joinUsButtonText}>
+                                            {menuData.joinUs[selectedLanguage?.code || 'eng']}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ) : (
+                                    <SkeletonPlaceholder width={100} height={40} borderRadius={10} />
+                                )}
                             </View>
                         </View>
                     </View>
@@ -107,34 +126,61 @@ const HomeScreen = () => {
                     {/* Information Section */}
                     <View style={styles.section}>
                         <View style={styles.infoCard}>
-                            <Text style={styles.infoTitle}>
-                                {informationData?.title?.[selectedLanguage?.code || 'eng']}
-                            </Text>
+                            {informationData?.title?.[selectedLanguage?.code || 'eng'] ? (
+                                <Text style={styles.infoTitle}>
+                                    {informationData.title[selectedLanguage?.code || 'eng']}
+                                </Text>
+                            ) : (
+                                <SkeletonPlaceholder width={100} height={18} borderRadius={4} style={{ marginBottom: 15, alignSelf: 'center' }} />
+                            )}
                             
                             <View style={styles.infoItem}>
                                 <FontAwesome5 name="download" size={16} color="#e94560" style={styles.infoIcon} />
                                 <View style={styles.infoContent}>
-                                    <Text style={styles.infoLabel}>
-                                        {informationData?.download?.[selectedLanguage?.code || 'eng']}
-                                    </Text>
-                                    <TouchableOpacity onPress={() => Linking.openURL(informationData?.website?.href)}>
-                                        <Text style={styles.infoLink}>{informationData?.website?.label}</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.infoText}>
-                                        {informationData?.app?.iOS?.[selectedLanguage?.code || 'eng']}
-                                    </Text>
+                                    {informationData?.download?.[selectedLanguage?.code || 'eng'] ? (
+                                        <Text style={styles.infoLabel}>
+                                            {informationData.download[selectedLanguage?.code || 'eng']}
+                                        </Text>
+                                    ) : (
+                                        <SkeletonPlaceholder width="70%" height={14} borderRadius={4} style={{ marginBottom: 5 }} />
+                                    )}
+                                    
+                                    {informationData?.website?.href && informationData?.website?.label ? (
+                                        <TouchableOpacity onPress={() => Linking.openURL(informationData.website.href)}>
+                                            <Text style={styles.infoLink}>{informationData.website.label}</Text>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <SkeletonPlaceholder width={180} height={14} borderRadius={4} style={{ marginBottom: 3 }} />
+                                    )}
+                                    
+                                    {informationData?.app?.iOS?.[selectedLanguage?.code || 'eng'] ? (
+                                        <Text style={styles.infoText}>
+                                            {informationData.app.iOS[selectedLanguage?.code || 'eng']}
+                                        </Text>
+                                    ) : (
+                                        <SkeletonPlaceholder width="60%" height={14} borderRadius={4} />
+                                    )}
                                 </View>
                             </View>
 
                             <View style={styles.infoItem}>
                                 <FontAwesome5 name="share" size={16} color="#e94560" style={styles.infoIcon} />
                                 <View style={styles.infoContent}>
-                                    <Text style={styles.infoLabel}>
-                                        {informationData?.share?.language?.[selectedLanguage?.code || 'eng']}
-                                    </Text>
-                                    <TouchableOpacity onPress={() => Linking.openURL(`mailto:${informationData?.share?.email}`)}>
-                                        <Text style={styles.infoLink}>{informationData?.share?.email}</Text>
-                                    </TouchableOpacity>
+                                    {informationData?.share?.language?.[selectedLanguage?.code || 'eng'] ? (
+                                        <Text style={styles.infoLabel}>
+                                            {informationData.share.language[selectedLanguage?.code || 'eng']}
+                                        </Text>
+                                    ) : (
+                                        <SkeletonPlaceholder width="90%" height={14} borderRadius={4} style={{ marginBottom: 5 }} />
+                                    )}
+                                    
+                                    {informationData?.share?.email ? (
+                                        <TouchableOpacity onPress={() => Linking.openURL(`mailto:${informationData.share.email}`)}>
+                                            <Text style={styles.infoLink}>{informationData.share.email}</Text>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <SkeletonPlaceholder width={200} height={14} borderRadius={4} />
+                                    )}
                                 </View>
                             </View>
 

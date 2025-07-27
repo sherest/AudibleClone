@@ -5,6 +5,7 @@ import { useJoinUs } from '../../providers/JoinUsProvider';
 import { realtimeDb } from '../../lib/firebase';
 import { ref, onValue } from 'firebase/database';
 import { FontAwesome5 } from '@expo/vector-icons';
+import SkeletonPlaceholder from '../../components/SkeletonPlaceholder';
 
 interface Event {
   title: { [key: string]: string };
@@ -119,16 +120,64 @@ const CommunityScreen = () => {
       <Fragment>
         <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
         <SafeAreaView style={styles.container}>
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#e94560" />
+          {/* Header Skeleton */}
+          <View style={styles.header}>
+            <FontAwesome5 name="users" size={22} color="#e94560" />
+            <SkeletonPlaceholder width={120} height={22} borderRadius={4} style={{ marginLeft: 10, flex: 1 }} />
+            <SkeletonPlaceholder width={80} height={36} borderRadius={10} />
           </View>
+
+          {/* Tab Navigation Skeleton */}
+          <View style={styles.tabContainer}>
+            {[1, 2, 3].map((index) => (
+              <View key={index} style={styles.tabButton}>
+                <FontAwesome5 name="circle" size={16} color="#8b8b8b" />
+                <SkeletonPlaceholder width={60} height={14} borderRadius={4} style={{ marginLeft: 8 }} />
+              </View>
+            ))}
+          </View>
+
+          {/* Content Skeleton */}
+          <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+            <View style={styles.section}>
+              {[1, 2, 3].map((index) => (
+                <View key={index} style={styles.eventCard}>
+                  <View style={styles.eventHeader}>
+                    <FontAwesome5 name="calendar-alt" size={16} color="#e94560" />
+                    <SkeletonPlaceholder width={150} height={18} borderRadius={4} style={{ marginLeft: 10 }} />
+                  </View>
+                  <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                  <SkeletonPlaceholder width="90%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                  <SkeletonPlaceholder width="80%" height={16} borderRadius={4} style={{ marginBottom: 10 }} />
+                  <SkeletonPlaceholder width={120} height={14} borderRadius={4} />
+                </View>
+              ))}
+            </View>
+          </ScrollView>
         </SafeAreaView>
       </Fragment>
     );
   }
 
   const renderEventsContent = () => {
-    if (!communityData?.events?.data) return null;
+    if (!communityData?.events?.data) {
+      return (
+        <View style={styles.section}>
+          {[1, 2, 3].map((index) => (
+            <View key={index} style={styles.eventCard}>
+              <View style={styles.eventHeader}>
+                <FontAwesome5 name="calendar-alt" size={16} color="#e94560" />
+                <SkeletonPlaceholder width={150} height={18} borderRadius={4} style={{ marginLeft: 10 }} />
+              </View>
+              <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+              <SkeletonPlaceholder width="90%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+              <SkeletonPlaceholder width="80%" height={16} borderRadius={4} style={{ marginBottom: 10 }} />
+              <SkeletonPlaceholder width={120} height={14} borderRadius={4} />
+            </View>
+          ))}
+        </View>
+      );
+    }
     
     return (
       <View style={styles.section}>
@@ -153,7 +202,24 @@ const CommunityScreen = () => {
   };
 
   const renderMessagesContent = () => {
-    if (!communityData?.messages?.data) return null;
+    if (!communityData?.messages?.data) {
+      return (
+        <View style={styles.section}>
+          {[1, 2, 3].map((index) => (
+            <View key={index} style={styles.messageCard}>
+              <View style={styles.messageHeader}>
+                <FontAwesome5 name="user" size={16} color="#e94560" />
+                <SkeletonPlaceholder width={100} height={16} borderRadius={4} style={{ marginLeft: 10 }} />
+              </View>
+              <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+              <SkeletonPlaceholder width="95%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+              <SkeletonPlaceholder width="90%" height={16} borderRadius={4} style={{ marginBottom: 10 }} />
+              <SkeletonPlaceholder width={120} height={14} borderRadius={4} />
+            </View>
+          ))}
+        </View>
+      );
+    }
     
     return (
       <View style={styles.section}>
@@ -172,7 +238,22 @@ const CommunityScreen = () => {
   };
 
   const renderBiographyContent = () => {
-    if (!communityData?.biography?.data) return null;
+    if (!communityData?.biography?.data) {
+      return (
+        <View style={styles.section}>
+          <View style={styles.biographyCard}>
+            {[1, 2, 3, 4].map((index) => (
+              <View key={index} style={{ marginBottom: 16 }}>
+                <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                <SkeletonPlaceholder width="95%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                <SkeletonPlaceholder width="90%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                <SkeletonPlaceholder width="85%" height={16} borderRadius={4} />
+              </View>
+            ))}
+          </View>
+        </View>
+      );
+    }
     
     return (
       <View style={styles.section}>
@@ -207,40 +288,58 @@ const CommunityScreen = () => {
         {/* Header */}
         <View style={styles.header}>
           <FontAwesome5 name="users" size={22} color="#e94560" />
-          <Text style={styles.headerTitle}>
-            {menuData?.community && getLocalizedContent(menuData.community)}
-          </Text>
-          <TouchableOpacity style={styles.joinUsButton} onPress={showJoinUs}>
-            <Text style={styles.joinUsButtonText}>
-              {menuData?.joinUs && getLocalizedContent(menuData.joinUs)}
+          {menuData?.community ? (
+            <Text style={styles.headerTitle}>
+              {getLocalizedContent(menuData.community)}
             </Text>
-          </TouchableOpacity>
+          ) : (
+            <SkeletonPlaceholder width={120} height={22} borderRadius={4} style={{ marginLeft: 10, flex: 1 }} />
+          )}
+          {menuData?.joinUs ? (
+            <TouchableOpacity style={styles.joinUsButton} onPress={showJoinUs}>
+              <Text style={styles.joinUsButtonText}>
+                {getLocalizedContent(menuData.joinUs)}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <SkeletonPlaceholder width={80} height={36} borderRadius={10} />
+          )}
         </View>
 
         {/* Tab Navigation */}
         <View style={styles.tabContainer}>
-          {tabs.map((tab) => (
-            <TouchableOpacity
-              key={tab.key}
-              style={[
-                styles.tabButton,
-                activeTab === tab.key && styles.activeTabButton
-              ]}
-              onPress={() => setActiveTab(tab.key as 'events' | 'messages' | 'biography')}
-            >
-              <FontAwesome5 
-                name={tab.icon} 
-                size={16} 
-                color={activeTab === tab.key ? '#e94560' : '#8b8b8b'} 
-              />
-              <Text style={[
-                styles.tabText,
-                activeTab === tab.key && styles.activeTabText
-              ]}>
-                {communityData && getLocalizedContent(communityData.tabs[tab.key as keyof typeof communityData.tabs])}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {communityData?.tabs ? (
+            tabs.map((tab) => (
+              <TouchableOpacity
+                key={tab.key}
+                style={[
+                  styles.tabButton,
+                  activeTab === tab.key && styles.activeTabButton
+                ]}
+                onPress={() => setActiveTab(tab.key as 'events' | 'messages' | 'biography')}
+              >
+                <FontAwesome5 
+                  name={tab.icon} 
+                  size={16} 
+                  color={activeTab === tab.key ? '#e94560' : '#8b8b8b'} 
+                />
+                <Text style={[
+                  styles.tabText,
+                  activeTab === tab.key && styles.activeTabText
+                ]}>
+                  {getLocalizedContent(communityData.tabs[tab.key as keyof typeof communityData.tabs])}
+                </Text>
+              </TouchableOpacity>
+            ))
+          ) : (
+            // Show skeleton placeholders for tabs
+            tabs.map((tab) => (
+              <View key={tab.key} style={styles.tabButton}>
+                <FontAwesome5 name={tab.icon} size={16} color="#8b8b8b" />
+                <SkeletonPlaceholder width={60} height={14} borderRadius={4} style={{ marginLeft: 8 }} />
+              </View>
+            ))
+          )}
         </View>
 
         {/* Content */}
@@ -269,9 +368,13 @@ const CommunityScreen = () => {
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
                 <FontAwesome5 name="info-circle" size={24} color="#e94560" />
-                <Text style={styles.modalTitle}>
-                  {communityData?.messages?.announcement?.title && getLocalizedContent(communityData.messages.announcement.title)}
-                </Text>
+                {communityData?.messages?.announcement?.title ? (
+                  <Text style={styles.modalTitle}>
+                    {getLocalizedContent(communityData.messages.announcement.title)}
+                  </Text>
+                ) : (
+                  <SkeletonPlaceholder width={150} height={18} borderRadius={4} style={{ marginLeft: 10, flex: 1 }} />
+                )}
                 <TouchableOpacity 
                   style={styles.closeButton}
                   onPress={() => setShowAnnouncementModal(false)}
@@ -280,22 +383,37 @@ const CommunityScreen = () => {
                 </TouchableOpacity>
               </View>
               <View style={styles.modalBody}>
-                <Text style={styles.modalMessage}>
-                  {communityData?.messages?.announcement && getLocalizedContent({
-                    ban: communityData.messages.announcement.ban,
-                    eng: communityData.messages.announcement.eng,
-                    hin: communityData.messages.announcement.hin
-                  })}
-                </Text>
+                {communityData?.messages?.announcement ? (
+                  <Text style={styles.modalMessage}>
+                    {getLocalizedContent({
+                      ban: communityData.messages.announcement.ban,
+                      eng: communityData.messages.announcement.eng,
+                      hin: communityData.messages.announcement.hin
+                    })}
+                  </Text>
+                ) : (
+                  <View>
+                    <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                    <SkeletonPlaceholder width="95%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                    <SkeletonPlaceholder width="90%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                    <SkeletonPlaceholder width="85%" height={16} borderRadius={4} />
+                  </View>
+                )}
               </View>
-              <TouchableOpacity 
-                style={styles.modalButton}
-                onPress={() => setShowAnnouncementModal(false)}
-              >
-                <Text style={styles.modalButtonText}>
-                  {communityData?.messages?.announcement?.button && getLocalizedContent(communityData.messages.announcement.button)}
-                </Text>
-              </TouchableOpacity>
+              {communityData?.messages?.announcement?.button ? (
+                <TouchableOpacity 
+                  style={styles.modalButton}
+                  onPress={() => setShowAnnouncementModal(false)}
+                >
+                  <Text style={styles.modalButtonText}>
+                    {getLocalizedContent(communityData.messages.announcement.button)}
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <View style={styles.modalButton}>
+                  <SkeletonPlaceholder width={100} height={20} borderRadius={4} />
+                </View>
+              )}
             </View>
           </View>
         </Modal>
@@ -309,11 +427,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0f3460',
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
