@@ -114,7 +114,19 @@ const Kirtan = () => {
 
   const renderKirtanItem = (kirtan: KirtanData, index: number) => {
     const title = getLocalizedContent(kirtan.title);
-    const author = getLocalizedContent(kirtan.songs[0]?.singer || { eng: 'Unknown' });
+    const albumName = getLocalizedContent(kirtan.albumName);
+    
+    // Format uploaded date (e.g., "2021-12-13" -> "Dec 13, 2021")
+    const formatDate = (dateString: string) => {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+    };
+    const uploadedDate = formatDate(kirtan.uploaded);
 
     return (
       <View key={index} style={styles.kirtanItem}>
@@ -128,7 +140,11 @@ const Kirtan = () => {
         {/* Middle Section - Content */}
         <View style={styles.contentContainer}>
           <Text style={styles.title} numberOfLines={1}>{title}</Text>
-          <Text style={styles.author}>By {author}</Text>
+          <Text style={styles.albumName}>{albumName}</Text>
+          <View style={styles.dateContainer}>
+            <FontAwesome5 name="calendar-alt" size={10} color="#e94560" style={styles.dateIcon} />
+            <Text style={styles.year}>{uploadedDate}</Text>
+          </View>
         </View>
 
         {/* Right Side - Actions */}
@@ -162,7 +178,11 @@ const Kirtan = () => {
                 <SkeletonPlaceholder width={60} height={60} borderRadius={8} />
                 <View style={styles.contentContainer}>
                   <SkeletonPlaceholder width="80%" height={18} borderRadius={4} style={{ marginBottom: 8 }} />
-                  <SkeletonPlaceholder width="60%" height={14} borderRadius={4} />
+                  <SkeletonPlaceholder width="60%" height={14} borderRadius={4} style={{ marginBottom: 6 }} />
+                  <View style={styles.dateContainer}>
+                    <SkeletonPlaceholder width={10} height={10} borderRadius={5} style={{ marginRight: 4 }} />
+                    <SkeletonPlaceholder width="50%" height={12} borderRadius={4} />
+                  </View>
                 </View>
                 <View style={styles.actionContainer}>
                   <SkeletonPlaceholder width={40} height={40} borderRadius={20} />
@@ -245,9 +265,22 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     marginBottom: 4,
   },
-  author: {
+  albumName: {
     fontSize: 14,
     color: '#8b8b8b',
+    marginBottom: 2,
+  },
+  year: {
+    fontSize: 12,
+    color: '#e94560',
+    fontWeight: '600',
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  dateIcon: {
+    marginRight: 4,
   },
   actionContainer: {
     alignItems: 'center',
