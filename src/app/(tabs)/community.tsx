@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator, Modal } from 'react-native';
 import { useLanguage } from '../../providers/LanguageContext';
 import { useJoinUs } from '../../providers/JoinUsProvider';
 import { realtimeDb } from '../../lib/firebase';
@@ -28,6 +28,14 @@ interface BiographyData {
   [key: string]: string;
 }
 
+interface AnnouncementData {
+  ban: string;
+  eng: string;
+  hin: string;
+  title?: { [key: string]: string };
+  button?: { [key: string]: string };
+}
+
 interface CommunityData {
   events: {
     data: Event[];
@@ -38,7 +46,7 @@ interface CommunityData {
     fields: {
       add_your_message: { [key: string]: string };
     };
-    announcement?: { [key: string]: string };
+    announcement?: AnnouncementData;
   };
   biography: {
     data: BiographyData[];
@@ -56,6 +64,7 @@ const CommunityScreen = () => {
   const [activeTab, setActiveTab] = useState<'events' | 'messages' | 'biography'>('events');
   const [communityData, setCommunityData] = useState<CommunityData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
 
   // Helper function to safely get localized content
   const getLocalizedContent = (content: Record<string, string>, fallback: string = 'eng') => {
@@ -223,15 +232,53 @@ const CommunityScreen = () => {
         {activeTab === 'messages' && communityData?.messages?.announcement && (
           <TouchableOpacity 
             style={styles.fab}
-            onPress={() => {
-              const announcement = communityData.messages.announcement!;
-              const message = getLocalizedContent(announcement);
-              alert(message);
-            }}
+            onPress={() => setShowAnnouncementModal(true)}
           >
             <FontAwesome5 name="plus" size={20} color="#ffffff" />
           </TouchableOpacity>
         )}
+
+        {/* Announcement Modal */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={showAnnouncementModal}
+          onRequestClose={() => setShowAnnouncementModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <FontAwesome5 name="info-circle" size={24} color="#e94560" />
+                <Text style={styles.modalTitle}>
+                  {communityData?.messages?.announcement?.title && getLocalizedContent(communityData.messages.announcement.title)}
+                </Text>
+                <TouchableOpacity 
+                  style={styles.closeButton}
+                  onPress={() => setShowAnnouncementModal(false)}
+                >
+                  <FontAwesome5 name="times" size={20} color="#8b8b8b" />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.modalBody}>
+                <Text style={styles.modalMessage}>
+                  {communityData?.messages?.announcement && getLocalizedContent({
+                    ban: communityData.messages.announcement.ban,
+                    eng: communityData.messages.announcement.eng,
+                    hin: communityData.messages.announcement.hin
+                  })}
+                </Text>
+              </View>
+              <TouchableOpacity 
+                style={styles.modalButton}
+                onPress={() => setShowAnnouncementModal(false)}
+              >
+                <Text style={styles.modalButtonText}>
+                  {communityData?.messages?.announcement?.button && getLocalizedContent(communityData.messages.announcement.button)}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </Fragment>
   );
@@ -390,6 +437,66 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 20,
+    padding: 0,
+    width: '85%',
+    maxWidth: 400,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2a2a3e',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginLeft: 10,
+    flex: 1,
+  },
+  closeButton: {
+    padding: 5,
+  },
+  modalBody: {
+    padding: 20,
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: '#ffffff',
+    lineHeight: 24,
+    textAlign: 'center',
+  },
+  modalButton: {
+    backgroundColor: '#e94560',
+    margin: 20,
+    marginTop: 10,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
