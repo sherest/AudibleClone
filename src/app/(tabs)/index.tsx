@@ -43,7 +43,7 @@ const Index = () => {
 
 
   return (
-    <ScrollView className='flex-1 p-5 bg-red-700'>
+    <ScrollView className='flex-1 p-5'>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className='mb-5'>
         {latestUploads.map((item, index) => (
           <View key={index} className='p-3 bg-red-800 rounded-lg mr-3'>

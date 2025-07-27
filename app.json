@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "Amrita Lahari",
-    "slug": "AudibleClone",
-    "scheme": "audibleclone",
+    "slug": "amritalahari",
+    "scheme": "amritalahari",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
