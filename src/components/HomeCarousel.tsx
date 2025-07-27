@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
-import { CarouselMomentum } from 'react-native-momentum-carousel';
+import { CarouselMomentum, CarouselMomentumAnimationType } from 'react-native-momentum-carousel';
 import { realtimeDb } from '../lib/firebase';
 import { ref, onValue } from 'firebase/database';
 import { useLanguage } from '../providers/LanguageContext';
@@ -110,7 +110,7 @@ const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) 
           bullet: styles.paginationBullet,
           activeBullet: styles.paginationActiveBullet,
         }}
-        animation={0}
+        animation={CarouselMomentumAnimationType.Default}
         customAnimation={false}
         onMomentumScrollEnd={() => {
           // Additional callback for smooth looping
