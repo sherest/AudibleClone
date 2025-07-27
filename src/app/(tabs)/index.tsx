@@ -1,10 +1,11 @@
 import React, {Fragment, useState} from 'react';
-import {View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, SafeAreaView} from 'react-native';
+import {View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, SafeAreaView, Linking} from 'react-native';
 import {useLanguage} from '../../providers/LanguageContext';
 import {FontAwesome5} from '@expo/vector-icons';
 import SettingsModal from '../settings';
 import {useJoinUs} from '../../providers/JoinUsProvider';
 import HomeCarousel from '../../components/HomeCarousel';
+import Constants from 'expo-constants';
 
 const {width} = Dimensions.get('window');
 
@@ -63,6 +64,48 @@ const HomeScreen = () => {
                             </View>
                         </View>
                     </View>
+
+                    {/* Information Section */}
+                    <View style={styles.section}>
+                        <View style={styles.infoCard}>
+                            <Text style={styles.infoTitle}>
+                                {selectedLanguage?.code === 'hin' ? 'जानकारी' : 'Information'}
+                            </Text>
+                            
+                            <View style={styles.infoItem}>
+                                <FontAwesome5 name="download" size={16} color="#e94560" style={styles.infoIcon} />
+                                <View style={styles.infoContent}>
+                                    <Text style={styles.infoLabel}>
+                                        {selectedLanguage?.code === 'hin' ? 'गाने डाउनलोड करने के लिए:' : 'For downloading the songs:'}
+                                    </Text>
+                                    <TouchableOpacity onPress={() => Linking.openURL('https://www.amritalahari.com')}>
+                                        <Text style={styles.infoLink}>www.amritalahari.com</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.infoText}>
+                                        {selectedLanguage?.code === 'hin' ? 'या iTunes - amrita lahari खोजें' : 'or iTunes - search amrita lahari'}
+                                    </Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.infoItem}>
+                                <FontAwesome5 name="share" size={16} color="#e94560" style={styles.infoIcon} />
+                                <View style={styles.infoContent}>
+                                    <Text style={styles.infoLabel}>
+                                        {selectedLanguage?.code === 'hin' ? 'सामग्री साझा करने के लिए:' : 'To share kirtans, photos, stories and other Audio visual material of Guruji:'}
+                                    </Text>
+                                    <TouchableOpacity onPress={() => Linking.openURL('mailto:lahari.amrita@gmail.com')}>
+                                        <Text style={styles.infoLink}>lahari.amrita@gmail.com</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+
+                            <View style={styles.versionContainer}>
+                                <Text style={styles.versionText}>
+                                    Version {Constants.expoConfig?.version || '1.0.0'}
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
                 </ScrollView>
 
                 {/* Settings Modal */}
@@ -110,10 +153,10 @@ const styles = StyleSheet.create({
     },
 
     section: {
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
     },
-
-
+    
     joinUsCard: {
         backgroundColor: '#1a1a2e',
         borderRadius: 15,
@@ -147,6 +190,61 @@ const styles = StyleSheet.create({
       color: '#ffffff',
       fontSize: 14,
       fontWeight: 'bold',
+    },
+    infoCard: {
+      backgroundColor: '#1a1a2e',
+      borderRadius: 15,
+      padding: 20,
+      borderLeftWidth: 4,
+      borderLeftColor: '#e94560',
+      marginBottom: 10,
+    },
+    infoTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#ffffff',
+      marginBottom: 15,
+      textAlign: 'center',
+    },
+    infoItem: {
+      flexDirection: 'row',
+      marginBottom: 15,
+      alignItems: 'flex-start',
+    },
+    infoIcon: {
+      marginRight: 10,
+      marginTop: 2,
+    },
+    infoContent: {
+      flex: 1,
+    },
+    infoLabel: {
+      fontSize: 14,
+      color: '#ffffff',
+      marginBottom: 5,
+      fontWeight: '500',
+    },
+    infoLink: {
+      fontSize: 14,
+      color: '#e94560',
+      textDecorationLine: 'underline',
+      marginBottom: 3,
+    },
+    infoText: {
+      fontSize: 14,
+      color: '#8b8b8b',
+    },
+    versionContainer: {
+      marginTop: 20,
+      paddingTop: 15,
+      borderTopWidth: 1,
+      borderTopColor: '#333',
+      alignItems: 'center',
+    },
+    versionText: {
+      fontSize: 12,
+      color: '#8b8b8b',
+      fontStyle: 'italic',
     },
 });
 

@@ -105,7 +105,8 @@ const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) 
 
 const styles = StyleSheet.create({
   carouselContainer: {
-    marginVertical: 20,
+    marginTop: 20,
+    marginBottom: 10,
   },
   carouselItem: {
     width: width - 40,
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: 'rgba(26, 26, 46, 0.8)',
-    padding: 20,
+    padding: 25,
   },
   carouselContent: {
     flex: 1,
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e94560',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 0,
+    borderRadius: 2,
     marginBottom: 8,
   },
   categoryText: {
