@@ -36,6 +36,14 @@ interface AnnouncementData {
   button?: { [key: string]: string };
 }
 
+interface MenuData {
+  amritaLahari: { [key: string]: string };
+  community: { [key: string]: string };
+  joinUs: { [key: string]: string };
+  kirtan: { [key: string]: string };
+  satprasanga: { [key: string]: string };
+}
+
 interface CommunityData {
   events: {
     data: Event[];
@@ -63,6 +71,7 @@ const CommunityScreen = () => {
   const { showJoinUs } = useJoinUs();
   const [activeTab, setActiveTab] = useState<'events' | 'messages' | 'biography'>('events');
   const [communityData, setCommunityData] = useState<CommunityData | null>(null);
+  const [menuData, setMenuData] = useState<MenuData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
 
@@ -73,19 +82,30 @@ const CommunityScreen = () => {
   };
 
   useEffect(() => {
-    const fetchCommunityData = () => {
+    const fetchData = () => {
       setLoading(true);
+      
+      // Fetch community data
       const communityRef = ref(realtimeDb, 'community');
       onValue(communityRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
           setCommunityData(data);
         }
+      });
+
+      // Fetch menu data
+      const menuRef = ref(realtimeDb, 'menu');
+      onValue(menuRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          setMenuData(data);
+        }
         setLoading(false);
       });
     };
 
-    fetchCommunityData();
+    fetchData();
   }, [selectedLanguage]);
 
   const tabs = [
@@ -188,11 +208,11 @@ const CommunityScreen = () => {
         <View style={styles.header}>
           <FontAwesome5 name="users" size={24} color="#e94560" />
           <Text style={styles.headerTitle}>
-            {selectedLanguage?.code === 'hin' ? 'समुदाय' : 'Community'}
+            {menuData?.community && getLocalizedContent(menuData.community)}
           </Text>
           <TouchableOpacity style={styles.joinUsButton} onPress={showJoinUs}>
             <Text style={styles.joinUsButtonText}>
-              {selectedLanguage?.code === 'hin' ? 'शामिल हों' : 'Join Us'}
+              {menuData?.joinUs && getLocalizedContent(menuData.joinUs)}
             </Text>
           </TouchableOpacity>
         </View>

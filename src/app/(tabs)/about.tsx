@@ -1,111 +1,107 @@
-import React from 'react';
-import { View, Text, ScrollView, Image, StyleSheet, Linking, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, Fragment } from 'react';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useLanguage } from '../../providers/LanguageContext';
-import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
+import { ref, onValue } from 'firebase/database';
+import { realtimeDb } from '../../lib/firebase';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { useJoinUs } from '../../providers/JoinUsProvider';
+
+interface AboutData {
+  data: Array<{
+    ban: string;
+    eng: string;
+    hin: string;
+  }>;
+  title: {
+    ban: string;
+    eng: string;
+    hin: string;
+  };
+}
+
+interface MenuData {
+  amritaLahari: { [key: string]: string };
+  community: { [key: string]: string };
+  joinUs: { [key: string]: string };
+  kirtan: { [key: string]: string };
+  satprasanga: { [key: string]: string };
+}
 
 const AboutScreen = () => {
   const { selectedLanguage } = useLanguage();
+  const { showJoinUs } = useJoinUs();
+  const [aboutData, setAboutData] = useState<AboutData | null>(null);
+  const [menuData, setMenuData] = useState<MenuData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const aboutContent = {
-    en: {
-      title: "About Amrita Lahari",
-      subtitle: "Sacred Audio for Spiritual Growth",
-      description: "Amrita Lahari is a sacred audio platform dedicated to spiritual growth through divine chants, prayers, and wisdom. Our mission is to provide authentic spiritual content that helps seekers on their journey towards enlightenment.",
-      features: [
-        "Sacred Chants & Bhajans",
-        "Daily Prayers & Meditations", 
-        "Spiritual Discourses",
-        "Community Connection",
-        "Multi-language Support"
-      ],
-      contact: "Contact Us",
-      website: "Visit Website",
-      email: "contact@amritalahari.com",
-      websiteUrl: "http://www.amritalahari.com"
-    },
-    hin: {
-      title: "अमृता लहरी के बारे में",
-      subtitle: "आध्यात्मिक विकास के लिए पवित्र ऑडियो",
-      description: "अमृता लहरी एक पवित्र ऑडियो प्लेटफॉर्म है जो दिव्य भजन, प्रार्थना और ज्ञान के माध्यम से आध्यात्मिक विकास के लिए समर्पित है। हमारा मिशन प्रामाणिक आध्यात्मिक सामग्री प्रदान करना है जो साधकों को ज्ञान की ओर उनकी यात्रा में मदद करती है।",
-      features: [
-        "पवित्र भजन और कीर्तन",
-        "दैनिक प्रार्थना और ध्यान",
-        "आध्यात्मिक प्रवचन",
-        "समुदाय कनेक्शन",
-        "बहुभाषी समर्थन"
-      ],
-      contact: "संपर्क करें",
-      website: "वेबसाइट देखें",
-      email: "contact@amritalahari.com",
-      websiteUrl: "http://www.amritalahari.com"
-    }
+  const getLocalizedContent = (content: Record<string, string>, fallback: string = 'eng') => {
+    const langCode = selectedLanguage?.code || fallback;
+    return content[langCode] || content[fallback] || '';
   };
 
-  const content = aboutContent[(selectedLanguage?.code || 'en') as keyof typeof aboutContent] || aboutContent.en;
+  useEffect(() => {
+    const fetchData = () => {
+      setLoading(true);
+      
+      // Fetch about data
+      const aboutRef = ref(realtimeDb, 'amrita_lahari/about');
+      onValue(aboutRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          setAboutData(data);
+        }
+      });
+
+      // Fetch menu data
+      const menuRef = ref(realtimeDb, 'menu');
+      onValue(menuRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          setMenuData(data);
+        }
+        setLoading(false);
+      });
+    };
+    fetchData();
+  }, [selectedLanguage]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#e94560" />
+      </View>
+    );
+  }
 
   return (
-    <ScrollView style={styles.container}>
+    <Fragment>
+        <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
+        <SafeAreaView style={styles.container}>
+
       {/* Header */}
       <View style={styles.header}>
-        <Image 
-          source={{ uri: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400' }}
-          style={styles.headerImage}
-        />
-        <View style={styles.headerOverlay}>
-          <Text style={styles.headerTitle}>{content.title}</Text>
-          <Text style={styles.headerSubtitle}>{content.subtitle}</Text>
+        <View style={styles.headerLeft}>
+          <FontAwesome5 name="info-circle" size={24} color="#e94560" />
+          <Text style={styles.headerTitle}>
+            {aboutData?.title && getLocalizedContent(aboutData.title)}
+          </Text>
         </View>
       </View>
 
-      {/* Description */}
-      <View style={styles.section}>
-        <Text style={styles.description}>{content.description}</Text>
-      </View>
-
-      {/* Features */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          {selectedLanguage?.code === 'hin' ? 'विशेषताएं' : 'Features'}
-        </Text>
-        {content.features.map((feature: string, index: number) => (
-          <View key={index} style={styles.featureItem}>
-            <FontAwesome5 name="check-circle" size={16} color="#4CAF50" />
-            <Text style={styles.featureText}>{feature}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* Contact Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{content.contact}</Text>
-        
-        <TouchableOpacity 
-          style={styles.contactItem}
-          onPress={() => Linking.openURL(`mailto:${content.email}`)}
-        >
-          <MaterialIcons name="email" size={24} color="#e94560" />
-          <Text style={styles.contactText}>{content.email}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.contactItem}
-          onPress={() => Linking.openURL(content.websiteUrl)}
-        >
-          <FontAwesome5 name="globe" size={24} color="#e94560" />
-          <Text style={styles.contactText}>{content.website}</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Version Info */}
-      <View style={styles.versionSection}>
-        <Text style={styles.versionText}>
-          Version 1.0.0
-        </Text>
-        <Text style={styles.copyrightText}>
-          © 2024 Amrita Lahari. All rights reserved.
-        </Text>
-      </View>
-    </ScrollView>
+      {/* Content */}
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
+        <View style={styles.contentCard}>
+          {aboutData?.data.map((paragraph, index) => (
+            <View key={index} style={styles.paragraphContainer}>
+              <Text style={styles.paragraphText}>
+                {getLocalizedContent(paragraph)}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+      </SafeAreaView>
+      </Fragment>
   );
 };
 
@@ -114,86 +110,63 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0f3460',
   },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#0f3460',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   header: {
-    height: 200,
-    position: 'relative',
+    backgroundColor: '#1a1a2e',
+    paddingTop: 20,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#16213e',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  headerImage: {
-    width: '100%',
-    height: '100%',
-  },
-  headerOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    padding: 20,
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#ffffff',
-    marginBottom: 5,
+    marginLeft: 15,
   },
-  headerSubtitle: {
-    fontSize: 16,
-    color: '#e94560',
+  joinUsButton: {
+    backgroundColor: '#e94560',
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
-  section: {
+  joinUsButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  content: {
+    flex: 1,
     padding: 20,
   },
-  description: {
+  contentCard: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+  },
+  paragraphContainer: {
+    marginBottom: 20,
+  },
+  paragraphText: {
     fontSize: 16,
     color: '#ffffff',
     lineHeight: 24,
     textAlign: 'justify',
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 15,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-    backgroundColor: '#1a1a2e',
-    padding: 15,
-    borderRadius: 10,
-  },
-  featureText: {
-    fontSize: 16,
-    color: '#ffffff',
-    marginLeft: 15,
-  },
-  contactItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1a1a2e',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  contactText: {
-    fontSize: 16,
-    color: '#ffffff',
-    marginLeft: 15,
-  },
-  versionSection: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  versionText: {
-    fontSize: 14,
-    color: '#8b8b8b',
-    marginBottom: 5,
-  },
-  copyrightText: {
-    fontSize: 12,
-    color: '#8b8b8b',
-    textAlign: 'center',
   },
 });
 
