@@ -21,6 +21,9 @@ interface JoinUsData {
   description: {
     [key: string]: string;
   };
+  titleDescription: {
+    [key: string]: string;
+  };
   fields: {
     [key: string]: {
       [key: string]: string;
@@ -159,7 +162,7 @@ const JoinUsModal = () => {
               activeOpacity={0.7}
             >
               <Text className="text-base font-bold text-white">
-                {selectedLanguage?.code === 'hin' ? 'विवरण' : 'Description'}
+                {getLocalizedText(joinUsData?.titleDescription) || 'Description'}
               </Text>
               <Ionicons 
                 name={isDescriptionExpanded ? "chevron-up" : "chevron-down"} 
