@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     joinUsTitle: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
         color: '#ffffff',
         marginBottom: 10,
