@@ -115,6 +115,7 @@ const Kirtan = () => {
   const renderKirtanItem = (kirtan: KirtanData, index: number) => {
     const title = getLocalizedContent(kirtan.title);
     const albumName = getLocalizedContent(kirtan.albumName);
+    const songCount = kirtan.songs?.length || 0;
     
     // Format uploaded date (e.g., "2021-12-13" -> "Dec 13, 2021")
     const formatDate = (dateString: string) => {
@@ -134,6 +135,10 @@ const Kirtan = () => {
         <View style={styles.thumbnailContainer}>
           <View style={styles.thumbnail}>
             <FontAwesome5 name="music" size={24} color="#ffffff" />
+          </View>
+          {/* Song Count Badge */}
+          <View style={styles.songCountBadge}>
+            <Text style={styles.songCountText}>{songCount}</Text>
           </View>
         </View>
 
@@ -175,7 +180,10 @@ const Kirtan = () => {
           <ScrollView style={styles.scrollContainer}>
             {[1, 2, 3, 4, 5].map((index) => (
               <View key={index} style={styles.kirtanItem}>
-                <SkeletonPlaceholder width={60} height={60} borderRadius={8} />
+                <View style={styles.thumbnailContainer}>
+                  <SkeletonPlaceholder width={60} height={60} borderRadius={8} />
+                  <SkeletonPlaceholder width={20} height={20} borderRadius={10} style={{ position: 'absolute', top: -5, right: -5 }} />
+                </View>
                 <View style={styles.contentContainer}>
                   <SkeletonPlaceholder width="80%" height={18} borderRadius={4} style={{ marginBottom: 8 }} />
                   <SkeletonPlaceholder width="60%" height={14} borderRadius={4} style={{ marginBottom: 6 }} />
@@ -282,12 +290,30 @@ const styles = StyleSheet.create({
   dateIcon: {
     marginRight: 4,
   },
+  songCountBadge: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: '#e94560',
+    borderRadius: 25,
+    minWidth: 25,
+    height: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#1a1a2e',
+  },
+  songCountText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
   actionContainer: {
     alignItems: 'center',
   },
   playButton: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#ffffff',
