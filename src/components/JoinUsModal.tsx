@@ -5,7 +5,6 @@ import {
   TouchableOpacity, 
   ScrollView, 
   TextInput, 
-  StyleSheet, 
   Modal,
   Alert
 } from 'react-native';
@@ -33,6 +32,7 @@ const JoinUsModal = () => {
   const { isJoinUsVisible, hideJoinUs } = useJoinUs();
   const { selectedLanguage } = useLanguage();
   const [joinUsData, setJoinUsData] = useState<JoinUsData | null>(null);
+  const [menuData, setMenuData] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -56,7 +56,18 @@ const JoinUsModal = () => {
         });
       };
 
+      const fetchMenuData = () => {
+        const menuRef = ref(realtimeDb, 'menu');
+        onValue(menuRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            setMenuData(data);
+          }
+        });
+      };
+
       fetchJoinUsData();
+      fetchMenuData();
     }
   }, [isJoinUsVisible, selectedLanguage]);
 
@@ -124,30 +135,30 @@ const JoinUsModal = () => {
       visible={isJoinUsVisible}
       onRequestClose={handleClose}
     >
-      <View style={styles.container}>
+      <View className="flex-1 bg-[#0f3460]">
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>
-            {getLocalizedText(joinUsData?.fields?.submit ? { eng: 'Join Us' } : undefined)}
+        <View className="flex-row justify-between items-center p-5 bg-[#1a1a2e] border-b border-[#2a2a3e] pt-20">
+          <Text className="text-2xl font-bold text-white">
+            {getLocalizedText(menuData?.joinUs) || 'Join Us'}
           </Text>
           
           <TouchableOpacity 
-            style={styles.closeButton}
+            className="p-1"
             onPress={handleClose}
           >
             <Ionicons name="close" size={24} color="#ffffff" />
           </TouchableOpacity>
         </View>
 
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView className="flex-1 p-5" showsVerticalScrollIndicator={false}>
           {/* Description */}
-          <View style={styles.descriptionContainer}>
+          <View className="bg-[#1a1a2e] rounded-2xl mb-5 overflow-hidden">
             <TouchableOpacity 
-              style={styles.descriptionHeader}
+              className="flex-row justify-between items-center p-5 bg-[#2a2a3e]"
               onPress={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
               activeOpacity={0.7}
             >
-              <Text style={styles.descriptionTitle}>
+              <Text className="text-base font-bold text-white">
                 {selectedLanguage?.code === 'hin' ? 'विवरण' : 'Description'}
               </Text>
               <Ionicons 
@@ -158,11 +169,11 @@ const JoinUsModal = () => {
             </TouchableOpacity>
             
             {isDescriptionExpanded && (
-              <View style={styles.descriptionContent}>
-                <Text style={styles.description}>
+              <View className="p-5">
+                <Text className="text-lg text-white mb-2">
                   {getLocalizedText(joinUsData?.description)}
                 </Text>
-                <Text style={styles.caption}>
+                <Text className="text-sm text-[#e94560] italic">
                   {getLocalizedText(joinUsData?.caption)}
                 </Text>
               </View>
@@ -170,14 +181,14 @@ const JoinUsModal = () => {
           </View>
 
           {/* Form */}
-          <View style={styles.formContainer}>
+          <View className="bg-[#1a1a2e] p-5 rounded-2xl mb-20">
             {/* Name Field */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>
+            <View className="mb-5">
+              <Text className="text-base font-semibold text-white mb-2">
                 {getLocalizedText(joinUsData?.fields?.name)} *
               </Text>
               <TextInput
-                style={styles.input}
+                className="bg-[#2a2a3e] rounded-xl p-4 text-base text-white border border-[#3a3a4e]"
                 placeholder={getLocalizedText(joinUsData?.fields?.name)}
                 placeholderTextColor="#8b8b8b"
                 value={formData.name}
@@ -186,12 +197,12 @@ const JoinUsModal = () => {
             </View>
 
             {/* Email Field */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>
+            <View className="mb-5">
+              <Text className="text-base font-semibold text-white mb-2">
                 {getLocalizedText(joinUsData?.fields?.email)} *
               </Text>
               <TextInput
-                style={styles.input}
+                className="bg-[#2a2a3e] rounded-xl p-4 text-base text-white border border-[#3a3a4e]"
                 placeholder={getLocalizedText(joinUsData?.fields?.email)}
                 placeholderTextColor="#8b8b8b"
                 value={formData.email}
@@ -202,12 +213,12 @@ const JoinUsModal = () => {
             </View>
 
             {/* Mobile Field */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>
+            <View className="mb-5">
+              <Text className="text-base font-semibold text-white mb-2">
                 {getLocalizedText(joinUsData?.fields?.mobile)}
               </Text>
               <TextInput
-                style={styles.input}
+                className="bg-[#2a2a3e] rounded-xl p-4 text-base text-white border border-[#3a3a4e]"
                 placeholder={getLocalizedText(joinUsData?.fields?.mobile)}
                 placeholderTextColor="#8b8b8b"
                 value={formData.mobile}
@@ -217,12 +228,12 @@ const JoinUsModal = () => {
             </View>
 
             {/* City Field */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>
+            <View className="mb-5">
+              <Text className="text-base font-semibold text-white mb-2">
                 {getLocalizedText(joinUsData?.fields?.city)}
               </Text>
               <TextInput
-                style={styles.input}
+                className="bg-[#2a2a3e] rounded-xl p-4 text-base text-white border border-[#3a3a4e]"
                 placeholder={getLocalizedText(joinUsData?.fields?.city)}
                 placeholderTextColor="#8b8b8b"
                 value={formData.city}
@@ -231,12 +242,12 @@ const JoinUsModal = () => {
             </View>
 
             {/* Country Field */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>
+            <View className="mb-5">
+              <Text className="text-base font-semibold text-white mb-2">
                 {getLocalizedText(joinUsData?.fields?.country)}
               </Text>
               <TextInput
-                style={styles.input}
+                className="bg-[#2a2a3e] rounded-xl p-4 text-base text-white border border-[#3a3a4e]"
                 placeholder={getLocalizedText(joinUsData?.fields?.country)}
                 placeholderTextColor="#8b8b8b"
                 value={formData.country}
@@ -245,12 +256,12 @@ const JoinUsModal = () => {
             </View>
 
             {/* Comments Field */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>
+            <View className="mb-5">
+              <Text className="text-base font-semibold text-white mb-2">
                 {getLocalizedText(joinUsData?.fields?.comments)}
               </Text>
               <TextInput
-                style={[styles.input, styles.textArea]}
+                className="bg-[#2a2a3e] rounded-xl p-4 text-base text-white border border-[#3a3a4e] h-24 pt-4"
                 placeholder={getLocalizedText(joinUsData?.fields?.comments)}
                 placeholderTextColor="#8b8b8b"
                 value={formData.comments}
@@ -263,11 +274,11 @@ const JoinUsModal = () => {
 
             {/* Submit Button */}
             <TouchableOpacity 
-              style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+              className={`bg-[#e94560] rounded-xl p-4 items-center mt-2 ${loading ? 'bg-gray-500' : ''}`}
               onPress={handleSubmit}
               disabled={loading}
             >
-              <Text style={styles.submitButtonText}>
+              <Text className="text-base font-bold text-white">
                 {loading ? 'Submitting...' : getLocalizedText(joinUsData?.fields?.submit)}
               </Text>
             </TouchableOpacity>
@@ -277,109 +288,5 @@ const JoinUsModal = () => {
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0f3460',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#1a1a2e',
-    borderBottomWidth: 1,
-    borderBottomColor: '#2a2a3e',
-    paddingTop: 80, // Add extra padding for status bar
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  closeButton: {
-    padding: 5,
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  descriptionContainer: {
-    backgroundColor: '#1a1a2e',
-    borderRadius: 15,
-    marginBottom: 20,
-    overflow: 'hidden',
-  },
-  descriptionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#2a2a3e',
-  },
-  descriptionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  descriptionContent: {
-    padding: 20,
-  },
-  description: {
-    fontSize: 16,
-    color: '#ffffff',
-    lineHeight: 24,
-    marginBottom: 10,
-  },
-  caption: {
-    fontSize: 14,
-    color: '#e94560',
-    fontStyle: 'italic',
-  },
-  formContainer: {
-    backgroundColor: '#1a1a2e',
-    padding: 20,
-    borderRadius: 15,
-    marginBottom: 80,
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#ffffff',
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: '#2a2a3e',
-    borderRadius: 10,
-    padding: 15,
-    fontSize: 16,
-    color: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#3a3a4e',
-  },
-  textArea: {
-    height: 100,
-    paddingTop: 15,
-  },
-  submitButton: {
-    backgroundColor: '#e94560',
-    borderRadius: 10,
-    padding: 15,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  submitButtonDisabled: {
-    backgroundColor: '#8b8b8b',
-  },
-  submitButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
 
 export default JoinUsModal; 
