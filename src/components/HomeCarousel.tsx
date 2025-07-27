@@ -9,12 +9,11 @@ import { FontAwesome5 } from '@expo/vector-icons';
 const { width } = Dimensions.get('window');
 
 interface CarouselItem {
-  id: string;
-  title: { [key: string]: string };
-  description: { [key: string]: string };
-  image_url: string;
-  category?: string;
-  date?: string;
+  album_name: { eng: string };
+  description: { eng: string };
+  title: { eng: string };
+  upload_date: string;
+  year: number;
 }
 
 interface HomeCarouselProps {
@@ -28,49 +27,35 @@ const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) 
 
   useEffect(() => {
     const fetchCarouselData = () => {
-      // Fetch from 'featured_content' or 'carousel_items' in Firebase
-      const carouselRef = ref(realtimeDb, 'featured_content');
+      // Fetch from 'latest' section in Firebase
+      const carouselRef = ref(realtimeDb, 'latest');
       onValue(carouselRef, (snapshot) => {
         const data = snapshot.val();
-        if (data) {
-          // Convert object to array if needed
-          const items = Array.isArray(data) ? data : Object.values(data);
-          setCarouselData(items);
+        if (data && data.data && Array.isArray(data.data)) {
+          setCarouselData(data.data);
         } else {
-          // Temporary sample data for testing
+          // Sample data for testing - remove this when you have Firebase data
           setCarouselData([
             {
-              id: 'temp1',
-              title: { en: 'Sacred Morning Chants', hin: 'पवित्र सुबह के भजन' },
-              description: { 
-                en: 'Start your day with divine melodies and spiritual awakening', 
-                hin: 'दिव्य धुनों और आध्यात्मिक जागरण के साथ अपना दिन शुरू करें' 
-              },
-              image_url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop',
-              category: 'Meditation',
-              date: '2024-01-15'
+              album_name: { eng: 'Kirtan 1' },
+              description: { eng: 'NA S Puri December 1978' },
+              title: { eng: 'Sri Sri Mohanananda Brahmachari ji' },
+              upload_date: '2017-06-08',
+              year: 1980
             },
             {
-              id: 'temp2',
-              title: { en: 'Evening Aarti', hin: 'शाम की आरती' },
-              description: { 
-                en: 'Join us for the sacred evening prayer ceremony', 
-                hin: 'पवित्र शाम की प्रार्थना समारोह में हमसे जुड़ें' 
-              },
-              image_url: 'https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=400&h=200&fit=crop',
-              category: 'Prayer',
-              date: '2024-01-16'
+              album_name: { eng: 'Kirtan 2' },
+              description: { eng: 'NA S Puri December 1978' },
+              title: { eng: 'Sri Sri Mohanananda Brahmachari ji' },
+              upload_date: '2017-06-08',
+              year: 1980
             },
             {
-              id: 'temp3',
-              title: { en: 'Bhagavad Gita Study', hin: 'भगवद गीता का अध्ययन' },
-              description: { 
-                en: 'Deep dive into the wisdom of ancient scriptures', 
-                hin: 'प्राचीन शास्त्रों के ज्ञान में गहराई से उतरें' 
-              },
-              image_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop',
-              category: 'Study',
-              date: '2024-01-17'
+              album_name: { eng: 'Kirtan 3' },
+              description: { eng: 'NA S Puri December 1978' },
+              title: { eng: 'Sri Sri Mohanananda Brahmachari ji' },
+              upload_date: '2017-06-08',
+              year: 1980
             }
           ]);
         }
@@ -82,32 +67,26 @@ const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) 
 
   const renderCarouselItem = ({ item }: { item: CarouselItem }) => (
     <View style={styles.carouselItem}>
-      <Image 
-        source={{ uri: item.image_url }} 
-        style={styles.carouselImage}
-        resizeMode="cover"
-      />
+      <View style={styles.carouselImage}>
+        <FontAwesome5 name="music" size={60} color="#e94560" style={styles.musicIcon} />
+      </View>
       <View style={styles.carouselOverlay}>
         <View style={styles.carouselContent}>
-          {item.category && (
-            <View style={styles.categoryBadge}>
-              <Text style={styles.categoryText}>
-                {item.category}
-              </Text>
-            </View>
-          )}
+          <View style={styles.categoryBadge}>
+            <Text style={styles.categoryText}>
+              {item.album_name.eng}
+            </Text>
+          </View>
           <Text style={styles.carouselTitle}>
-            {item.title[selectedLanguage?.code as keyof typeof item.title] || item.title.en}
+            {item.title.eng}
           </Text>
           <Text style={styles.carouselDescription} numberOfLines={2}>
-            {item.description[selectedLanguage?.code as keyof typeof item.description] || item.description.en}
+            {item.description.eng}
           </Text>
-          {item.date && (
-            <View style={styles.dateContainer}>
-              <FontAwesome5 name="calendar-alt" size={12} color="#e94560" />
-              <Text style={styles.dateText}>{item.date}</Text>
-            </View>
-          )}
+          <View style={styles.dateContainer}>
+            <FontAwesome5 name="calendar-alt" size={12} color="#e94560" />
+            <Text style={styles.dateText}>{item.upload_date} • {item.year}</Text>
+          </View>
         </View>
       </View>
     </View>
@@ -117,36 +96,14 @@ const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) 
     setCurrentIndex(index);
   };
 
-  // For debugging - always show carousel with sample data
-  const displayData = carouselData.length > 0 ? carouselData : [
-    {
-      id: 'debug1',
-      title: { en: 'Sacred Morning Chants', hin: 'पवित्र सुबह के भजन' },
-      description: { 
-        en: 'Start your day with divine melodies and spiritual awakening', 
-        hin: 'दिव्य धुनों और आध्यात्मिक जागरण के साथ अपना दिन शुरू करें' 
-      },
-      image_url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop',
-      category: 'Meditation',
-      date: '2024-01-15'
-    },
-    {
-      id: 'debug2',
-      title: { en: 'Evening Aarti', hin: 'शाम की आरती' },
-      description: { 
-        en: 'Join us for the sacred evening prayer ceremony', 
-        hin: 'पवित्र शाम की प्रार्थना समारोह में हमसे जुड़ें' 
-      },
-      image_url: 'https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=400&h=200&fit=crop',
-      category: 'Prayer',
-      date: '2024-01-16'
-    }
-  ];
+  if (carouselData.length === 0) {
+    return null; // Don't render carousel if no data
+  }
 
   return (
     <View style={styles.carouselContainer}>
       <CarouselMomentum
-        data={displayData}
+        data={carouselData}
         sliderWidth={width}
         itemWidth={width - 40}
         renderItem={renderCarouselItem}
@@ -185,6 +142,12 @@ const styles = StyleSheet.create({
   carouselImage: {
     width: '100%',
     height: '100%',
+    backgroundColor: '#1a1a2e',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  musicIcon: {
+    opacity: 0.7,
   },
   carouselOverlay: {
     position: 'absolute',

@@ -7,16 +7,10 @@ import { FontAwesome5, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import SettingsModal from '../settings';
 import { useJoinUs } from '../../providers/JoinUsProvider';
 import HomeCarousel from '../../components/HomeCarousel';
-import SimpleCarousel from '../../components/SimpleCarousel';
 
 const { width } = Dimensions.get('window');
 
-interface DailyWisdom {
-  id: string;
-  quote: { [key: string]: string };
-  author: { [key: string]: string };
-  category: string;
-}
+
 
 interface SacredEvent {
   id: string;
@@ -29,22 +23,11 @@ interface SacredEvent {
 const SacredHomeScreen = () => {
   const { selectedLanguage } = useLanguage();
   const { showJoinUs } = useJoinUs();
-  const [dailyWisdom, setDailyWisdom] = useState<DailyWisdom | null>(null);
+
   const [sacredEvents, setSacredEvents] = useState<SacredEvent[]>([]);
-  const [quickActions, setQuickActions] = useState<any>({});
   const [settingsVisible, setSettingsVisible] = useState(false);
 
   useEffect(() => {
-    const fetchDailyWisdom = () => {
-      const wisdomRef = ref(realtimeDb, 'daily_wisdom');
-      onValue(wisdomRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setDailyWisdom(data);
-        }
-      });
-    };
-
     const fetchSacredEvents = () => {
       const eventsRef = ref(realtimeDb, 'sacred_events');
       onValue(eventsRef, (snapshot) => {
@@ -55,47 +38,10 @@ const SacredHomeScreen = () => {
       });
     };
 
-    const fetchQuickActions = () => {
-      const actionsRef = ref(realtimeDb, 'quick_actions');
-      onValue(actionsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setQuickActions(data);
-        }
-      });
-    };
-
-    fetchDailyWisdom();
     fetchSacredEvents();
-    fetchQuickActions();
   }, [selectedLanguage]);
 
-  const actionItems = [
-    {
-      id: 'meditation',
-      icon: 'meditation',
-                    title: { en: 'Meditation', hin: 'ध्यान' },
-      color: '#4CAF50',
-    },
-    {
-      id: 'prayer',
-      icon: 'pray',
-      title: { en: 'Daily Prayer', hin: 'दैनिक प्रार्थना' },
-      color: '#FF9800',
-    },
-    {
-      id: 'chanting',
-      icon: 'music',
-      title: { en: 'Sacred Chants', hin: 'पवित्र भजन' },
-      color: '#9C27B0',
-    },
-    {
-      id: 'community',
-      icon: 'users',
-      title: { en: 'Community', hin: 'समुदाय' },
-      color: '#2196F3',
-    },
-  ];
+
 
   return (
     <Fragment>
@@ -123,44 +69,8 @@ const SacredHomeScreen = () => {
         
         {/* Home Carousel */}
         <HomeCarousel autoPlayInterval={5000} />
-        {/* <SimpleCarousel /> */}
 
-        {/* Daily Wisdom Card */}
-        {dailyWisdom && (
-          <View style={styles.wisdomCard}>
-            <View style={styles.wisdomHeader}>
-              <FontAwesome5 name="quote-left" size={16} color="#e94560" />
-              <Text style={styles.wisdomTitle}>
-                {selectedLanguage?.code === 'hin' ? 'आज का ज्ञान' : 'Daily Wisdom'}
-              </Text>
-            </View>
-            <Text style={styles.wisdomQuote}>
-              "{dailyWisdom.quote[selectedLanguage?.code as keyof typeof dailyWisdom.quote] || dailyWisdom.quote.en}"
-            </Text>
-            <Text style={styles.wisdomAuthor}>
-              — {dailyWisdom.author[selectedLanguage?.code as keyof typeof dailyWisdom.author] || dailyWisdom.author.en}
-            </Text>
-          </View>
-        )}
 
-        {/* Quick Actions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            {selectedLanguage?.code === 'hin' ? 'त्वरित कार्य' : 'Quick Actions'}
-          </Text>
-          <View style={styles.actionsGrid}>
-            {actionItems.map((action) => (
-              <TouchableOpacity key={action.id} style={styles.actionItem}>
-                <View style={[styles.actionIcon, { backgroundColor: action.color }]}>
-                  <FontAwesome5 name={action.icon} size={20} color="#ffffff" />
-                </View>
-                <Text style={styles.actionTitle}>
-                  {action.title[selectedLanguage?.code as keyof typeof action.title] || action.title.en}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
 
         {/* Join Us Section */}
         <View style={styles.section}>
