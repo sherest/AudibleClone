@@ -22,6 +22,10 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
   const [languages, setLanguages] = useState<Language[]>([]);
 
   useEffect(() => {
+    console.log('Settings modal - selected language changed:', selectedLanguage);
+  }, [selectedLanguage]);
+
+  useEffect(() => {
     const fetchLanguages = async () => {
       try {
         const languagesRef = ref(realtimeDb, 'languages');
@@ -32,11 +36,15 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
               code: data[key].code, 
               name: data[key].name 
             }));
+            console.log('Available languages:', languageList);
             setLanguages(languageList);
-            // Set default language to English if available
-            const defaultLanguage = languageList.find(lang => lang.name.toLowerCase() === 'english');
-            if (defaultLanguage) {
-              setSelectedLanguage(defaultLanguage);
+            // Only set default language if no language is currently selected
+            if (!selectedLanguage) {
+              const defaultLanguage = languageList.find(lang => lang.name.toLowerCase() === 'english');
+              if (defaultLanguage) {
+                console.log('Setting default language:', defaultLanguage);
+                setSelectedLanguage(defaultLanguage);
+              }
             }
           }
         });
@@ -46,17 +54,28 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
     };
 
     fetchLanguages();
-  }, []);
+  }, [selectedLanguage]);
 
   const renderLanguageItem = ({ item }: { item: Language }) => (
     <TouchableOpacity 
-      style={styles.languageItem}
+      style={[
+        styles.languageItem,
+        selectedLanguage?.code === item.code && styles.selectedLanguageItem
+      ]}
       onPress={() => {
         setSelectedLanguage(item);
         onClose();
       }}
     >
-      <Text style={styles.languageText}>{item.name}</Text>
+      <Text style={[
+        styles.languageText,
+        selectedLanguage?.code === item.code && styles.selectedLanguageText
+      ]}>
+        {item.name}
+      </Text>
+      {selectedLanguage?.code === item.code && (
+        <Text style={styles.checkmark}>✓</Text>
+      )}
     </TouchableOpacity>
   );
 
@@ -135,6 +154,12 @@ const styles = StyleSheet.create({
   currentLanguage: {
     color: '#FFFFFF',
     fontSize: 16,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  currentLanguageCode: {
+    color: '#8b8b8b',
+    fontSize: 14,
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -145,10 +170,24 @@ const styles = StyleSheet.create({
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#444',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  selectedLanguageItem: {
+    backgroundColor: '#e94560',
   },
   languageText: {
     color: '#FFFFFF',
     fontSize: 16,
+  },
+  selectedLanguageText: {
+    fontWeight: 'bold',
+  },
+  checkmark: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 

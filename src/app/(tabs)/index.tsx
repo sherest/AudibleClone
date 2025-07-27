@@ -31,6 +31,8 @@ const SacredHomeScreen = () => {
   const [settingsVisible, setSettingsVisible] = useState(false);
 
   useEffect(() => {
+    console.log('Current selected language:', selectedLanguage);
+    
     const fetchDailyWisdom = () => {
       const wisdomRef = ref(realtimeDb, 'daily_wisdom');
       onValue(wisdomRef, (snapshot) => {
@@ -70,25 +72,25 @@ const SacredHomeScreen = () => {
     {
       id: 'meditation',
       icon: 'meditation',
-      title: { en: 'Meditation', hi: 'ध्यान' },
+                    title: { en: 'Meditation', hin: 'ध्यान' },
       color: '#4CAF50',
     },
     {
       id: 'prayer',
       icon: 'pray',
-      title: { en: 'Daily Prayer', hi: 'दैनिक प्रार्थना' },
+      title: { en: 'Daily Prayer', hin: 'दैनिक प्रार्थना' },
       color: '#FF9800',
     },
     {
       id: 'chanting',
       icon: 'music',
-      title: { en: 'Sacred Chants', hi: 'पवित्र भजन' },
+      title: { en: 'Sacred Chants', hin: 'पवित्र भजन' },
       color: '#9C27B0',
     },
     {
       id: 'community',
       icon: 'users',
-      title: { en: 'Community', hi: 'समुदाय' },
+      title: { en: 'Community', hin: 'समुदाय' },
       color: '#2196F3',
     },
   ];
@@ -101,7 +103,7 @@ const SacredHomeScreen = () => {
           <View style={styles.greetingContainer}>
             <FontAwesome5 name="sun" size={20} color="#FFD700" />
             <Text style={styles.greeting}>
-              {selectedLanguage?.code === 'hi' ? 'जय श्री कृष्णा' : 'Jai Shri Krishna'}
+              {selectedLanguage?.code === 'hin' ? 'जय श्री कृष्णा' : 'Jai Shri Krishna'}
             </Text>
           </View>
           <TouchableOpacity 
@@ -109,7 +111,7 @@ const SacredHomeScreen = () => {
             onPress={() => setSettingsVisible(true)}
           >
             <Text style={styles.languageLabel}>
-              {selectedLanguage?.code === 'hi' ? 'हिंदी' : 'English'}
+              {selectedLanguage?.name || 'English'}
             </Text>
             <FontAwesome5 name="chevron-down" size={12} color="#e94560" />
           </TouchableOpacity>
@@ -121,7 +123,7 @@ const SacredHomeScreen = () => {
             <View style={styles.wisdomHeader}>
               <FontAwesome5 name="quote-left" size={16} color="#e94560" />
               <Text style={styles.wisdomTitle}>
-                {selectedLanguage?.code === 'hi' ? 'आज का ज्ञान' : 'Daily Wisdom'}
+                {selectedLanguage?.code === 'hin' ? 'आज का ज्ञान' : 'Daily Wisdom'}
               </Text>
             </View>
             <Text style={styles.wisdomQuote}>
@@ -136,7 +138,7 @@ const SacredHomeScreen = () => {
         {/* Quick Actions */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            {selectedLanguage?.code === 'hi' ? 'त्वरित कार्य' : 'Quick Actions'}
+            {selectedLanguage?.code === 'hin' ? 'त्वरित कार्य' : 'Quick Actions'}
           </Text>
           <View style={styles.actionsGrid}>
             {actionItems.map((action) => (
@@ -155,7 +157,7 @@ const SacredHomeScreen = () => {
         {/* Sacred Events */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            {selectedLanguage?.code === 'hi' ? 'पवित्र कार्यक्रम' : 'Sacred Events'}
+            {selectedLanguage?.code === 'hin' ? 'पवित्र कार्यक्रम' : 'Sacred Events'}
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {sacredEvents.map((event, index) => (
@@ -181,28 +183,28 @@ const SacredHomeScreen = () => {
         {/* Community Stats */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            {selectedLanguage?.code === 'hi' ? 'समुदाय आंकड़े' : 'Community Stats'}
+            {selectedLanguage?.code === 'hin' ? 'समुदाय आंकड़े' : 'Community Stats'}
           </Text>
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
               <FontAwesome5 name="users" size={24} color="#4CAF50" />
               <Text style={styles.statNumber}>1,234</Text>
               <Text style={styles.statLabel}>
-                {selectedLanguage?.code === 'hi' ? 'सदस्य' : 'Members'}
+                {selectedLanguage?.code === 'hin' ? 'सदस्य' : 'Members'}
               </Text>
             </View>
             <View style={styles.statItem}>
               <FontAwesome5 name="pray" size={24} color="#FF9800" />
               <Text style={styles.statNumber}>567</Text>
               <Text style={styles.statLabel}>
-                {selectedLanguage?.code === 'hi' ? 'प्रार्थना' : 'Prayers'}
+                {selectedLanguage?.code === 'hin' ? 'प्रार्थना' : 'Prayers'}
               </Text>
             </View>
             <View style={styles.statItem}>
               <FontAwesome5 name="heart" size={24} color="#e94560" />
               <Text style={styles.statNumber}>890</Text>
               <Text style={styles.statLabel}>
-                {selectedLanguage?.code === 'hi' ? 'भक्ति' : 'Devotion'}
+                {selectedLanguage?.code === 'hin' ? 'भक्ति' : 'Devotion'}
               </Text>
             </View>
           </View>
