@@ -33,31 +33,6 @@ const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) 
         const data = snapshot.val();
         if (data && data.data && Array.isArray(data.data)) {
           setCarouselData(data.data);
-        } else {
-          // Sample data for testing - remove this when you have Firebase data
-          setCarouselData([
-            {
-              album_name: { eng: 'Kirtan 1' },
-              description: { eng: 'NA S Puri December 1978' },
-              title: { eng: 'Sri Sri Mohanananda Brahmachari ji' },
-              upload_date: '2017-06-08',
-              year: 1980
-            },
-            {
-              album_name: { eng: 'Kirtan 2' },
-              description: { eng: 'NA S Puri December 1978' },
-              title: { eng: 'Sri Sri Mohanananda Brahmachari ji' },
-              upload_date: '2017-06-08',
-              year: 1980
-            },
-            {
-              album_name: { eng: 'Kirtan 3' },
-              description: { eng: 'NA S Puri December 1978' },
-              title: { eng: 'Sri Sri Mohanananda Brahmachari ji' },
-              upload_date: '2017-06-08',
-              year: 1980
-            }
-          ]);
         }
       });
     };
