@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { useLanguage } from '../providers/LanguageContext';
 import { realtimeDb } from '../lib/firebase';
 import { ref, onValue } from 'firebase/database';
@@ -54,6 +55,129 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
     fetchLanguages();
   }, [selectedLanguage]);
 
+  const getLocalizedLanguageName = (languageCode: string, englishName: string) => {
+    const localizedNames: { [key: string]: string } = {
+      'eng': 'English',
+      'hin': 'हिंदी',
+      'ban': 'বাংলা',
+      'spa': 'Español',
+      'fra': 'Français',
+      'deu': 'Deutsch',
+      'ita': 'Italiano',
+      'por': 'Português',
+      'rus': 'Русский',
+      'jpn': '日本語',
+      'kor': '한국어',
+      'chi': '中文',
+      'ara': 'العربية',
+      'tur': 'Türkçe',
+      'nld': 'Nederlands',
+      'swe': 'Svenska',
+      'nor': 'Norsk',
+      'dan': 'Dansk',
+      'fin': 'Suomi',
+      'pol': 'Polski',
+      'cze': 'Čeština',
+      'hun': 'Magyar',
+      'rum': 'Română',
+      'bul': 'Български',
+      'gre': 'Ελληνικά',
+      'heb': 'עברית',
+      'per': 'فارسی',
+      'urd': 'اردو',
+      'tam': 'தமிழ்',
+      'tel': 'తెలుగు',
+      'kan': 'ಕನ್ನಡ',
+      'mal': 'മലയാളം',
+      'mar': 'मराठी',
+      'guj': 'ગુજરાતી',
+      'pun': 'ਪੰਜਾਬੀ',
+      'ben': 'বাংলা',
+      'asm': 'অসমীয়া',
+      'ori': 'ଓଡ଼ିଆ',
+      'sin': 'සිංහල',
+      'nep': 'नेपाली',
+      'bod': 'བོད་ཡིག',
+      'mya': 'မြန်မာဘာသာ',
+      'tha': 'ไทย',
+      'lao': 'ລາວ',
+      'khm': 'ខ្មែរ',
+      'vie': 'Tiếng Việt',
+      'ind': 'Bahasa Indonesia',
+      'msa': 'Bahasa Melayu',
+      'fil': 'Filipino',
+      'swa': 'Kiswahili',
+      'zul': 'isiZulu',
+      'xho': 'isiXhosa',
+      'afr': 'Afrikaans',
+      'amh': 'አማርኛ',
+      'hau': 'Hausa',
+      'yor': 'Yorùbá',
+      'igb': 'Igbo',
+      'som': 'Soomaali',
+      'orm': 'Afaan Oromoo',
+      'tig': 'ትግርኛ',
+      'wol': 'Wolof',
+      'ful': 'Fulfulde',
+      'bam': 'Bamanankan',
+      'sus': 'Sosoxui',
+      'man': 'Manding',
+      'dyu': 'Julakan',
+      'son': 'Soŋay',
+      'zgh': 'ⵜⴰⵎⴰⵣⵉⵖⵜ',
+      'ber': 'Tamaziɣt',
+      'kab': 'Taqbaylit',
+      'rif': 'Tarifit',
+      'shi': 'Tashelhit',
+      'tam': 'தமிழ்',
+      'tel': 'తెలుగు',
+      'kan': 'ಕನ್ನಡ',
+      'mal': 'മലയാളം',
+      'mar': 'मराठी',
+      'guj': 'ગુજરાતી',
+      'pun': 'ਪੰਜਾਬੀ',
+      'ben': 'বাংলা',
+      'asm': 'অসমীয়া',
+      'ori': 'ଓଡ଼ିଆ',
+      'sin': 'සිංහල',
+      'nep': 'नेपालী',
+      'bod': 'བོད་ཡིག',
+      'mya': 'မြန်မာဘာသာ',
+      'tha': 'ไทย',
+      'lao': 'ລາວ',
+      'khm': 'ខ្មែរ',
+      'vie': 'Tiếng Việt',
+      'ind': 'Bahasa Indonesia',
+      'msa': 'Bahasa Melayu',
+      'fil': 'Filipino',
+      'swa': 'Kiswahili',
+      'zul': 'isiZulu',
+      'xho': 'isiXhosa',
+      'afr': 'Afrikaans',
+      'amh': 'አማርኛ',
+      'hau': 'Hausa',
+      'yor': 'Yorùbá',
+      'igb': 'Igbo',
+      'som': 'Soomaali',
+      'orm': 'Afaan Oromoo',
+      'tig': 'ትግርኛ',
+      'wol': 'Wolof',
+      'ful': 'Fulfulde',
+      'bam': 'Bamanankan',
+      'sus': 'Sosoxui',
+      'man': 'Manding',
+      'dyu': 'Julakan',
+      'son': 'Soŋay',
+      'zgh': 'ⵜⴰⵎⴰⵣⵉⵖⵜ',
+      'ber': 'Tamaziɣt',
+      'kab': 'Taqbaylit',
+      'rif': 'Tarifit',
+      'shi': 'Tashelhit'
+    };
+    
+    return localizedNames[languageCode] || englishName;
+  };
+
   const renderLanguageItem = ({ item }: { item: Language }) => (
     <TouchableOpacity 
       style={[
@@ -84,7 +208,7 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
+      <BlurView intensity={20} style={styles.overlay}>
         <View style={styles.modalContainer}>
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Select Language</Text>
@@ -94,10 +218,6 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
           </View>
           
           <View style={styles.content}>
-            <Text style={styles.currentLanguage}>
-              Current: {selectedLanguage ? selectedLanguage.name : 'Choose a language'}
-            </Text>
-            
             <FlatList
               data={languages}
               renderItem={renderLanguageItem}
@@ -106,7 +226,7 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
             />
           </View>
         </View>
-      </View>
+      </BlurView>
     </Modal>
   );
 };
@@ -114,9 +234,9 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
   },
   modalContainer: {
     width: width * 0.8,
@@ -124,6 +244,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     borderRadius: 10,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 15,
+    borderWidth: 1,
+    borderColor: '#16213e',
   },
   header: {
     flexDirection: 'row',
