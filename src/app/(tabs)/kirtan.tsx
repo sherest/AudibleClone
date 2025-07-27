@@ -34,8 +34,6 @@ interface KirtanData {
     ban: string;
   };
   cover: string;
-  coverPath?: string;
-  coverPathRequest?: boolean;
   description: {
     eng: string;
     hin: string;
@@ -75,6 +73,8 @@ const Kirtan = () => {
             image: data.basePath.image,
             audio: data.isFirebaseAudio ? data.basePath.audio : data.fallbackBasePath.audio,
           });
+          
+
         }
         setLoading(false);
       });
@@ -83,30 +83,24 @@ const Kirtan = () => {
     fetchKirtanData();
   }, [selectedLanguage]);
 
-  const getCoverImage = async (index: number) => {
-    const oKirtan = kirtanData[index];
-    if (!oKirtan.coverPathRequest) {
-      oKirtan.coverPathRequest = true;
-      try {
-        const storage = getStorage();
-        const fileReference = await getDownloadURL(storageRef(storage, basePath.image + oKirtan.cover));
-        oKirtan.coverPath = fileReference;
-        setKirtanData([...kirtanData]); // Trigger re-render
-      } catch (error) {
-        console.error('Error loading cover image:', error);
-        // Use fallback music icon if Firebase Storage image is not available
-        oKirtan.coverPath = musicIcon;
-      }
-    }
-    return oKirtan.coverPath;
-  };
+
+
+
 
   const addToPlayList = async (index: number) => {
     const oKirtan = kirtanData[index];
     const audioUrl = basePath.audio + oKirtan.songs[0]?.fileName;
 
-    // Ensure coverPath is fetched
-    const coverPath = await getCoverImage(index);
+    // Fetch Firebase Storage image for the player
+    let coverPath = musicIcon;
+    try {
+      const storage = getStorage();
+      const fileReference = await getDownloadURL(storageRef(storage, basePath.image + oKirtan.cover));
+      coverPath = fileReference;
+    } catch (error) {
+      console.error('Error loading cover image for player:', error);
+      // Use fallback music icon if Firebase Storage image is not available
+    }
 
     const book = {
       id: `kirtan-${index}`,
@@ -126,17 +120,9 @@ const Kirtan = () => {
       <View key={index} style={styles.kirtanItem}>
         {/* Left Side - Thumbnail */}
         <View style={styles.thumbnailContainer}>
-          {kirtan.coverPath ? (
-            <Image 
-              source={typeof kirtan.coverPath === 'string' ? { uri: kirtan.coverPath } : kirtan.coverPath}
-              style={styles.thumbnail}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.thumbnail}>
-              <FontAwesome5 name="music" size={24} color="#ffffff" />
-            </View>
-          )}
+          <View style={styles.thumbnail}>
+            <FontAwesome5 name="music" size={24} color="#ffffff" />
+          </View>
         </View>
 
         {/* Middle Section - Content */}
@@ -247,7 +233,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#e94560',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 8,
   },
 
   contentContainer: {
