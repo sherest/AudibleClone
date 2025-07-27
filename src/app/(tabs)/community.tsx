@@ -1,195 +1,228 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
 import { useLanguage } from '../../providers/LanguageContext';
+import { useJoinUs } from '../../providers/JoinUsProvider';
 import { realtimeDb } from '../../lib/firebase';
 import { ref, onValue } from 'firebase/database';
-import { FontAwesome5, MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 
-interface CommunityEvent {
-  id: string;
+interface Event {
   title: { [key: string]: string };
-  date: string;
-  time: string;
-  location: { [key: string]: string };
   description: { [key: string]: string };
-  image_url?: string;
-  attendees: number;
+  when: { [key: string]: string };
 }
 
-interface CommunityPost {
-  id: string;
-  user: string;
-  content: { [key: string]: string };
-  timestamp: string;
-  likes: number;
-  comments: number;
-  avatar_url?: string;
+interface Message {
+  name: string;
+  message: string;
+  date: string;
+  time: string;
+  email: string;
+  phone: number;
+}
+
+interface BiographyData {
+  ban: string;
+  eng: string;
+  hin: string;
+  [key: string]: string;
+}
+
+interface CommunityData {
+  events: {
+    data: Event[];
+    lang: string;
+  };
+  messages: {
+    data: Message[];
+    fields: {
+      add_your_message: { [key: string]: string };
+    };
+  };
+  biography: {
+    data: BiographyData[];
+  };
+  tabs: {
+    events: { [key: string]: string };
+    messages: { [key: string]: string };
+    biography: { [key: string]: string };
+  };
 }
 
 const CommunityScreen = () => {
   const { selectedLanguage } = useLanguage();
-  const [communityEvents, setCommunityEvents] = useState<CommunityEvent[]>([]);
-  const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>([]);
-  const [newPost, setNewPost] = useState('');
+  const { showJoinUs } = useJoinUs();
+  const [activeTab, setActiveTab] = useState<'events' | 'messages' | 'biography'>('events');
+  const [communityData, setCommunityData] = useState<CommunityData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Helper function to safely get localized content
-  const getLocalizedContent = (content: Record<string, string>, fallback: string = 'en') => {
+  const getLocalizedContent = (content: Record<string, string>, fallback: string = 'eng') => {
     const langCode = selectedLanguage?.code || fallback;
     return content[langCode] || content[fallback] || '';
   };
 
   useEffect(() => {
-    const fetchCommunityEvents = () => {
-      const eventsRef = ref(realtimeDb, 'community_events');
-      onValue(eventsRef, (snapshot) => {
+    const fetchCommunityData = () => {
+      setLoading(true);
+      const communityRef = ref(realtimeDb, 'community');
+      onValue(communityRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
-          setCommunityEvents(Object.values(data));
+          setCommunityData(data);
         }
+        setLoading(false);
       });
     };
 
-    const fetchCommunityPosts = () => {
-      const postsRef = ref(realtimeDb, 'community_posts');
-      onValue(postsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setCommunityPosts(Object.values(data));
-        }
-      });
-    };
-
-    fetchCommunityEvents();
-    fetchCommunityPosts();
+    fetchCommunityData();
   }, [selectedLanguage]);
 
-  const stats = [
-    { label: { en: 'Members', hin: 'सदस्य' }, value: '1,234', icon: 'users' },
-    { label: { en: 'Events', hin: 'कार्यक्रम' }, value: '45', icon: 'calendar' },
-    { label: { en: 'Discussions', hin: 'चर्चाएं' }, value: '89', icon: 'comments' },
+  const tabs = [
+    { key: 'events', icon: 'calendar-alt' },
+    { key: 'messages', icon: 'envelope' },
+    { key: 'biography', icon: 'user' },
   ];
+
+  if (loading) {
+    return (
+      <Fragment>
+        <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
+        <SafeAreaView style={styles.container}>
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#e94560" />
+          </View>
+        </SafeAreaView>
+      </Fragment>
+    );
+  }
+
+  const renderEventsContent = () => {
+    if (!communityData?.events?.data) return null;
+    
+    return (
+      <View style={styles.section}>
+        {communityData.events.data.map((event, index) => (
+          <View key={index} style={styles.eventCard}>
+            <View style={styles.eventHeader}>
+              <FontAwesome5 name="calendar-alt" size={16} color="#e94560" />
+              <Text style={styles.eventTitle}>
+                {getLocalizedContent(event.title)}
+              </Text>
+            </View>
+            <Text style={styles.eventDescription}>
+              {getLocalizedContent(event.description)}
+            </Text>
+            <Text style={styles.eventDate}>
+              {getLocalizedContent(event.when)}
+            </Text>
+          </View>
+        ))}
+      </View>
+    );
+  };
+
+  const renderMessagesContent = () => {
+    if (!communityData?.messages?.data) return null;
+    
+    return (
+      <View style={styles.section}>
+        {communityData.messages.data.map((message, index) => (
+          <View key={index} style={styles.messageCard}>
+            <View style={styles.messageHeader}>
+              <FontAwesome5 name="user" size={16} color="#e94560" />
+              <Text style={styles.messageName}>{message.name}</Text>
+            </View>
+            <Text style={styles.messageText}>{message.message}</Text>
+            <Text style={styles.messageTime}>{message.date} {message.time}</Text>
+          </View>
+        ))}
+      </View>
+    );
+  };
+
+  const renderBiographyContent = () => {
+    if (!communityData?.biography?.data) return null;
+    
+    return (
+      <View style={styles.section}>
+        <View style={styles.biographyCard}>
+          {communityData.biography.data.map((paragraph, index) => (
+            <Text key={index} style={styles.biographyText}>
+              {getLocalizedContent(paragraph)}
+            </Text>
+          ))}
+        </View>
+      </View>
+    );
+  };
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'events':
+        return renderEventsContent();
+      case 'messages':
+        return renderMessagesContent();
+      case 'biography':
+        return renderBiographyContent();
+      default:
+        return null;
+    }
+  };
 
   return (
     <Fragment>
-    <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <FontAwesome5 name="users" size={24} color="#e94560" />
-        <Text style={styles.headerTitle}>
-          {selectedLanguage?.code === 'hin' ? 'समुदाय' : 'Community'}
-        </Text>
-      </View>
-    <ScrollView style={styles.container}>
-      
-
-      {/* Community Stats */}
-      <View style={styles.statsContainer}>
-        {stats.map((stat, index) => (
-          <View key={index} style={styles.statItem}>
-            <FontAwesome5 name={stat.icon} size={20} color="#e94560" />
-            <Text style={styles.statValue}>{stat.value}</Text>
-            <Text style={styles.statLabel}>
-              {getLocalizedContent(stat.label)}
+      <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
+      <SafeAreaView style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <FontAwesome5 name="users" size={24} color="#e94560" />
+          <Text style={styles.headerTitle}>
+            {selectedLanguage?.code === 'hin' ? 'समुदाय' : 'Community'}
+          </Text>
+          <TouchableOpacity style={styles.joinUsButton} onPress={showJoinUs}>
+            <Text style={styles.joinUsButtonText}>
+              {selectedLanguage?.code === 'hin' ? 'शामिल हों' : 'Join Us'}
             </Text>
-          </View>
-        ))}
-      </View>
-
-      {/* Create Post */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          {selectedLanguage?.code === 'hin' ? 'अपना अनुभव साझा करें' : 'Share Your Experience'}
-        </Text>
-        <View style={styles.postInputContainer}>
-          <TextInput
-            style={styles.postInput}
-            placeholder={selectedLanguage?.code === 'hin' ? 'अपना आध्यात्मिक अनुभव यहाँ लिखें...' : 'Share your spiritual experience here...'}
-            placeholderTextColor="#8b8b8b"
-            value={newPost}
-            onChangeText={setNewPost}
-            multiline
-          />
-          <TouchableOpacity style={styles.postButton}>
-            <MaterialIcons name="send" size={20} color="#ffffff" />
           </TouchableOpacity>
         </View>
-      </View>
 
-      {/* Upcoming Events */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          {selectedLanguage?.code === 'hin' ? 'आगामी कार्यक्रम' : 'Upcoming Events'}
-        </Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {communityEvents.map((event, index) => (
-            <View key={index} style={styles.eventCard}>
-              <Image 
-                source={{ uri: event.image_url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200' }}
-                style={styles.eventImage}
+        {/* Tab Navigation */}
+        <View style={styles.tabContainer}>
+          {tabs.map((tab) => (
+            <TouchableOpacity
+              key={tab.key}
+              style={[
+                styles.tabButton,
+                activeTab === tab.key && styles.activeTabButton
+              ]}
+              onPress={() => setActiveTab(tab.key as 'events' | 'messages' | 'biography')}
+            >
+              <FontAwesome5 
+                name={tab.icon} 
+                size={16} 
+                color={activeTab === tab.key ? '#e94560' : '#8b8b8b'} 
               />
-              <View style={styles.eventContent}>
-                <Text style={styles.eventTitle}>
-                  {getLocalizedContent(event.title)}
-                </Text>
-                <Text style={styles.eventDate}>{event.date} • {event.time}</Text>
-                <Text style={styles.eventLocation}>
-                  {getLocalizedContent(event.location)}
-                </Text>
-                <View style={styles.eventFooter}>
-                  <Text style={styles.attendees}>{event.attendees} attending</Text>
-                  <TouchableOpacity style={styles.joinButton}>
-                    <Text style={styles.joinButtonText}>
-                      {selectedLanguage?.code === 'hin' ? 'शामिल हों' : 'Join'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
+              <Text style={[
+                styles.tabText,
+                activeTab === tab.key && styles.activeTabText
+              ]}>
+                {communityData && getLocalizedContent(communityData.tabs[tab.key as keyof typeof communityData.tabs])}
+              </Text>
+            </TouchableOpacity>
           ))}
-        </ScrollView>
-      </View>
+        </View>
 
-      {/* Community Posts */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          {selectedLanguage?.code === 'hin' ? 'समुदाय पोस्ट' : 'Community Posts'}
-        </Text>
-        {communityPosts.map((post, index) => (
-          <View key={index} style={styles.postCard}>
-            <View style={styles.postHeader}>
-              <Image 
-                source={{ uri: post.avatar_url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=50' }}
-                style={styles.avatar}
-              />
-              <View style={styles.postInfo}>
-                <Text style={styles.postUser}>{post.user}</Text>
-                <Text style={styles.postTime}>{post.timestamp}</Text>
-              </View>
-            </View>
-            <Text style={styles.postContent}>
-              {getLocalizedContent(post.content)}
-            </Text>
-            <View style={styles.postActions}>
-              <TouchableOpacity style={styles.actionButton}>
-                <Ionicons name="heart-outline" size={16} color="#8b8b8b" />
-                <Text style={styles.actionText}>{post.likes}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.actionButton}>
-                <Ionicons name="chatbubble-outline" size={16} color="#8b8b8b" />
-                <Text style={styles.actionText}>{post.comments}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.actionButton}>
-                <Ionicons name="share-outline" size={16} color="#8b8b8b" />
-                <Text style={styles.actionText}>
-                  {selectedLanguage?.code === 'hin' ? 'शेयर' : 'Share'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
-    </SafeAreaView>
+        {/* Content */}
+        <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+          {renderContent()}
+        </ScrollView>
+
+        {/* Floating Action Button */}
+        <TouchableOpacity style={styles.fab}>
+          <FontAwesome5 name="plus" size={20} color="#ffffff" />
+        </TouchableOpacity>
+      </SafeAreaView>
     </Fragment>
   );
 };
@@ -198,6 +231,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0f3460',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -210,159 +248,138 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#ffffff',
     marginLeft: 10,
+    flex: 1,
   },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 20,
-    backgroundColor: '#1a1a2e',
-    margin: 20,
-    borderRadius: 15,
+  joinUsButton: {
+    backgroundColor: '#e94560',
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
-  statItem: {
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  joinUsButtonText: {
     color: '#ffffff',
-    marginTop: 5,
+    fontSize: 14,
+    fontWeight: 'bold',
   },
-  statLabel: {
-    fontSize: 12,
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#1a1a2e',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  tabButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginHorizontal: 4,
+  },
+  activeTabButton: {
+    backgroundColor: '#16213e',
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '600',
     color: '#8b8b8b',
-    marginTop: 2,
+    marginLeft: 8,
+  },
+  activeTabText: {
+    color: '#e94560',
+  },
+  scrollContainer: {
+    flex: 1,
   },
   section: {
     padding: 20,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 15,
-  },
-  postInputContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#1a1a2e',
-    borderRadius: 10,
-    padding: 15,
-    alignItems: 'flex-end',
-  },
-  postInput: {
-    flex: 1,
-    color: '#ffffff',
-    fontSize: 16,
-    minHeight: 40,
-  },
-  postButton: {
-    backgroundColor: '#e94560',
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 10,
-  },
   eventCard: {
-    width: 250,
     backgroundColor: '#1a1a2e',
     borderRadius: 15,
-    marginRight: 15,
-    overflow: 'hidden',
+    padding: 20,
+    marginBottom: 15,
   },
-  eventImage: {
-    width: '100%',
-    height: 120,
-  },
-  eventContent: {
-    padding: 15,
+  eventHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   eventTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#ffffff',
-    marginBottom: 5,
-  },
-  eventDate: {
-    fontSize: 12,
-    color: '#e94560',
-    marginBottom: 5,
-  },
-  eventLocation: {
-    fontSize: 12,
-    color: '#8b8b8b',
-    marginBottom: 10,
-  },
-  eventFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  attendees: {
-    fontSize: 12,
-    color: '#8b8b8b',
-  },
-  joinButton: {
-    backgroundColor: '#e94560',
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderRadius: 15,
-  },
-  joinButtonText: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  postCard: {
-    backgroundColor: '#1a1a2e',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-  },
-  postHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-  },
-  postInfo: {
     marginLeft: 10,
   },
-  postUser: {
+  eventDescription: {
+    fontSize: 16,
+    color: '#ffffff',
+    marginBottom: 10,
+    lineHeight: 24,
+  },
+  eventDate: {
+    fontSize: 14,
+    color: '#e94560',
+    fontWeight: '600',
+  },
+  messageCard: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 15,
+    padding: 20,
+    marginBottom: 15,
+  },
+  messageHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  messageName: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#ffffff',
+    marginLeft: 10,
   },
-  postTime: {
-    fontSize: 12,
+  messageText: {
+    fontSize: 16,
+    color: '#ffffff',
+    marginBottom: 10,
+    lineHeight: 24,
+  },
+  messageTime: {
+    fontSize: 14,
     color: '#8b8b8b',
   },
-  postContent: {
+  biographyCard: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 15,
+    padding: 20,
+  },
+  biographyText: {
     fontSize: 16,
     color: '#ffffff',
     lineHeight: 24,
-    marginBottom: 15,
+    marginBottom: 16,
+    textAlign: 'justify',
   },
-  postActions: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: '#16213e',
-    paddingTop: 10,
-  },
-  actionButton: {
-    flexDirection: 'row',
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#e94560',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 20,
-  },
-  actionText: {
-    fontSize: 14,
-    color: '#8b8b8b',
-    marginLeft: 5,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
   },
 });
 
