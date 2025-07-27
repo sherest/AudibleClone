@@ -7,6 +7,11 @@ import {useLanguage} from '../../providers/LanguageContext';
 import {realtimeDb} from '../../lib/firebase';
 import {ref, onValue} from 'firebase/database';
 
+const fontSize = {
+    small: 10,
+    medium: 12
+}
+
 export default function TabsLayout() {
     const {selectedLanguage} = useLanguage();
     const [menuData, setMenuData] = useState<any>({});
@@ -57,6 +62,10 @@ export default function TabsLayout() {
                     tabBarIcon: ({color, size}) => (
                         <FontAwesome5 name='info-circle' size={size} color={color}/>
                     ),
+                    tabBarLabelStyle: {
+                        fontSize: selectedLanguage?.code === 'eng' ? fontSize.small : fontSize.medium,
+                        fontWeight: '600',
+                    },
                 }}/>
             <Tabs.Screen
                 name='satprasanga'
@@ -65,6 +74,10 @@ export default function TabsLayout() {
                     tabBarIcon: ({color, size}) => (
                         <FontAwesome5 name='book-open' size={size} color={color}/>
                     ),
+                    tabBarLabelStyle: {
+                        fontSize: selectedLanguage?.code === 'eng' ? fontSize.small : fontSize.medium,
+                        fontWeight: '600',
+                    },
                 }}
             />
             <Tabs.Screen
@@ -73,8 +86,11 @@ export default function TabsLayout() {
                     title: menuData?.home?.[selectedLanguage?.code || 'eng'] || 'Home',
                     tabBarIcon: ({color, size}) => (
                         <FontAwesome5 name='praying-hands' size={size} color={color}/>
-                        
                     ),
+                    tabBarLabelStyle: {
+                        fontSize: selectedLanguage?.code === 'eng' ? fontSize.small : fontSize.medium,
+                        fontWeight: '600',
+                    },
                 }}/>
             <Tabs.Screen
                 name='kirtan'
@@ -83,6 +99,10 @@ export default function TabsLayout() {
                     tabBarIcon: ({color, size}) => (
                         <MaterialIcons name='music-note' size={size} color={color}/>
                     ),
+                    tabBarLabelStyle: {
+                        fontSize: selectedLanguage?.code === 'eng' ? fontSize.small : fontSize.medium,
+                        fontWeight: '600',
+                    },
                 }}
             />
             <Tabs.Screen
@@ -92,6 +112,10 @@ export default function TabsLayout() {
                     tabBarIcon: ({color, size}) => (
                         <FontAwesome5 name='users' size={size} color={color}/>
                     ),
+                    tabBarLabelStyle: {
+                        fontSize: selectedLanguage?.code === 'eng' ? fontSize.small : fontSize.medium,
+                        fontWeight: '600',
+                    },
                 }}
             />
         </Tabs>
