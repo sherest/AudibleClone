@@ -147,8 +147,8 @@ const Kirtan = () => {
 
         {/* Middle Section - Content */}
         <View style={styles.contentContainer}>
-          <Text style={styles.title} numberOfLines={1}>{title}</Text>
           <Text style={styles.albumName}>{albumName}</Text>
+          <Text style={styles.title} numberOfLines={1}>{title}</Text>
           <View style={styles.dateContainer}>
             <FontAwesome5 name="calendar-alt" size={10} color="#e94560" style={styles.dateIcon} />
             <Text style={styles.year}>{uploadedDate}</Text>
@@ -188,8 +188,8 @@ const Kirtan = () => {
                   <SkeletonPlaceholder width={20} height={20} borderRadius={10} style={{ position: 'absolute', top: -5, right: -5 }} />
                 </View>
                 <View style={styles.contentContainer}>
-                  <SkeletonPlaceholder width="80%" height={18} borderRadius={4} style={{ marginBottom: 8 }} />
-                  <SkeletonPlaceholder width="60%" height={14} borderRadius={4} style={{ marginBottom: 6 }} />
+                  <SkeletonPlaceholder width="60%" height={16} borderRadius={4} style={{ marginBottom: 4 }} />
+                  <SkeletonPlaceholder width="80%" height={14} borderRadius={4} style={{ marginBottom: 6 }} />
                   <View style={styles.dateContainer}>
                     <SkeletonPlaceholder width={10} height={10} borderRadius={5} style={{ marginRight: 4 }} />
                     <SkeletonPlaceholder width="50%" height={12} borderRadius={4} />
@@ -271,15 +271,15 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   title: {
+    fontSize: 14,
+    color: '#8b8b8b',
+    marginBottom: 2,
+  },
+  albumName: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#ffffff',
     marginBottom: 4,
-  },
-  albumName: {
-    fontSize: 14,
-    color: '#8b8b8b',
-    marginBottom: 2,
   },
   year: {
     fontSize: 12,
