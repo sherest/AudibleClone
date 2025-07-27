@@ -9,10 +9,39 @@ import SkeletonPlaceholder from '@/components/SkeletonPlaceholder';
 
 import { useAudioPlayerStatus } from 'expo-audio';
 import { usePlayer } from '@/providers/PlayerProvider';
+import { useLanguage } from '@/providers/LanguageContext';
 
 export default function PlayerScreen() {
   const { player, book, currentAlbum, playNextSong, playPreviousSong, clearPlayer } = usePlayer();
+  const { selectedLanguage } = useLanguage();
   const playerStatus = useAudioPlayerStatus(player);
+
+  // Debug logging
+  console.log('Player Debug:', { 
+    book: book ? { title: book.title, author: book.author } : null,
+    currentAlbum: currentAlbum ? { albumName: currentAlbum.albumName } : null,
+    selectedLanguage 
+  });
+
+  const getLocalizedContent = (content: any, fallback: string = 'eng') => {
+    if (!content) return '';
+    
+    // If content is already a string, return it directly
+    if (typeof content === 'string') {
+      console.log('Content is string, returning directly:', content);
+      return content;
+    }
+    
+    // If content is an object with language keys
+    if (typeof content === 'object' && content !== null) {
+      const langCode = selectedLanguage?.code || fallback;
+      const result = content[langCode] || content[fallback] || '';
+      console.log('Localization:', { content, langCode, result });
+      return result;
+    }
+    
+    return '';
+  };
 
   // If no book is loaded, show empty state
   if (!book) {
@@ -56,7 +85,7 @@ export default function PlayerScreen() {
         <SkeletonPlaceholder width="60%" height={24} borderRadius={4} style={{ alignSelf: 'center', marginBottom: 20 }} />
       ) : (
         <Text className='text-white text-lg font-semibold text-center mb-5'>
-          {currentAlbum?.albumName?.eng || currentAlbum?.albumName?.hin || currentAlbum?.albumName?.ban || 'Album'}
+          {getLocalizedContent(currentAlbum?.albumName, 'eng') || 'Album'}
         </Text>
       )}
 
@@ -79,14 +108,14 @@ export default function PlayerScreen() {
             numberOfLines={2}
             ellipsizeMode='tail'
           >
-            {book.title}
+            {getLocalizedContent(book.title, 'eng') || 'Unknown Title'}
           </Text>
         )}
 
         {/* Author */}
         {book?.author && (
           <Text className='text-white text-lg text-center opacity-80'>
-            {book.author}
+            {getLocalizedContent(book.author, 'eng') || 'Unknown Artist'}
           </Text>
         )}
 

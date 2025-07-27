@@ -49,13 +49,18 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
     // Set the first song as the current book
     if (album.songs && album.songs[songIndex]) {
       const song = album.songs[songIndex];
+      console.log('Raw song data from album:', song);
+      console.log('Song title type:', typeof song.title, song.title);
+      console.log('Song singer type:', typeof song.singer, song.singer);
+      
       const newBook = {
         id: `${album.title?.eng || 'album'}-${songIndex}`,
-        title: song.title?.eng || song.title?.hin || song.title?.ban || 'Unknown',
-        author: song.singer?.eng || song.singer?.hin || song.singer?.ban || 'Unknown',
+        title: song.title || {}, // Ensure it's an object
+        author: song.singer || {}, // Ensure it's an object
         audio_url: `${album.basePath?.audio || ''}${song.fileName}`,
         thumbnail_url: album.coverPath || undefined
       };
+      console.log('Setting new book:', newBook);
       setBook(newBook);
     }
   };
