@@ -77,8 +77,8 @@ const Kirtan = () => {
       {/* Header with Greeting */}
       <View className='flex-row items-center p-[20px] bg-[#1a1a2e]'>
         <View className='flex-1 flex-row items-center'>
-          <MaterialIcons name="music-note" size={24} color="#e94560" style={{ marginRight: 10 }} />
-          <Text className='text-white text-[24px] font-bold'>
+          <MaterialIcons name="music-note" size={22} color="#e94560" style={{ marginRight: 10 }} />
+          <Text className='text-white text-[22px] font-bold'>
             Kirtan
           </Text>
         </View>

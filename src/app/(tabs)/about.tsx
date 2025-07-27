@@ -81,7 +81,7 @@ const AboutScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <FontAwesome5 name="info-circle" size={24} color="#e94560" />
+          <FontAwesome5 name="info-circle" size={22} color="#e94560" />
           <Text style={styles.headerTitle}>
             {aboutData?.title && getLocalizedContent(aboutData.title)}
           </Text>
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#ffffff',
     marginLeft: 15,

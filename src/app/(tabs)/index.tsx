@@ -61,7 +61,7 @@ const HomeScreen = () => {
                 {/* Header with Greeting */}
                 <View style={styles.header}>
                     <View style={styles.greetingContainer}>
-                        <FontAwesome5 name="home" size={24} color="#e94560" style={{marginRight: 10}}/>
+                        <FontAwesome5 name="home" size={22} color="#e94560" style={{marginRight: 10}}/>
                         <Text style={styles.greeting}>
                             {selectedLanguage?.code === 'hin' ? 'जय श्री कृष्णा' : 'Welcome!'}
                         </Text>
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     greeting: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: 'bold',
         color: '#ffffff',
     },

@@ -206,7 +206,7 @@ const CommunityScreen = () => {
       <SafeAreaView style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <FontAwesome5 name="users" size={24} color="#e94560" />
+          <FontAwesome5 name="users" size={22} color="#e94560" />
           <Text style={styles.headerTitle}>
             {menuData?.community && getLocalizedContent(menuData.community)}
           </Text>
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a2e',
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#ffffff',
     marginLeft: 10,
