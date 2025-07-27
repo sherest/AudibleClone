@@ -2,8 +2,29 @@ import {Tabs} from 'expo-router';
 import {Ionicons, MaterialIcons, FontAwesome5} from '@expo/vector-icons';
 import {BottomTabBar} from '@react-navigation/bottom-tabs';
 import FloatingPlayer from '@/components/FloatingPlayer';
+import {useEffect, useState} from 'react';
+import {useLanguage} from '../../providers/LanguageContext';
+import {realtimeDb} from '../../lib/firebase';
+import {ref, onValue} from 'firebase/database';
 
 export default function TabsLayout() {
+    const {selectedLanguage} = useLanguage();
+    const [menuData, setMenuData] = useState<any>({});
+
+    useEffect(() => {
+        const fetchMenuData = () => {
+            const menuRef = ref(realtimeDb, 'menu');
+            onValue(menuRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    setMenuData(data);
+                }
+            });
+        };
+
+        fetchMenuData();
+    }, [selectedLanguage]);
+
     return (
         <Tabs
             tabBar={(props) => (
@@ -32,7 +53,7 @@ export default function TabsLayout() {
             <Tabs.Screen
                 name='about'
                 options={{
-                    title: 'About',
+                    title: menuData?.about?.[selectedLanguage?.code || 'eng'] || 'About',
                     tabBarIcon: ({color, size}) => (
                         <FontAwesome5 name='info-circle' size={size} color={color}/>
                     ),
@@ -40,7 +61,7 @@ export default function TabsLayout() {
             <Tabs.Screen
                 name='satprasanga'
                 options={{
-                    title: 'Satprasanga',
+                    title: menuData?.satprasanga?.[selectedLanguage?.code || 'eng'] || 'Satprasanga',
                     tabBarIcon: ({color, size}) => (
                         <FontAwesome5 name='book-open' size={size} color={color}/>
                     ),
@@ -49,7 +70,7 @@ export default function TabsLayout() {
             <Tabs.Screen
                 name='index'
                 options={{
-                    title: 'Home',
+                    title: menuData?.home?.[selectedLanguage?.code || 'eng'] || 'Home',
                     tabBarIcon: ({color, size}) => (
                         <FontAwesome5 name='home' size={size} color={color}/>
                     ),
@@ -57,7 +78,7 @@ export default function TabsLayout() {
             <Tabs.Screen
                 name='kirtan'
                 options={{
-                    title: 'Kirtan',
+                    title: menuData?.kirtan?.[selectedLanguage?.code || 'eng'] || 'Kirtan',
                     tabBarIcon: ({color, size}) => (
                         <MaterialIcons name='music-note' size={size} color={color}/>
                     ),
@@ -66,7 +87,7 @@ export default function TabsLayout() {
             <Tabs.Screen
                 name='community'
                 options={{
-                    title: 'Community',
+                    title: menuData?.community?.[selectedLanguage?.code || 'eng'] || 'Community',
                     tabBarIcon: ({color, size}) => (
                         <FontAwesome5 name='users' size={size} color={color}/>
                     ),
