@@ -138,15 +138,15 @@ const styles = StyleSheet.create({
         lineHeight: 24,
     },
     joinUsButton: {
-        backgroundColor: '#e94560',
-        borderRadius: 10,
-        paddingVertical: 12,
-        paddingHorizontal: 30,
+      backgroundColor: '#e94560',
+      borderRadius: 10,
+      paddingVertical: 8,
+      paddingHorizontal: 16,
     },
     joinUsButtonText: {
-        color: '#ffffff',
-        fontSize: 16,
-        fontWeight: 'bold',
+      color: '#ffffff',
+      fontSize: 14,
+      fontWeight: 'bold',
     },
 });
 

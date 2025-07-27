@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 15,
     overflow: 'hidden',
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#1a1a2e'
   },
   carouselImage: {
     width: '100%',
@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
   },
   carouselOverlay: {
     position: 'absolute',
+    top: 0,
     bottom: 0,
     left: 0,
     right: 0,
@@ -134,14 +135,14 @@ const styles = StyleSheet.create({
   },
   carouselContent: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
   },
   categoryBadge: {
     alignSelf: 'flex-start',
     backgroundColor: '#e94560',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 0,
     marginBottom: 8,
   },
   categoryText: {
