@@ -21,9 +21,7 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
   const { selectedLanguage, setSelectedLanguage } = useLanguage();
   const [languages, setLanguages] = useState<Language[]>([]);
 
-  useEffect(() => {
-    console.log('Settings modal - selected language changed:', selectedLanguage);
-  }, [selectedLanguage]);
+
 
   useEffect(() => {
     const fetchLanguages = async () => {
@@ -36,13 +34,13 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
               code: data[key].code, 
               name: data[key].name 
             }));
-            console.log('Available languages:', languageList);
+
             setLanguages(languageList);
             // Only set default language if no language is currently selected
             if (!selectedLanguage) {
               const defaultLanguage = languageList.find(lang => lang.name.toLowerCase() === 'english');
               if (defaultLanguage) {
-                console.log('Setting default language:', defaultLanguage);
+
                 setSelectedLanguage(defaultLanguage);
               }
             }

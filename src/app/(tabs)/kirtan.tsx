@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { Fragment, useEffect, useState } from 'react';
+import { View, Text, ScrollView, Image, TouchableOpacity, SafeAreaView } from 'react-native';
 import { realtimeDb } from '../../lib/firebase';
 import { ref, onValue } from 'firebase/database';
 import { getStorage, ref as storageRef, getDownloadURL } from 'firebase/storage';
@@ -70,6 +70,17 @@ const Kirtan = () => {
   };
 
   return (
+    <Fragment>
+    <SafeAreaView className='bg-[#1a1a2e]'></SafeAreaView>
+    <SafeAreaView className='flex-1 bg-[#0f3460]'>
+      {/* Header with Greeting */}
+      <View className='flex-row items-center p-5 bg-[#1a1a2e]'>
+        <View className='flex-1'>
+          <Text className='text-white text-2xl font-bold'>
+            Kirtan
+          </Text>
+        </View>
+      </View>
     <ScrollView className='flex-1 p-5'>
       {kirtanData.map((kirtan, index) => (
         <View key={index} className='p-3 rounded-lg mb-3'>
@@ -85,6 +96,8 @@ const Kirtan = () => {
         </View>
       ))}
     </ScrollView>
+    </SafeAreaView>
+    </Fragment>
   );
 };
 

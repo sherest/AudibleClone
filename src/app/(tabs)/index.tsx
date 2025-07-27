@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet, Dimensions } from 'react-native';
+import React, { Fragment, useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet, Dimensions, SafeAreaView } from 'react-native';
 import { useLanguage } from '../../providers/LanguageContext';
 import { realtimeDb } from '../../lib/firebase';
 import { ref, onValue } from 'firebase/database';
@@ -31,8 +31,6 @@ const SacredHomeScreen = () => {
   const [settingsVisible, setSettingsVisible] = useState(false);
 
   useEffect(() => {
-    console.log('Current selected language:', selectedLanguage);
-    
     const fetchDailyWisdom = () => {
       const wisdomRef = ref(realtimeDb, 'daily_wisdom');
       onValue(wisdomRef, (snapshot) => {
@@ -96,14 +94,14 @@ const SacredHomeScreen = () => {
   ];
 
   return (
-    <>
-      <ScrollView style={styles.container}>
-        {/* Header with Greeting */}
-        <View style={styles.header}>
+    <Fragment>
+    <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
+    <SafeAreaView style={styles.container}>
+      {/* Header with Greeting */}
+      <View style={styles.header}>
           <View style={styles.greetingContainer}>
-            <FontAwesome5 name="sun" size={20} color="#FFD700" />
             <Text style={styles.greeting}>
-              {selectedLanguage?.code === 'hin' ? 'जय श्री कृष्णा' : 'Jai Shri Krishna'}
+              {selectedLanguage?.code === 'hin' ? 'जय श्री कृष्णा' : 'Welcome!'}
             </Text>
           </View>
           <TouchableOpacity 
@@ -116,6 +114,8 @@ const SacredHomeScreen = () => {
             <FontAwesome5 name="chevron-down" size={12} color="#e94560" />
           </TouchableOpacity>
         </View>
+      <ScrollView style={styles.container}>
+        
 
         {/* Daily Wisdom Card */}
         {dailyWisdom && (
@@ -216,7 +216,8 @@ const SacredHomeScreen = () => {
         visible={settingsVisible}
         onClose={() => setSettingsVisible(false)}
       />
-    </>
+    </SafeAreaView>
+    </Fragment>
   );
 };
 
@@ -240,7 +241,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#ffffff',
-    marginLeft: 10,
   },
   languageSelector: {
     flexDirection: 'row',

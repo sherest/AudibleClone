@@ -23,7 +23,7 @@ const AboutScreen = () => {
       email: "contact@amritalahari.com",
       websiteUrl: "http://www.amritalahari.com"
     },
-    hi: {
+    hin: {
       title: "अमृता लहरी के बारे में",
       subtitle: "आध्यात्मिक विकास के लिए पवित्र ऑडियो",
       description: "अमृता लहरी एक पवित्र ऑडियो प्लेटफॉर्म है जो दिव्य भजन, प्रार्थना और ज्ञान के माध्यम से आध्यात्मिक विकास के लिए समर्पित है। हमारा मिशन प्रामाणिक आध्यात्मिक सामग्री प्रदान करना है जो साधकों को ज्ञान की ओर उनकी यात्रा में मदद करती है।",
@@ -41,7 +41,7 @@ const AboutScreen = () => {
     }
   };
 
-  const content = aboutContent[selectedLanguage?.code as keyof typeof aboutContent] || aboutContent.en;
+  const content = aboutContent[(selectedLanguage?.code || 'en') as keyof typeof aboutContent] || aboutContent.en;
 
   return (
     <ScrollView style={styles.container}>
@@ -65,7 +65,7 @@ const AboutScreen = () => {
       {/* Features */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>
-          {selectedLanguage?.code === 'hi' ? 'विशेषताएं' : 'Features'}
+          {selectedLanguage?.code === 'hin' ? 'विशेषताएं' : 'Features'}
         </Text>
         {content.features.map((feature: string, index: number) => (
           <View key={index} style={styles.featureItem}>

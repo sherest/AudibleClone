@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import React, { Fragment, useEffect, useState } from 'react';
+import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
 import { useLanguage } from '../../providers/LanguageContext';
 import { realtimeDb } from '../../lib/firebase';
 import { ref, onValue } from 'firebase/database';
@@ -32,6 +32,12 @@ const CommunityScreen = () => {
   const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>([]);
   const [newPost, setNewPost] = useState('');
 
+  // Helper function to safely get localized content
+  const getLocalizedContent = (content: Record<string, string>, fallback: string = 'en') => {
+    const langCode = selectedLanguage?.code || fallback;
+    return content[langCode] || content[fallback] || '';
+  };
+
   useEffect(() => {
     const fetchCommunityEvents = () => {
       const eventsRef = ref(realtimeDb, 'community_events');
@@ -58,20 +64,23 @@ const CommunityScreen = () => {
   }, [selectedLanguage]);
 
   const stats = [
-    { label: { en: 'Members', hi: 'सदस्य' }, value: '1,234', icon: 'users' },
-    { label: { en: 'Events', hi: 'कार्यक्रम' }, value: '45', icon: 'calendar' },
-    { label: { en: 'Discussions', hi: 'चर्चाएं' }, value: '89', icon: 'comments' },
+    { label: { en: 'Members', hin: 'सदस्य' }, value: '1,234', icon: 'users' },
+    { label: { en: 'Events', hin: 'कार्यक्रम' }, value: '45', icon: 'calendar' },
+    { label: { en: 'Discussions', hin: 'चर्चाएं' }, value: '89', icon: 'comments' },
   ];
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Header */}
+    <Fragment>
+    <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <FontAwesome5 name="users" size={24} color="#e94560" />
         <Text style={styles.headerTitle}>
-          {selectedLanguage?.code === 'hi' ? 'समुदाय' : 'Community'}
+          {selectedLanguage?.code === 'hin' ? 'समुदाय' : 'Community'}
         </Text>
       </View>
+    <ScrollView style={styles.container}>
+      
 
       {/* Community Stats */}
       <View style={styles.statsContainer}>
@@ -80,7 +89,7 @@ const CommunityScreen = () => {
             <FontAwesome5 name={stat.icon} size={20} color="#e94560" />
             <Text style={styles.statValue}>{stat.value}</Text>
             <Text style={styles.statLabel}>
-              {stat.label[selectedLanguage?.code as keyof typeof stat.label] || stat.label.en}
+              {getLocalizedContent(stat.label)}
             </Text>
           </View>
         ))}
@@ -89,12 +98,12 @@ const CommunityScreen = () => {
       {/* Create Post */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>
-          {selectedLanguage?.code === 'hi' ? 'अपना अनुभव साझा करें' : 'Share Your Experience'}
+          {selectedLanguage?.code === 'hin' ? 'अपना अनुभव साझा करें' : 'Share Your Experience'}
         </Text>
         <View style={styles.postInputContainer}>
           <TextInput
             style={styles.postInput}
-            placeholder={selectedLanguage?.code === 'hi' ? 'अपना आध्यात्मिक अनुभव यहाँ लिखें...' : 'Share your spiritual experience here...'}
+            placeholder={selectedLanguage?.code === 'hin' ? 'अपना आध्यात्मिक अनुभव यहाँ लिखें...' : 'Share your spiritual experience here...'}
             placeholderTextColor="#8b8b8b"
             value={newPost}
             onChangeText={setNewPost}
@@ -109,7 +118,7 @@ const CommunityScreen = () => {
       {/* Upcoming Events */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>
-          {selectedLanguage?.code === 'hi' ? 'आगामी कार्यक्रम' : 'Upcoming Events'}
+          {selectedLanguage?.code === 'hin' ? 'आगामी कार्यक्रम' : 'Upcoming Events'}
         </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {communityEvents.map((event, index) => (
@@ -120,17 +129,17 @@ const CommunityScreen = () => {
               />
               <View style={styles.eventContent}>
                 <Text style={styles.eventTitle}>
-                  {event.title[selectedLanguage?.code as keyof typeof event.title] || event.title.en}
+                  {getLocalizedContent(event.title)}
                 </Text>
                 <Text style={styles.eventDate}>{event.date} • {event.time}</Text>
                 <Text style={styles.eventLocation}>
-                  {event.location[selectedLanguage?.code as keyof typeof event.location] || event.location.en}
+                  {getLocalizedContent(event.location)}
                 </Text>
                 <View style={styles.eventFooter}>
                   <Text style={styles.attendees}>{event.attendees} attending</Text>
                   <TouchableOpacity style={styles.joinButton}>
                     <Text style={styles.joinButtonText}>
-                      {selectedLanguage?.code === 'hi' ? 'शामिल हों' : 'Join'}
+                      {selectedLanguage?.code === 'hin' ? 'शामिल हों' : 'Join'}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -143,7 +152,7 @@ const CommunityScreen = () => {
       {/* Community Posts */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>
-          {selectedLanguage?.code === 'hi' ? 'समुदाय पोस्ट' : 'Community Posts'}
+          {selectedLanguage?.code === 'hin' ? 'समुदाय पोस्ट' : 'Community Posts'}
         </Text>
         {communityPosts.map((post, index) => (
           <View key={index} style={styles.postCard}>
@@ -158,7 +167,7 @@ const CommunityScreen = () => {
               </View>
             </View>
             <Text style={styles.postContent}>
-              {post.content[selectedLanguage?.code as keyof typeof post.content] || post.content.en}
+              {getLocalizedContent(post.content)}
             </Text>
             <View style={styles.postActions}>
               <TouchableOpacity style={styles.actionButton}>
@@ -172,7 +181,7 @@ const CommunityScreen = () => {
               <TouchableOpacity style={styles.actionButton}>
                 <Ionicons name="share-outline" size={16} color="#8b8b8b" />
                 <Text style={styles.actionText}>
-                  {selectedLanguage?.code === 'hi' ? 'शेयर' : 'Share'}
+                  {selectedLanguage?.code === 'hin' ? 'शेयर' : 'Share'}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -180,6 +189,8 @@ const CommunityScreen = () => {
         ))}
       </View>
     </ScrollView>
+    </SafeAreaView>
+    </Fragment>
   );
 };
 
