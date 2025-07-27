@@ -1,12 +1,12 @@
-import { Text, View, Image, Pressable } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
+import { Text, View, Image, Pressable, TouchableOpacity } from 'react-native';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { useAudioPlayerStatus } from 'expo-audio';
 import { usePlayer } from '@/providers/PlayerProvider';
 import SkeletonPlaceholder from './SkeletonPlaceholder';
 
 export default function FloatingPlayer() {
-  const { player, book } = usePlayer();
+  const { player, book, clearPlayer } = usePlayer();
   const playerStatus = useAudioPlayerStatus(player);
 
   // console.log(JSON.stringify(playerStatus, null, 2));
@@ -59,6 +59,14 @@ export default function FloatingPlayer() {
             playerStatus.playing ? player.pause() : player.play()
           }
         />
+
+        {/* Clear Button */}
+        <TouchableOpacity
+          onPress={clearPlayer}
+          className='p-1'
+        >
+          <Ionicons name="close" size={20} color="#e94560" />
+        </TouchableOpacity>
       </Pressable>
     </Link>
   );

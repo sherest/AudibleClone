@@ -21,6 +21,7 @@ type PlayerContextType = {
   playNextSong: () => void;
   playPreviousSong: () => void;
   setAlbum: (album: any, songIndex?: number) => void;
+  clearPlayer: () => void;
 };
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -73,6 +74,19 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
     }
   };
 
+  const clearPlayer = () => {
+    // Stop the player if it's playing
+    if (player) {
+      player.pause();
+    }
+    // Clear all state
+    setBook(null);
+    setCurrentAlbum(null);
+    setCurrentSongIndex(0);
+    setAlbumSongs([]);
+    setAudioUri(undefined);
+  };
+
   const getAudioUri = async () => {
     if (!book) {
       return;
@@ -120,7 +134,8 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
       albumSongs, 
       playNextSong, 
       playPreviousSong, 
-      setAlbum 
+      setAlbum,
+      clearPlayer
     }}>
       {children}
     </PlayerContext.Provider>

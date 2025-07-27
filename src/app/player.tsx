@@ -11,8 +11,31 @@ import { useAudioPlayerStatus } from 'expo-audio';
 import { usePlayer } from '@/providers/PlayerProvider';
 
 export default function PlayerScreen() {
-  const { player, book, currentAlbum, playNextSong, playPreviousSong } = usePlayer();
+  const { player, book, currentAlbum, playNextSong, playPreviousSong, clearPlayer } = usePlayer();
   const playerStatus = useAudioPlayerStatus(player);
+
+  // If no book is loaded, show empty state
+  if (!book) {
+    return (
+      <SafeAreaView className='flex-1 px-5 py-2 gap-4 relative'>
+        <Pressable
+          onPress={() => router.back()}
+          className='absolute top-[60px] left-4 bg-gray-800 rounded-full p-2 z-20'
+        >
+          <Entypo name='chevron-down' size={24} color='white' />
+        </Pressable>
+
+        <View className='flex-1 justify-center items-center'>
+          <Text className='text-white text-xl font-semibold text-center mb-4'>
+            No Audio Playing
+          </Text>
+          <Text className='text-gray-400 text-center'>
+            Select an album from Kirtan or Satprasanga to start playing
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   // Check if data is loading
   const isThumbnailLoading = !book?.thumbnail_url || book.thumbnail_url === require('../../assets/img/music-icon.png');
@@ -61,7 +84,7 @@ export default function PlayerScreen() {
         )}
 
         {/* Author */}
-        {book.author && (
+        {book?.author && (
           <Text className='text-white text-lg text-center opacity-80'>
             {book.author}
           </Text>
@@ -98,6 +121,14 @@ export default function PlayerScreen() {
             <Ionicons name='play-skip-forward' size={24} color='white' />
           </TouchableOpacity>
         </View>
+
+        {/* Clear Player Button */}
+        <TouchableOpacity
+          onPress={clearPlayer}
+          className='mt-6 self-center bg-red-600 px-6 py-3 rounded-full'
+        >
+          <Text className='text-white font-semibold'>Clear Player</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
