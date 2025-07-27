@@ -5752,6 +5752,11 @@ react-native-is-edge-to-edge@^1.1.6:
   resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.2.1.tgz#64e10851abd9d176cbf2b40562f751622bde3358"
   integrity sha512-FLbPWl/MyYQWz+KwqOZsSyj2JmLKglHatd3xLZWskXOpRaio4LfEDEz8E/A6uD8QoTHW6Aobw1jbEwK7KMgR7Q==
 
+react-native-momentum-carousel@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-momentum-carousel/-/react-native-momentum-carousel-2.0.0.tgz#661ecd9e22e5d53987b6d3ec6a572969abfaa944"
+  integrity sha512-x1AqoQ6uMDvUh5253wuexBhDPgDlH8Pbk0zVnKPfNY4CLfDfHn5dCnjnQMyNVeW+Rit7APm6PcJJj6jEggJwVQ==
+
 react-native-reanimated@3.16.2:
   version "3.16.2"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.16.2.tgz#8ae2d632cbf02174ce3ef1329b3ce6e3cfe46aa2"

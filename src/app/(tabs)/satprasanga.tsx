@@ -15,7 +15,7 @@ const SatprasangaScreen = () => {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <FontAwesome5 name="book-open" size={24} color="#e94560" />
+        <FontAwesome5 name="book-open" size={22} color="#e94560" />
         <Text style={styles.headerTitle}>
           Satprasanga
         </Text>
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a2e',
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#ffffff',
     marginLeft: 10,
