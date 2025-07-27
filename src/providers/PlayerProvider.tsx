@@ -15,6 +15,12 @@ type PlayerContextType = {
   player: AudioPlayer;
   book: any;
   setBook: (book: any) => void;
+  currentAlbum: any;
+  currentSongIndex: number;
+  albumSongs: any[];
+  playNextSong: () => void;
+  playPreviousSong: () => void;
+  setAlbum: (album: any, songIndex?: number) => void;
 };
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -26,10 +32,46 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
   
   const [book, setBook] = useState<any | null>(null);
   const [audioUri, setAudioUri] = useState<string | undefined>();
+  const [currentAlbum, setCurrentAlbum] = useState<any | null>(null);
+  const [currentSongIndex, setCurrentSongIndex] = useState<number>(0);
+  const [albumSongs, setAlbumSongs] = useState<any[]>([]);
 
   useEffect(() => {
     getAudioUri();
   }, [book?.id]);
+
+  const setAlbum = async (album: any, songIndex: number = 0) => {
+    setCurrentAlbum(album);
+    setAlbumSongs(album.songs || []);
+    setCurrentSongIndex(songIndex);
+    
+    // Set the first song as the current book
+    if (album.songs && album.songs[songIndex]) {
+      const song = album.songs[songIndex];
+      const newBook = {
+        id: `${album.title?.eng || 'album'}-${songIndex}`,
+        title: song.title?.eng || song.title?.hin || song.title?.ban || 'Unknown',
+        author: song.singer?.eng || song.singer?.hin || song.singer?.ban || 'Unknown',
+        audio_url: `${album.basePath?.audio || ''}${song.fileName}`,
+        thumbnail_url: album.coverPath || undefined
+      };
+      setBook(newBook);
+    }
+  };
+
+  const playNextSong = () => {
+    if (currentAlbum && albumSongs.length > 0) {
+      const nextIndex = (currentSongIndex + 1) % albumSongs.length;
+      setAlbum(currentAlbum, nextIndex);
+    }
+  };
+
+  const playPreviousSong = () => {
+    if (currentAlbum && albumSongs.length > 0) {
+      const prevIndex = currentSongIndex === 0 ? albumSongs.length - 1 : currentSongIndex - 1;
+      setAlbum(currentAlbum, prevIndex);
+    }
+  };
 
   const getAudioUri = async () => {
     if (!book) {
@@ -69,7 +111,17 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
   console.log('Playing: ', audioUri);
 
   return (
-    <PlayerContext.Provider value={{ player, book, setBook }}>
+    <PlayerContext.Provider value={{ 
+      player, 
+      book, 
+      setBook, 
+      currentAlbum, 
+      currentSongIndex, 
+      albumSongs, 
+      playNextSong, 
+      playPreviousSong, 
+      setAlbum 
+    }}>
       {children}
     </PlayerContext.Provider>
   );

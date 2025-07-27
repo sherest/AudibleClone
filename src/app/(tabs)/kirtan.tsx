@@ -50,7 +50,7 @@ interface KirtanData {
 }
 
 const Kirtan = () => {
-  const { setBook } = usePlayer();
+  const { setAlbum } = usePlayer();
   const { selectedLanguage } = useLanguage();
   const [kirtanData, setKirtanData] = useState<KirtanData[]>([]);
   const [basePath, setBasePath] = useState({ image: '', audio: '' });
@@ -89,8 +89,7 @@ const Kirtan = () => {
 
   const addToPlayList = async (index: number) => {
     const oKirtan = kirtanData[index];
-    const audioUrl = basePath.audio + oKirtan.songs[0]?.fileName;
-
+    
     // Fetch Firebase Storage image for the player
     let coverPath = musicIcon;
     try {
@@ -102,14 +101,15 @@ const Kirtan = () => {
       // Use fallback music icon if Firebase Storage image is not available
     }
 
-    const book = {
-      id: `kirtan-${index}`,
-      title: getLocalizedContent(oKirtan.title),
-      author: getLocalizedContent(oKirtan.songs[0]?.singer || { eng: 'Unknown' }),
-      audio_url: audioUrl,
-      thumbnail_url: coverPath
+    // Add basePath to album data for audio URL construction
+    const albumWithBasePath = {
+      ...oKirtan,
+      basePath: basePath,
+      coverPath: coverPath
     };
-    setBook(book);
+
+    // Set the album with the first song (index 0)
+    setAlbum(albumWithBasePath, 0);
   };
 
   const renderKirtanItem = (kirtan: KirtanData, index: number) => {
