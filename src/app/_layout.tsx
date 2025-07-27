@@ -3,6 +3,8 @@ import { Stack } from 'expo-router';
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import PlayerProvider from '@/providers/PlayerProvider';
 import { LanguageProvider } from '../providers/LanguageContext';
+import { JoinUsProvider } from '../providers/JoinUsProvider';
+import JoinUsModal from '../components/JoinUsModal';
 
 const theme = {
   ...DarkTheme,
@@ -19,13 +21,16 @@ export default function RootLayout() {
     <LanguageProvider>
       <ThemeProvider value={theme}>
         <PlayerProvider>
-          <Stack>
-            <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-            <Stack.Screen
-              name='player'
-              options={{ headerShown: false, animation: 'fade_from_bottom' }}
-            />
-          </Stack>
+          <JoinUsProvider>
+            <Stack>
+              <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+              <Stack.Screen
+                name='player'
+                options={{ headerShown: false, animation: 'fade_from_bottom' }}
+              />
+            </Stack>
+            <JoinUsModal />
+          </JoinUsProvider>
         </PlayerProvider>
       </ThemeProvider>
     </LanguageProvider>

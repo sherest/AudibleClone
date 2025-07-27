@@ -5,6 +5,7 @@ import { realtimeDb } from '../../lib/firebase';
 import { ref, onValue } from 'firebase/database';
 import { FontAwesome5, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import SettingsModal from '../settings';
+import { useJoinUs } from '../../providers/JoinUsProvider';
 
 const { width } = Dimensions.get('window');
 
@@ -25,6 +26,7 @@ interface SacredEvent {
 
 const SacredHomeScreen = () => {
   const { selectedLanguage } = useLanguage();
+  const { showJoinUs } = useJoinUs();
   const [dailyWisdom, setDailyWisdom] = useState<DailyWisdom | null>(null);
   const [sacredEvents, setSacredEvents] = useState<SacredEvent[]>([]);
   const [quickActions, setQuickActions] = useState<any>({});
@@ -151,6 +153,30 @@ const SacredHomeScreen = () => {
                 </Text>
               </TouchableOpacity>
             ))}
+          </View>
+        </View>
+
+        {/* Join Us Section */}
+        <View style={styles.section}>
+          <View style={styles.joinUsCard}>
+            <View style={styles.joinUsContent}>
+              <Text style={styles.joinUsTitle}>
+                {selectedLanguage?.code === 'hin' ? 'हमसे जुड़ें' : 'Join Us'}
+              </Text>
+              <Text style={styles.joinUsDescription}>
+                {selectedLanguage?.code === 'hin' 
+                  ? 'समुदाय की गतिविधियों के बारे में अपडेट रहें' 
+                  : 'Stay updated on community activities'}
+              </Text>
+              <TouchableOpacity 
+                style={styles.joinUsButton}
+                onPress={showJoinUs}
+              >
+                <Text style={styles.joinUsButtonText}>
+                  {selectedLanguage?.code === 'hin' ? 'शामिल हों' : 'Join Now'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -371,6 +397,40 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#8b8b8b',
     marginTop: 2,
+  },
+  joinUsCard: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 15,
+    padding: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: '#e94560',
+  },
+  joinUsContent: {
+    alignItems: 'center',
+  },
+  joinUsTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 10,
+  },
+  joinUsDescription: {
+    fontSize: 16,
+    color: '#8b8b8b',
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 24,
+  },
+  joinUsButton: {
+    backgroundColor: '#e94560',
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+  },
+  joinUsButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
