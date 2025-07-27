@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import PlaybackBar from '@/components/PlaybackBar';
+import SkeletonPlaceholder from '@/components/SkeletonPlaceholder';
 
 import { useAudioPlayerStatus } from 'expo-audio';
 import { usePlayer } from '@/providers/PlayerProvider';
@@ -12,6 +13,11 @@ import { usePlayer } from '@/providers/PlayerProvider';
 export default function PlayerScreen() {
   const { player, book, currentAlbum, currentSongIndex, albumSongs, playNextSong, playPreviousSong, setAlbum } = usePlayer();
   const playerStatus = useAudioPlayerStatus(player);
+
+  // Check if data is loading
+  const isThumbnailLoading = !book?.thumbnail_url || book.thumbnail_url === require('../../assets/img/music-icon.png');
+  const isTitleLoading = !book?.title;
+  const isAlbumSongsLoading = !albumSongs || albumSongs.length === 0;
 
   return (
     <SafeAreaView className='flex-1  p-4 py-10 gap-4'>
@@ -22,42 +28,67 @@ export default function PlayerScreen() {
         <Entypo name='chevron-down' size={24} color='white' />
       </Pressable>
 
-      <Image
-        source={{ uri: book.thumbnail_url }}
-        className='w-[95%] aspect-square rounded-[30px] self-center'
-      />
+      {/* Album Cover */}
+      {isThumbnailLoading ? (
+        <SkeletonPlaceholder width="95%" height={300} borderRadius={30} style={{ alignSelf: 'center' }} />
+      ) : (
+        <Image
+          source={{ uri: book.thumbnail_url }}
+          className='w-[95%] aspect-square rounded-[30px] self-center'
+        />
+      )}
 
       <View className='gap-8 flex-1 justify-end'>
-        <Text className='text-white text-2xl font-bold text-center'>
-          {book.title}
-        </Text>
+        {/* Title */}
+        {isTitleLoading ? (
+          <SkeletonPlaceholder width="80%" height={32} borderRadius={4} style={{ alignSelf: 'center' }} />
+        ) : (
+          <Text className='text-white text-2xl font-bold text-center'>
+            {book.title}
+          </Text>
+        )}
 
+        {/* Album Songs List */}
         {albumSongs.length > 1 && (
           <View className='bg-gray-800 rounded-lg p-4 max-h-32'>
             <Text className='text-white text-sm font-semibold mb-2'>Album Songs</Text>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {albumSongs.map((song, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => setAlbum(currentAlbum, index)}
-                  className={`flex-row items-center justify-between py-2 px-2 rounded ${
-                    index === currentSongIndex ? 'bg-red-600' : ''
-                  }`}
-                >
-                  <View className='flex-1'>
-                    <Text className={`text-sm ${index === currentSongIndex ? 'text-white font-bold' : 'text-gray-300'}`}>
-                      {song.title?.eng || song.title?.hin || song.title?.ban || 'Unknown'}
-                    </Text>
-                    <Text className='text-xs text-gray-400'>
-                      {song.singer?.eng || song.singer?.hin || song.singer?.ban || 'Unknown'}
-                    </Text>
+            {isAlbumSongsLoading ? (
+              <View className='gap-2'>
+                {[1, 2, 3].map((index) => (
+                  <View key={index} className='flex-row items-center justify-between py-2 px-2'>
+                    <View className='flex-1'>
+                      <SkeletonPlaceholder width="70%" height={14} borderRadius={4} style={{ marginBottom: 4 }} />
+                      <SkeletonPlaceholder width="50%" height={12} borderRadius={4} />
+                    </View>
+                    <SkeletonPlaceholder width={16} height={16} borderRadius={8} />
                   </View>
-                  {index === currentSongIndex && (
-                    <Ionicons name='play' size={16} color='white' />
-                  )}
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+                ))}
+              </View>
+            ) : (
+              <ScrollView showsVerticalScrollIndicator={false}>
+                {albumSongs.map((song, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => setAlbum(currentAlbum, index)}
+                    className={`flex-row items-center justify-between py-2 px-2 rounded ${
+                      index === currentSongIndex ? 'bg-red-600' : ''
+                    }`}
+                  >
+                    <View className='flex-1'>
+                      <Text className={`text-sm ${index === currentSongIndex ? 'text-white font-bold' : 'text-gray-300'}`}>
+                        {song.title?.eng || song.title?.hin || song.title?.ban || 'Unknown'}
+                      </Text>
+                      <Text className='text-xs text-gray-400'>
+                        {song.singer?.eng || song.singer?.hin || song.singer?.ban || 'Unknown'}
+                      </Text>
+                    </View>
+                    {index === currentSongIndex && (
+                      <Ionicons name='play' size={16} color='white' />
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
           </View>
         )}
 
