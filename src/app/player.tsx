@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import PlaybackBar from '@/components/PlaybackBar';
 import SkeletonPlaceholder from '@/components/SkeletonPlaceholder';
-import MarqueeText from '@/components/MarqueeText';
 
 import { useAudioPlayerStatus } from 'expo-audio';
 import { usePlayer } from '@/providers/PlayerProvider';
