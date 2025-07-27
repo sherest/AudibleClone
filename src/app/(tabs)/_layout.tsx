@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { BottomTabBar } from '@react-navigation/bottom-tabs';
 import FloatingPlayer from '@/components/FloatingPlayer';
 
@@ -12,39 +12,59 @@ export default function TabsLayout() {
           <BottomTabBar {...props} />
         </>
       )}
+      screenOptions={{
+        tabBarStyle: {
+          backgroundColor: '#1a1a2e',
+          borderTopColor: '#16213e',
+        },
+        tabBarActiveTintColor: '#e94560',
+        tabBarInactiveTintColor: '#8b8b8b',
+        headerStyle: {
+          backgroundColor: '#1a1a2e',
+        },
+        headerTintColor: '#ffffff',
+      }}
     >
+      <Tabs.Screen 
+        name='about' 
+        options={{ 
+          title: 'About',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name='info-circle' size={size} color={color} />
+          ),
+        }} />
+      <Tabs.Screen
+        name='satprasanga'
+        options={{
+          title: 'Satprasanga',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name='book-open' size={size} color={color} />
+          ),
+        }}
+      />
       <Tabs.Screen 
         name='index' 
         options={{ 
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name='home' size={size} color={color} />
+            <FontAwesome5 name='home' size={size} color={color} />
           ),
         }} />
       <Tabs.Screen
-        name='library'
+        name='kirtan'
         options={{
-          title: 'Library',
+          title: 'Kirtan',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name='library' size={size} color={color} />
+            <MaterialIcons name='music-note' size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name='discover'
+        name='community'
         options={{
-          title: 'Discover',
+          title: 'Community',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name='search' size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name='settings'
-        options={{
-          title: 'Settings',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name='settings' size={size} color={color} />
+            <FontAwesome5 name='users' size={size} color={color} />
           ),
         }}
       />
