@@ -42,6 +42,7 @@ const JoinUsModal = () => {
     comments: ''
   });
   const [loading, setLoading] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(true);
 
   useEffect(() => {
     if (isJoinUsVisible) {
@@ -141,12 +142,31 @@ const JoinUsModal = () => {
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {/* Description */}
           <View style={styles.descriptionContainer}>
-            <Text style={styles.description}>
-              {getLocalizedText(joinUsData?.description)}
-            </Text>
-            <Text style={styles.caption}>
-              {getLocalizedText(joinUsData?.caption)}
-            </Text>
+            <TouchableOpacity 
+              style={styles.descriptionHeader}
+              onPress={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.descriptionTitle}>
+                {selectedLanguage?.code === 'hin' ? 'विवरण' : 'Description'}
+              </Text>
+              <Ionicons 
+                name={isDescriptionExpanded ? "chevron-up" : "chevron-down"} 
+                size={20} 
+                color="#e94560" 
+              />
+            </TouchableOpacity>
+            
+            {isDescriptionExpanded && (
+              <View style={styles.descriptionContent}>
+                <Text style={styles.description}>
+                  {getLocalizedText(joinUsData?.description)}
+                </Text>
+                <Text style={styles.caption}>
+                  {getLocalizedText(joinUsData?.caption)}
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* Form */}
@@ -271,7 +291,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a2e',
     borderBottomWidth: 1,
     borderBottomColor: '#2a2a3e',
-    paddingTop: 50, // Add extra padding for status bar
+    paddingTop: 80, // Add extra padding for status bar
   },
   headerTitle: {
     fontSize: 18,
@@ -287,9 +307,24 @@ const styles = StyleSheet.create({
   },
   descriptionContainer: {
     backgroundColor: '#1a1a2e',
-    padding: 20,
     borderRadius: 15,
     marginBottom: 20,
+    overflow: 'hidden',
+  },
+  descriptionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#2a2a3e',
+  },
+  descriptionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  descriptionContent: {
+    padding: 20,
   },
   description: {
     fontSize: 16,
@@ -306,6 +341,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a2e',
     padding: 20,
     borderRadius: 15,
+    marginBottom: 80,
   },
   inputContainer: {
     marginBottom: 20,
