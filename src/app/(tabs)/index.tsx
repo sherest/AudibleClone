@@ -102,6 +102,7 @@ const SacredHomeScreen = () => {
       {/* Header with Greeting */}
       <View style={styles.header}>
           <View style={styles.greetingContainer}>
+            <FontAwesome5 name="home" size={24} color="#e94560" style={{ marginRight: 10 }} />
             <Text style={styles.greeting}>
               {selectedLanguage?.code === 'hin' ? 'जय श्री कृष्णा' : 'Welcome!'}
             </Text>
@@ -264,7 +265,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   greeting: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#ffffff',
   },

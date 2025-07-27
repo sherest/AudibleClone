@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Image, TouchableOpacity, SafeAreaView } from 'r
 import { realtimeDb } from '../../lib/firebase';
 import { ref, onValue } from 'firebase/database';
 import { getStorage, ref as storageRef, getDownloadURL } from 'firebase/storage';
+import { MaterialIcons } from '@expo/vector-icons';
 import { usePlayer } from '../../providers/PlayerProvider';
 
 interface Song {
@@ -74,9 +75,10 @@ const Kirtan = () => {
     <SafeAreaView className='bg-[#1a1a2e]'></SafeAreaView>
     <SafeAreaView className='flex-1 bg-[#0f3460]'>
       {/* Header with Greeting */}
-      <View className='flex-row items-center p-5 bg-[#1a1a2e]'>
-        <View className='flex-1'>
-          <Text className='text-white text-2xl font-bold'>
+      <View className='flex-row items-center p-[20px] bg-[#1a1a2e]'>
+        <View className='flex-1 flex-row items-center'>
+          <MaterialIcons name="music-note" size={24} color="#e94560" style={{ marginRight: 10 }} />
+          <Text className='text-white text-[24px] font-bold'>
             Kirtan
           </Text>
         </View>
