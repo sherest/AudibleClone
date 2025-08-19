@@ -4,11 +4,13 @@ import { Link } from 'expo-router';
 import { useAudioPlayerStatus } from 'expo-audio';
 import { usePlayer } from '@/providers/PlayerProvider';
 import { useLanguage } from '@/providers/LanguageContext';
+import { useTheme } from '@/providers/ThemeProvider';
 import SkeletonPlaceholder from './SkeletonPlaceholder';
 
 export default function FloatingPlayer() {
   const { player, book, clearPlayer } = usePlayer();
   const { selectedLanguage } = useLanguage();
+  const { colors } = useTheme();
   const playerStatus = useAudioPlayerStatus(player);
 
   const getLocalizedContent = (content: any, fallback: string = 'eng') => {
@@ -40,27 +42,27 @@ export default function FloatingPlayer() {
 
   return (
     <Link href='/player' asChild>
-      <Pressable className='flex-row gap-4 items-center p-2 bg-slate-900'>
+      <Pressable style={{flexDirection: 'row', gap: 16, alignItems: 'center', padding: 8, backgroundColor: colors.background.secondary}}>
         {/* Thumbnail */}
         {isThumbnailLoading ? (
           <SkeletonPlaceholder width={64} height={64} borderRadius={8} />
         ) : (
           <Image
             source={{ uri: book.thumbnail_url }}
-            className='w-16 aspect-square rounded-md'
+            style={{width: 64, aspectRatio: 1, borderRadius: 8}}
           />
         )}
         
         {/* Content */}
-        <View className='gap-1 flex-1'>
+        <View style={{gap: 4, flex: 1}}>
           {book.title ? (
-            <Text className='text-2xl text-gray-100 font-bold' numberOfLines={2} ellipsizeMode='tail'>{getLocalizedContent(book.title, 'eng') || 'Unknown Title'}</Text>
+            <Text style={{fontSize: 24, color: colors.text.primary, fontWeight: 'bold'}} numberOfLines={2} ellipsizeMode='tail'>{getLocalizedContent(book.title, 'eng') || 'Unknown Title'}</Text>
           ) : (
             <SkeletonPlaceholder width="80%" height={24} borderRadius={4} style={{ marginBottom: 4 }} />
           )}
           
           {book.author ? (
-            <Text className='text-gray-400' numberOfLines={1} ellipsizeMode='tail'>{getLocalizedContent(book.author, 'eng') || 'Unknown Artist'}</Text>
+            <Text style={{color: colors.text.secondary}} numberOfLines={1} ellipsizeMode='tail'>{getLocalizedContent(book.author, 'eng') || 'Unknown Artist'}</Text>
           ) : (
             <SkeletonPlaceholder width="60%" height={16} borderRadius={4} />
           )}
@@ -76,7 +78,7 @@ export default function FloatingPlayer() {
               : 'playcircleo'
           }
           size={24}
-          color='gainsboro'
+          color={colors.text.secondary}
           onPress={() =>
             playerStatus.playing ? player.pause() : player.play()
           }
@@ -85,9 +87,9 @@ export default function FloatingPlayer() {
         {/* Clear Button */}
         <TouchableOpacity
           onPress={clearPlayer}
-          className='p-1'
+          style={{padding: 4}}
         >
-          <Ionicons name="close" size={20} color="#e94560" />
+          <Ionicons name="close" size={20} color={colors.primary} />
         </TouchableOpacity>
       </Pressable>
     </Link>

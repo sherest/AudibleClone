@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "cover",
-      "backgroundColor": "#da4d0d"
+      "backgroundColor": "#b90101"
     },
     "ios": {
       "supportsTablet": true,
@@ -26,7 +26,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0f3460"
+        "backgroundColor": "#b90101"
       },
       "permissions": [
         "android.permission.RECORD_AUDIO",

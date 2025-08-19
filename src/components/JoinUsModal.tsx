@@ -6,9 +6,11 @@ import {
   ScrollView, 
   TextInput, 
   Modal,
-  Alert
+  Alert,
+  StyleSheet
 } from 'react-native';
 import { useLanguage } from '../providers/LanguageContext';
+import { useTheme } from '../providers/ThemeProvider';
 import { realtimeDb } from '../lib/firebase';
 import { ref, onValue, push, set } from 'firebase/database';
 import { Ionicons } from '@expo/vector-icons';
@@ -34,6 +36,7 @@ interface JoinUsData {
 const JoinUsModal = () => {
   const { isJoinUsVisible, hideJoinUs } = useJoinUs();
   const { selectedLanguage } = useLanguage();
+  const { colors } = useTheme();
   const [joinUsData, setJoinUsData] = useState<JoinUsData | null>(null);
   const [menuData, setMenuData] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -98,42 +101,24 @@ const JoinUsModal = () => {
         comment: formData.comments,
         city: formData.city,
         country: formData.country,
-        date: new Date().toISOString().split('T')[0],
-        time: new Date().toTimeString().split(' ')[0]
+        timestamp: new Date().toISOString(),
+        language: selectedLanguage?.code || 'eng'
       };
-      
+
       await set(newMessageRef, messageData);
 
-      // Then, send email via Cloud Function
-      const response = await fetch("https://us-central1-amrita-lahari.cloudfunctions.net/sendMail", {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        method: "POST",
-        body: JSON.stringify(messageData)
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        mobile: '',
+        city: '',
+        country: '',
+        comments: ''
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to send email notification');
-      }
-
-      Alert.alert(
-        'Success', 
-        'Thank you for joining us! We will keep you updated on our activities.',
-        [{ text: 'OK', onPress: () => {
-          handleClose();
-          // Reset form data
-          setFormData({
-            name: '',
-            email: '',
-            mobile: '',
-            comments: '',
-            city: '',
-            country: ''
-          });
-        }}]
-      );
+      Alert.alert('Success', 'Thank you for joining us!');
+      hideJoinUs();
     } catch (error) {
       console.error('Error submitting form:', error);
       Alert.alert('Error', 'Failed to submit form. Please try again.');
@@ -142,161 +127,126 @@ const JoinUsModal = () => {
     }
   };
 
-  const handleClose = () => {
-    // Reset form data when closing
-    setFormData({
-      name: '',
-      email: '',
-      mobile: '',
-      city: '',
-      country: '',
-      comments: ''
-    });
-    hideJoinUs();
-  };
-
-  const updateFormData = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
   return (
     <Modal
-      animationType="slide"
-      transparent={false}
       visible={isJoinUsVisible}
-      onRequestClose={handleClose}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={hideJoinUs}
     >
-      <View className="flex-1 bg-[#0f3460]">
+      <View style={[styles.container, {backgroundColor: colors.background.primary}]}>
         {/* Header */}
-        <View className="flex-row justify-between items-center p-5 bg-[#1a1a2e] border-b border-[#2a2a3e] pt-20">
-          <Text className="text-2xl font-bold text-white">
-            {getLocalizedText(menuData?.joinUs) || 'Join Us'}
-          </Text>
-          
-          <TouchableOpacity 
-            className="p-1"
-            onPress={handleClose}
-          >
-            <Ionicons name="close" size={24} color="#ffffff" />
+        <View style={[styles.header, {backgroundColor: colors.background.secondary, borderBottomColor: colors.border.primary}]}>
+          <TouchableOpacity onPress={hideJoinUs} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
+            <Text style={[styles.backText, {color: colors.text.primary}]}>Back</Text>
           </TouchableOpacity>
+          <Text style={[styles.headerTitle, {color: colors.text.primary}]}>
+            {getLocalizedText(menuData?.joinUs)}
+          </Text>
+          <View style={styles.placeholder} />
         </View>
 
-        <ScrollView className="flex-1 p-5" showsVerticalScrollIndicator={false}>
-          {/* Description */}
-          <View className="bg-[#1a1a2e] rounded-2xl mb-5 overflow-hidden">
-            <TouchableOpacity 
-              className="flex-row justify-between items-center p-5 bg-[#2a2a3e]"
-              onPress={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-              activeOpacity={0.7}
-            >
-              <Text className="text-base font-bold text-white">
-                {getLocalizedText(joinUsData?.titleDescription) || 'Description'}
-              </Text>
-              <Ionicons 
-                name={isDescriptionExpanded ? "chevron-up" : "chevron-down"} 
-                size={20} 
-                color="#e94560" 
-              />
-            </TouchableOpacity>
-            
-            {isDescriptionExpanded && (
-              <View className="p-5">
-                <Text className="text-lg text-white mb-2">
-                  {getLocalizedText(joinUsData?.description)}
-                </Text>
-                <Text className="text-sm text-[#e94560] italic">
-                  {getLocalizedText(joinUsData?.caption)}
-                </Text>
-              </View>
-            )}
+        <ScrollView style={styles.content}>
+          {/* Description Card */}
+          <View style={[styles.card, {backgroundColor: colors.background.secondary}]}>
+            <Text style={[styles.descriptionTitle, {color: colors.text.primary}]}>
+              {getLocalizedText(joinUsData?.titleDescription)}
+            </Text>
+            <Text style={[styles.descriptionText, {color: colors.text.secondary}]}>
+              {getLocalizedText(joinUsData?.description)}
+            </Text>
           </View>
 
-          {/* Form */}
-          <View className="bg-[#1a1a2e] p-5 rounded-2xl mb-20">
+          {/* Form Card */}
+          <View style={[styles.formCard, {backgroundColor: colors.background.secondary}]}>
+            <Text style={[styles.formTitle, {color: colors.text.primary}]}>
+              {getLocalizedText(joinUsData?.caption)}
+            </Text>
+
             {/* Name Field */}
-            <View className="mb-5">
-              <Text className="text-base font-semibold text-white mb-2">
+            <View style={styles.fieldContainer}>
+              <Text style={[styles.fieldLabel, {color: colors.text.primary}]}>
                 {getLocalizedText(joinUsData?.fields?.name)} *
               </Text>
               <TextInput
-                className="bg-[#2a2a3e] rounded-xl p-4 text-base text-white border border-[#3a3a4e]"
-                placeholder={getLocalizedText(joinUsData?.fields?.name)}
-                placeholderTextColor="#8b8b8b"
+                style={[styles.textInput, {backgroundColor: colors.background.tertiary, color: colors.text.primary, borderColor: colors.border.primary}]}
                 value={formData.name}
-                onChangeText={(value) => updateFormData('name', value)}
+                onChangeText={(text) => setFormData({...formData, name: text})}
+                placeholder="Enter your name"
+                placeholderTextColor={colors.text.secondary}
               />
             </View>
 
             {/* Email Field */}
-            <View className="mb-5">
-              <Text className="text-base font-semibold text-white mb-2">
+            <View style={styles.fieldContainer}>
+              <Text style={[styles.fieldLabel, {color: colors.text.primary}]}>
                 {getLocalizedText(joinUsData?.fields?.email)} *
               </Text>
               <TextInput
-                className="bg-[#2a2a3e] rounded-xl p-4 text-base text-white border border-[#3a3a4e]"
-                placeholder={getLocalizedText(joinUsData?.fields?.email)}
-                placeholderTextColor="#8b8b8b"
+                style={[styles.textInput, {backgroundColor: colors.background.tertiary, color: colors.text.primary, borderColor: colors.border.primary}]}
                 value={formData.email}
-                onChangeText={(value) => updateFormData('email', value)}
+                onChangeText={(text) => setFormData({...formData, email: text})}
+                placeholder="Enter your email"
+                placeholderTextColor={colors.text.secondary}
                 keyboardType="email-address"
-                autoCapitalize="none"
               />
             </View>
 
             {/* Mobile Field */}
-            <View className="mb-5">
-              <Text className="text-base font-semibold text-white mb-2">
+            <View style={styles.fieldContainer}>
+              <Text style={[styles.fieldLabel, {color: colors.text.primary}]}>
                 {getLocalizedText(joinUsData?.fields?.mobile)}
               </Text>
               <TextInput
-                className="bg-[#2a2a3e] rounded-xl p-4 text-base text-white border border-[#3a3a4e]"
-                placeholder={getLocalizedText(joinUsData?.fields?.mobile)}
-                placeholderTextColor="#8b8b8b"
+                style={[styles.textInput, {backgroundColor: colors.background.tertiary, color: colors.text.primary, borderColor: colors.border.primary}]}
                 value={formData.mobile}
-                onChangeText={(value) => updateFormData('mobile', value)}
+                onChangeText={(text) => setFormData({...formData, mobile: text})}
+                placeholder="Enter your mobile number"
+                placeholderTextColor={colors.text.secondary}
                 keyboardType="phone-pad"
               />
             </View>
 
             {/* City Field */}
-            <View className="mb-5">
-              <Text className="text-base font-semibold text-white mb-2">
+            <View style={styles.fieldContainer}>
+              <Text style={[styles.fieldLabel, {color: colors.text.primary}]}>
                 {getLocalizedText(joinUsData?.fields?.city)}
               </Text>
               <TextInput
-                className="bg-[#2a2a3e] rounded-xl p-4 text-base text-white border border-[#3a3a4e]"
-                placeholder={getLocalizedText(joinUsData?.fields?.city)}
-                placeholderTextColor="#8b8b8b"
+                style={[styles.textInput, {backgroundColor: colors.background.tertiary, color: colors.text.primary, borderColor: colors.border.primary}]}
                 value={formData.city}
-                onChangeText={(value) => updateFormData('city', value)}
+                onChangeText={(text) => setFormData({...formData, city: text})}
+                placeholder="Enter your city"
+                placeholderTextColor={colors.text.secondary}
               />
             </View>
 
             {/* Country Field */}
-            <View className="mb-5">
-              <Text className="text-base font-semibold text-white mb-2">
+            <View style={styles.fieldContainer}>
+              <Text style={[styles.fieldLabel, {color: colors.text.primary}]}>
                 {getLocalizedText(joinUsData?.fields?.country)}
               </Text>
               <TextInput
-                className="bg-[#2a2a3e] rounded-xl p-4 text-base text-white border border-[#3a3a4e]"
-                placeholder={getLocalizedText(joinUsData?.fields?.country)}
-                placeholderTextColor="#8b8b8b"
+                style={[styles.textInput, {backgroundColor: colors.background.tertiary, color: colors.text.primary, borderColor: colors.border.primary}]}
                 value={formData.country}
-                onChangeText={(value) => updateFormData('country', value)}
+                onChangeText={(text) => setFormData({...formData, country: text})}
+                placeholder="Enter your country"
+                placeholderTextColor={colors.text.secondary}
               />
             </View>
 
             {/* Comments Field */}
-            <View className="mb-5">
-              <Text className="text-base font-semibold text-white mb-2">
+            <View style={styles.fieldContainer}>
+              <Text style={[styles.fieldLabel, {color: colors.text.primary}]}>
                 {getLocalizedText(joinUsData?.fields?.comments)}
               </Text>
               <TextInput
-                className="bg-[#2a2a3e] rounded-xl p-4 text-base text-white border border-[#3a3a4e] h-24 pt-4"
-                placeholder={getLocalizedText(joinUsData?.fields?.comments)}
-                placeholderTextColor="#8b8b8b"
+                style={[styles.textArea, {backgroundColor: colors.background.tertiary, color: colors.text.primary, borderColor: colors.border.primary}]}
                 value={formData.comments}
-                onChangeText={(value) => updateFormData('comments', value)}
+                onChangeText={(text) => setFormData({...formData, comments: text})}
+                placeholder="Enter your comments"
+                placeholderTextColor={colors.text.secondary}
                 multiline
                 numberOfLines={4}
                 textAlignVertical="top"
@@ -304,13 +254,13 @@ const JoinUsModal = () => {
             </View>
 
             {/* Submit Button */}
-            <TouchableOpacity 
-              className={`bg-[#e94560] rounded-xl p-4 items-center mt-2 ${loading ? 'bg-gray-500' : ''}`}
+            <TouchableOpacity
+              style={[styles.submitButton, {backgroundColor: colors.primary}, loading && {backgroundColor: colors.text.secondary}]}
               onPress={handleSubmit}
               disabled={loading}
             >
-              <Text className="text-base font-bold text-white">
-                {loading ? 'Submitting...' : getLocalizedText(joinUsData?.fields?.submit)}
+              <Text style={[styles.submitButtonText, {color: colors.text.primary}]}>
+                {loading ? 'Submitting...' : getLocalizedText(menuData?.joinUs)}
               </Text>
             </TouchableOpacity>
           </View>
@@ -319,5 +269,93 @@ const JoinUsModal = () => {
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    paddingTop: 60,
+    borderBottomWidth: 1,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backText: {
+    fontSize: 16,
+    marginLeft: 8,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  placeholder: {
+    width: 80,
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+  },
+  card: {
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+  },
+  descriptionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  descriptionText: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  formCard: {
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+  },
+  formTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  fieldContainer: {
+    marginBottom: 16,
+  },
+  fieldLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+  },
+  textArea: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    height: 100,
+  },
+  submitButton: {
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  submitButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
 
 export default JoinUsModal; 

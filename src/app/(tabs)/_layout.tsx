@@ -4,6 +4,7 @@ import {BottomTabBar} from '@react-navigation/bottom-tabs';
 import FloatingPlayer from '@/components/FloatingPlayer';
 import {useEffect, useState} from 'react';
 import {useLanguage} from '../../providers/LanguageContext';
+import {useTheme} from '../../providers/ThemeProvider';
 import {realtimeDb} from '../../lib/firebase';
 import {ref, onValue} from 'firebase/database';
 
@@ -14,6 +15,7 @@ const fontSize = {
 
 export default function TabsLayout() {
     const {selectedLanguage} = useLanguage();
+    const {colors} = useTheme();
     const [menuData, setMenuData] = useState<any>({});
 
     useEffect(() => {
@@ -40,18 +42,18 @@ export default function TabsLayout() {
             )}
             screenOptions={{
                 tabBarStyle: {
-                    backgroundColor: '#1a1a2e',
-                    borderTopColor: '#16213e',
+                    backgroundColor: colors.background.secondary,
+                    borderTopColor: colors.border.primary,
                     paddingTop: 10,
                     paddingBottom: 10,
                     height: 90,
                 },
-                tabBarActiveTintColor: '#e94560',
-                tabBarInactiveTintColor: '#8b8b8b',
+                tabBarActiveTintColor: '#fff6a8',
+                tabBarInactiveTintColor: '#ffffff',
                 headerStyle: {
-                    backgroundColor: '#1a1a2e',
+                    backgroundColor: colors.background.secondary,
                 },
-                headerTintColor: '#ffffff',
+                headerTintColor: colors.text.primary,
                 headerShown: false,
             }}
         >

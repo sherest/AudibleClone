@@ -4,6 +4,7 @@ import { CarouselMomentum, CarouselMomentumAnimationType } from 'react-native-mo
 import { realtimeDb } from '../lib/firebase';
 import { ref, onValue } from 'firebase/database';
 import { useLanguage } from '../providers/LanguageContext';
+import { useTheme } from '../providers/ThemeProvider';
 import { FontAwesome5 } from '@expo/vector-icons';
 import SkeletonPlaceholder from './SkeletonPlaceholder';
 
@@ -23,6 +24,7 @@ interface HomeCarouselProps {
 
 const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) => {
   const { selectedLanguage } = useLanguage();
+  const { colors } = useTheme();
   const [carouselData, setCarouselData] = useState<CarouselItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -42,26 +44,26 @@ const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) 
   }, [selectedLanguage]);
 
   const renderCarouselItem = ({ item }: { item: CarouselItem }) => (
-    <View style={styles.carouselItem}>
-      <View style={styles.carouselImage}>
-        <FontAwesome5 name="music" size={60} color="#e94560" style={styles.musicIcon} />
+    <View style={[styles.carouselItem, {backgroundColor: colors.background.secondary}]}>
+      <View style={[styles.carouselImage, {backgroundColor: colors.background.secondary}]}>
+        <FontAwesome5 name="music" size={60} color={colors.primary} style={styles.musicIcon} />
       </View>
-      <View style={styles.carouselOverlay}>
+      <View style={[styles.carouselOverlay, {backgroundColor: `rgba(${colors.background.secondary.replace('#', '')}, 0.8)`}]}>
         <View style={styles.carouselContent}>
-          <View style={styles.categoryBadge}>
-            <Text style={styles.categoryText}>
+          <View style={[styles.categoryBadge, {backgroundColor: colors.primary}]}>
+            <Text style={[styles.categoryText, {color: colors.text.primary}]}>
               {item.album_name.eng}
             </Text>
           </View>
-          <Text style={styles.carouselTitle}>
+          <Text style={[styles.carouselTitle, {color: colors.text.primary}]}>
             {item.title.eng}
           </Text>
-          <Text style={styles.carouselDescription} numberOfLines={2}>
+          <Text style={[styles.carouselDescription, {color: colors.text.secondary}]} numberOfLines={2}>
             {item.description.eng}
           </Text>
           <View style={styles.dateContainer}>
-            <FontAwesome5 name="calendar-alt" size={12} color="#e94560" />
-            <Text style={styles.dateText}>{item.upload_date} • {item.year}</Text>
+            <FontAwesome5 name="calendar-alt" size={12} color={colors.primary} />
+            <Text style={[styles.dateText, {color: colors.primary}]}>{item.upload_date} • {item.year}</Text>
           </View>
         </View>
       </View>
@@ -75,11 +77,11 @@ const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) 
   if (carouselData.length === 0) {
     return (
       <View style={{...styles.carouselContainer, marginHorizontal: 20}}>
-        <View style={styles.carouselItem}>
-          <View style={styles.carouselImage}>
-            <FontAwesome5 name="music" size={60} color="#e94560" style={styles.musicIcon} />
+        <View style={[styles.carouselItem, {backgroundColor: colors.background.secondary}]}>
+          <View style={[styles.carouselImage, {backgroundColor: colors.background.secondary}]}>
+            <FontAwesome5 name="music" size={60} color={colors.primary} style={styles.musicIcon} />
           </View>
-          <View style={styles.carouselOverlay}>
+          <View style={[styles.carouselOverlay, {backgroundColor: `rgba(${colors.background.secondary.replace('#', '')}, 0.8)`}]}>
             <View style={styles.carouselContent}>
               <SkeletonPlaceholder width={80} height={20} borderRadius={2} style={{ marginBottom: 8 }} />
               <SkeletonPlaceholder width="90%" height={18} borderRadius={4} style={{ marginBottom: 5 }} />
@@ -108,7 +110,7 @@ const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) 
         paginationStyle={{
           container: styles.paginationContainer,
           bullet: styles.paginationBullet,
-          activeBullet: styles.paginationActiveBullet,
+          activeBullet: [styles.paginationActiveBullet, {backgroundColor: colors.primary}],
         }}
         animation={CarouselMomentumAnimationType.Default}
         customAnimation={false}
@@ -130,12 +132,10 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 15,
     overflow: 'hidden',
-    backgroundColor: '#1a1a2e'
   },
   carouselImage: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#1a1a2e',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -148,7 +148,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(26, 26, 46, 0.8)',
     padding: 25,
   },
   carouselContent: {
@@ -157,14 +156,12 @@ const styles = StyleSheet.create({
   },
   categoryBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: '#e94560',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 2,
     marginBottom: 8,
   },
   categoryText: {
-    color: '#ffffff',
     fontSize: 10,
     fontWeight: 'bold',
     textTransform: 'uppercase',
@@ -172,12 +169,10 @@ const styles = StyleSheet.create({
   carouselTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#ffffff',
     marginBottom: 5,
   },
   carouselDescription: {
     fontSize: 14,
-    color: '#b0b0b0',
     lineHeight: 20,
     marginBottom: 8,
   },
@@ -187,7 +182,6 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 12,
-    color: '#e94560',
     marginLeft: 5,
     fontWeight: '500',
   },
@@ -209,7 +203,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#e94560',
     marginHorizontal: 4,
   },
 });
