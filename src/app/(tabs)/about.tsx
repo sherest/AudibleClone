@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useLanguage } from '../../providers/LanguageContext';
+import { useTheme } from '../../providers/ThemeProvider';
 import { ref, onValue } from 'firebase/database';
 import { realtimeDb } from '../../lib/firebase';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -30,6 +31,7 @@ interface MenuData {
 
 const AboutScreen = () => {
   const { selectedLanguage } = useLanguage();
+  const { colors } = useTheme();
   const { showJoinUs } = useJoinUs();
   const [aboutData, setAboutData] = useState<AboutData | null>(null);
   const [menuData, setMenuData] = useState<MenuData | null>(null);
@@ -69,19 +71,19 @@ const AboutScreen = () => {
   if (loading) {
     return (
       <Fragment>
-        <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
+        <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
           {/* Header Skeleton */}
-          <View style={styles.header}>
+          <View style={[styles.header, {backgroundColor: colors.background.secondary, borderBottomColor: colors.border.primary}]}>
             <View style={styles.headerLeft}>
-              <FontAwesome5 name="info-circle" size={22} color="#e94560" />
+              <FontAwesome5 name="info-circle" size={22} color={colors.primary} />
               <SkeletonPlaceholder width={150} height={22} borderRadius={4} style={{ marginLeft: 15 }} />
             </View>
           </View>
 
           {/* Content Skeleton */}
           <ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
-            <View style={styles.contentCard}>
+            <View style={[styles.contentCard, {backgroundColor: colors.background.secondary}]}>
               {[1, 2, 3, 4].map((index) => (
                 <View key={index} style={styles.paragraphContainer}>
                   <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
@@ -99,15 +101,15 @@ const AboutScreen = () => {
 
   return (
     <Fragment>
-        <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
+        <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, {backgroundColor: colors.background.secondary, borderBottomColor: colors.border.primary}]}>
         <View style={styles.headerLeft}>
-          <FontAwesome5 name="info-circle" size={22} color="#e94560" />
+          <FontAwesome5 name="info-circle" size={22} color={colors.primary} />
           {aboutData?.title ? (
-            <Text style={styles.headerTitle}>
+            <Text style={[styles.headerTitle, {color: colors.text.primary}]}>
               {getLocalizedContent(aboutData.title)}
             </Text>
           ) : (
@@ -118,11 +120,11 @@ const AboutScreen = () => {
 
       {/* Content */}
       <ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
-        <View style={styles.contentCard}>
+        <View style={[styles.contentCard, {backgroundColor: colors.background.secondary}]}>
           {aboutData?.data ? (
             aboutData.data.map((paragraph, index) => (
               <View key={index} style={styles.paragraphContainer}>
-                <Text style={styles.paragraphText}>
+                <Text style={[styles.paragraphText, {color: colors.text.primary}]}>
                   {getLocalizedContent(paragraph)}
                 </Text>
               </View>
@@ -148,16 +150,16 @@ const AboutScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f3460',
+    backgroundColor: '#0f3460', // This will be overridden by theme
   },
 
   header: {
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#1a1a2e', // This will be overridden by theme
     paddingTop: 20,
     paddingBottom: 20,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#16213e',
+    borderBottomColor: '#16213e', // This will be overridden by theme
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -170,17 +172,17 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#ffffff', // This will be overridden by theme
     marginLeft: 15,
   },
   joinUsButton: {
-    backgroundColor: '#e94560',
+    backgroundColor: '#e94560', // This will be overridden by theme
     borderRadius: 10,
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
   joinUsButtonText: {
-    color: '#ffffff',
+    color: '#ffffff', // This will be overridden by theme
     fontSize: 14,
     fontWeight: 'bold',
   },
@@ -189,7 +191,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   contentCard: {
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#1a1a2e', // This will be overridden by theme
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
   },
   paragraphText: {
     fontSize: 16,
-    color: '#ffffff',
+    color: '#ffffff', // This will be overridden by theme
     lineHeight: 24,
     textAlign: 'justify',
   },

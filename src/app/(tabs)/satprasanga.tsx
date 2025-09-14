@@ -6,6 +6,7 @@ import { getStorage, ref as storageRef, getDownloadURL } from 'firebase/storage'
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { usePlayer } from '../../providers/PlayerProvider';
 import { useLanguage } from '../../providers/LanguageContext';
+import { useTheme } from '../../providers/ThemeProvider';
 import SkeletonPlaceholder from '../../components/SkeletonPlaceholder';
 
 // Import fallback satprasanga icon
@@ -52,6 +53,7 @@ interface SatprasangaData {
 const SatprasangaScreen = () => {
   const { setAlbum } = usePlayer();
   const { selectedLanguage } = useLanguage();
+  const { colors } = useTheme();
   const [satprasangaData, setSatprasangaData] = useState<SatprasangaData[]>([]);
   const [basePath, setBasePath] = useState({ image: '', audio: '' });
   const [loading, setLoading] = useState(true);
@@ -124,35 +126,35 @@ const SatprasangaScreen = () => {
     const uploadedDate = formatDate(satprasanga.uploaded);
 
     return (
-      <View key={index} style={styles.satprasangaItem}>
+      <View key={index} style={[styles.satprasangaItem, {backgroundColor: colors.background.secondary}]}>
         {/* Left Side - Thumbnail */}
         <View style={styles.thumbnailContainer}>
-          <View style={styles.thumbnail}>
-            <Image source={satprasangaIcon} style={styles.satprasangaIcon} />
+          <View style={[styles.thumbnail, {backgroundColor: colors.primary}]}>
+            <Image source={satprasangaIcon} style={[styles.satprasangaIcon, {tintColor: colors.text.primary}]} />
           </View>
           {/* Song Count Badge */}
-          <View style={styles.songCountBadge}>
-            <Text style={styles.songCountText}>{songCount}</Text>
+          <View style={[styles.songCountBadge, {backgroundColor: colors.primary, borderColor: colors.background.secondary}]}>
+            <Text style={[styles.songCountText, {color: colors.text.primary}]}>{songCount}</Text>
           </View>
         </View>
 
         {/* Middle Section - Content */}
         <View style={styles.contentContainer}>
-          <Text style={styles.albumName} numberOfLines={1}>{albumName}</Text>
-          <Text style={styles.title} numberOfLines={1}>{title}</Text>
+          <Text style={[styles.albumName, {color: colors.text.primary}]} numberOfLines={1}>{albumName}</Text>
+          <Text style={[styles.title, {color: colors.text.secondary}]} numberOfLines={1}>{title}</Text>
           <View style={styles.dateContainer}>
-            <FontAwesome5 name="calendar-alt" size={10} color="#e94560" style={styles.dateIcon} />
-            <Text style={styles.year}>{uploadedDate}</Text>
+            <FontAwesome5 name="calendar-alt" size={10} color={colors.primary} style={styles.dateIcon} />
+            <Text style={[styles.year, {color: colors.primary}]}>{uploadedDate}</Text>
           </View>
         </View>
 
         {/* Right Side - Actions */}
         <View style={styles.actionContainer}>
           <TouchableOpacity 
-            style={styles.playButton}
+            style={[styles.playButton, {borderColor: colors.text.primary}]}
             onPress={() => addToPlayList(index)}
           >
-            <FontAwesome5 name="play" size={12} color="#ffffff" />
+            <FontAwesome5 name="play" size={12} color={colors.text.primary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -162,18 +164,18 @@ const SatprasangaScreen = () => {
   if (loading) {
     return (
       <Fragment>
-        <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
+        <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
           {/* Header Skeleton */}
-          <View style={styles.header}>
-            <FontAwesome5 name="book-open" size={22} color="#e94560" style={{ marginRight: 10 }} />
+          <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
+            <FontAwesome5 name="book-open" size={22} color={colors.primary} style={{ marginRight: 10 }} />
             <SkeletonPlaceholder width={100} height={22} borderRadius={4} />
           </View>
 
           {/* Content Skeleton */}
           <ScrollView style={styles.scrollContainer}>
             {[1, 2, 3, 4, 5].map((index) => (
-              <View key={index} style={styles.satprasangaItem}>
+              <View key={index} style={[styles.satprasangaItem, {backgroundColor: colors.background.secondary}]}>
                 <View style={styles.thumbnailContainer}>
                   <SkeletonPlaceholder width={60} height={60} borderRadius={8} />
                   <SkeletonPlaceholder width={20} height={20} borderRadius={10} style={{ position: 'absolute', top: -5, right: -5 }} />
@@ -199,12 +201,12 @@ const SatprasangaScreen = () => {
 
   return (
     <Fragment>
-      <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
+      <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
         {/* Header */}
-        <View style={styles.header}>
-          <FontAwesome5 name="book-open" size={22} color="#e94560" style={{ marginRight: 10 }} />
-          <Text style={styles.headerTitle}>Satprasanga</Text>
+        <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
+          <FontAwesome5 name="book-open" size={22} color={colors.primary} style={{ marginRight: 10 }} />
+          <Text style={[styles.headerTitle, {color: colors.text.primary}]}>Satprasanga</Text>
         </View>
 
         {/* Content */}
@@ -219,18 +221,18 @@ const SatprasangaScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f3460',
+    backgroundColor: '#0f3460', // This will be overridden by theme
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#1a1a2e', // This will be overridden by theme
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#ffffff', // This will be overridden by theme
   },
   scrollContainer: {
     flex: 1,
@@ -239,7 +241,7 @@ const styles = StyleSheet.create({
   satprasangaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#1a1a2e', // This will be overridden by theme
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
@@ -252,14 +254,14 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 8,
-    backgroundColor: '#e94560',
+    backgroundColor: '#e94560', // This will be overridden by theme
     justifyContent: 'center',
     alignItems: 'center',
   },
   satprasangaIcon: {
     width: 30,
     height: 30,
-    tintColor: '#ffffff',
+    tintColor: '#ffffff', // This will be overridden by theme
   },
   contentContainer: {
     flex: 1,
@@ -267,18 +269,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    color: '#8b8b8b',
+    color: '#8b8b8b', // This will be overridden by theme
     marginBottom: 2,
   },
   albumName: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#ffffff', // This will be overridden by theme
     marginBottom: 4,
   },
   year: {
     fontSize: 12,
-    color: '#e94560',
+    color: '#e94560', // This will be overridden by theme
     fontWeight: '600',
   },
   dateContainer: {
@@ -292,17 +294,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -5,
     right: -5,
-    backgroundColor: '#e94560',
+    backgroundColor: '#e94560', // This will be overridden by theme
     borderRadius: 25,
     minWidth: 25,
     height: 25,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#1a1a2e',
+    borderColor: '#1a1a2e', // This will be overridden by theme
   },
   songCountText: {
-    color: '#ffffff',
+    color: '#ffffff', // This will be overridden by theme
     fontSize: 12,
     fontWeight: 'bold',
   },
@@ -314,7 +316,7 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#ffffff',
+    borderColor: '#ffffff', // This will be overridden by theme
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,

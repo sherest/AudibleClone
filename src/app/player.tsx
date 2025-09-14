@@ -10,10 +10,12 @@ import SkeletonPlaceholder from '@/components/SkeletonPlaceholder';
 import { useAudioPlayerStatus } from 'expo-audio';
 import { usePlayer } from '@/providers/PlayerProvider';
 import { useLanguage } from '@/providers/LanguageContext';
+import { useTheme } from '@/providers/ThemeProvider';
 
 export default function PlayerScreen() {
   const { player, book, currentAlbum, playNextSong, playPreviousSong, clearPlayer } = usePlayer();
   const { selectedLanguage } = useLanguage();
+  const { colors } = useTheme();
   const playerStatus = useAudioPlayerStatus(player);
 
   // Debug logging
@@ -46,19 +48,19 @@ export default function PlayerScreen() {
   // If no book is loaded, show empty state
   if (!book) {
     return (
-      <SafeAreaView className='flex-1 px-5 py-2 gap-4 relative'>
+      <SafeAreaView style={{flex: 1, paddingHorizontal: 20, paddingVertical: 8, gap: 16, backgroundColor: colors.background.primary}}>
         <Pressable
           onPress={() => router.back()}
-          className='absolute top-[60px] left-4 bg-gray-800 rounded-full p-2 z-20'
+          style={{position: 'absolute', top: 60, left: 16, backgroundColor: colors.background.secondary, borderRadius: 20, padding: 8, zIndex: 20}}
         >
-          <Entypo name='chevron-down' size={24} color='white' />
+          <Entypo name='chevron-down' size={24} color={colors.text.primary} />
         </Pressable>
 
-        <View className='flex-1 justify-center items-center'>
-          <Text className='text-white text-xl font-semibold text-center mb-4'>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Text style={{color: colors.text.primary, fontSize: 20, fontWeight: '600', textAlign: 'center', marginBottom: 16}}>
             No Audio Playing
           </Text>
-          <Text className='text-gray-400 text-center'>
+          <Text style={{color: colors.text.secondary, textAlign: 'center'}}>
             Select an album from Kirtan or Satprasanga to start playing
           </Text>
         </View>
@@ -72,19 +74,19 @@ export default function PlayerScreen() {
   const isAlbumNameLoading = !currentAlbum?.albumName;
 
   return (
-    <SafeAreaView className='flex-1 px-5 py-2 gap-4 relative'>
+    <SafeAreaView style={{flex: 1, paddingHorizontal: 20, paddingVertical: 8, gap: 16, backgroundColor: colors.background.primary}}>
       <Pressable
         onPress={() => router.back()}
-        className='absolute top-[60px] left-4 bg-gray-800 rounded-full p-2 z-20'
+        style={{position: 'absolute', top: 60, left: 16, backgroundColor: colors.background.secondary, borderRadius: 20, padding: 8, zIndex: 20}}
       >
-        <Entypo name='chevron-down' size={24} color='white' />
+        <Entypo name='chevron-down' size={24} color={colors.text.primary} />
       </Pressable>
 
       {/* Album Name */}
       {isAlbumNameLoading ? (
         <SkeletonPlaceholder width="60%" height={24} borderRadius={4} style={{ alignSelf: 'center', marginBottom: 20 }} />
       ) : (
-        <Text className='text-white text-lg font-semibold text-center mb-5'>
+        <Text style={{color: colors.text.primary, fontSize: 18, fontWeight: '600', textAlign: 'center', marginBottom: 20}}>
           {getLocalizedContent(currentAlbum?.albumName, 'eng') || 'Album'}
         </Text>
       )}
@@ -95,16 +97,16 @@ export default function PlayerScreen() {
       ) : (
         <Image
           source={{ uri: book.thumbnail_url }}
-          className='w-[95%] aspect-square rounded-[30px] self-center'
+          style={{width: '95%', aspectRatio: 1, borderRadius: 30, alignSelf: 'center'}}
         />
       )}
 
-      <View className='gap-8 flex-1 justify-end'>
+      <View style={{gap: 32, flex: 1, justifyContent: 'flex-end'}}>
         {/* Title */}
         {isTitleLoading ? (
           <SkeletonPlaceholder width="80%" height={32} borderRadius={4} style={{ alignSelf: 'center' }} />
         ) : (
-          <Text className='text-white text-xl font-bold text-center'
+          <Text style={{color: colors.text.primary, fontSize: 20, fontWeight: 'bold', textAlign: 'center'}}
             numberOfLines={2}
             ellipsizeMode='tail'
           >
@@ -114,7 +116,7 @@ export default function PlayerScreen() {
 
         {/* Author */}
         {book?.author && (
-          <Text className='text-white text-lg text-center opacity-80'>
+          <Text style={{color: colors.text.primary, fontSize: 18, textAlign: 'center', opacity: 0.8}}>
             {getLocalizedContent(book.author, 'eng') || 'Unknown Artist'}
           </Text>
         )}
@@ -125,12 +127,12 @@ export default function PlayerScreen() {
           onSeek={(seconds: number) => player.seekTo(seconds)}
         />
 
-        <View className='flex-row items-center justify-between'>
+        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
           <TouchableOpacity onPress={playPreviousSong}>
-            <Ionicons name='play-skip-back' size={24} color='white' />
+            <Ionicons name='play-skip-back' size={24} color={colors.text.primary} />
           </TouchableOpacity>
           <TouchableOpacity onPress={playPreviousSong}>
-            <Ionicons name='play-back' size={24} color='white' />
+            <Ionicons name='play-back' size={24} color={colors.text.primary} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
@@ -140,23 +142,23 @@ export default function PlayerScreen() {
             <Ionicons
               name={playerStatus.playing ? 'pause' : 'play'}
               size={50}
-              color='white'
+              color={colors.text.primary}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={playNextSong}>
-            <Ionicons name='play-forward' size={24} color='white' />
+            <Ionicons name='play-forward' size={24} color={colors.text.primary} />
           </TouchableOpacity>
           <TouchableOpacity onPress={playNextSong}>
-            <Ionicons name='play-skip-forward' size={24} color='white' />
+            <Ionicons name='play-skip-forward' size={24} color={colors.text.primary} />
           </TouchableOpacity>
         </View>
 
         {/* Clear Player Button */}
         <TouchableOpacity
           onPress={clearPlayer}
-          className='mt-6 self-center bg-red-600 px-6 py-3 rounded-full'
+          style={{marginTop: 24, alignSelf: 'center', backgroundColor: colors.primary, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 20}}
         >
-          <Text className='text-white font-semibold'>Clear Player</Text>
+          <Text style={{color: colors.text.primary, fontWeight: '600'}}>Clear Player</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

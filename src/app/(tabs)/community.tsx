@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator, Modal } from 'react-native';
 import { useLanguage } from '../../providers/LanguageContext';
+import { useTheme } from '../../providers/ThemeProvider';
 import { useJoinUs } from '../../providers/JoinUsProvider';
 import { realtimeDb } from '../../lib/firebase';
 import { ref, onValue } from 'firebase/database';
@@ -69,6 +70,7 @@ interface CommunityData {
 
 const CommunityScreen = () => {
   const { selectedLanguage } = useLanguage();
+  const { colors } = useTheme();
   const { showJoinUs } = useJoinUs();
   const [activeTab, setActiveTab] = useState<'events' | 'messages' | 'biography'>('events');
   const [communityData, setCommunityData] = useState<CommunityData | null>(null);
@@ -118,20 +120,20 @@ const CommunityScreen = () => {
   if (loading) {
     return (
       <Fragment>
-        <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
+        <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
           {/* Header Skeleton */}
-          <View style={styles.header}>
-            <FontAwesome5 name="users" size={22} color="#e94560" />
+          <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
+            <FontAwesome5 name="users" size={22} color={colors.primary} />
             <SkeletonPlaceholder width={120} height={22} borderRadius={4} style={{ marginLeft: 10, flex: 1 }} />
             <SkeletonPlaceholder width={80} height={36} borderRadius={10} />
           </View>
 
           {/* Tab Navigation Skeleton */}
-          <View style={styles.tabContainer}>
+          <View style={[styles.tabContainer, {backgroundColor: colors.background.secondary}]}>
             {[1, 2, 3].map((index) => (
               <View key={index} style={styles.tabButton}>
-                <FontAwesome5 name="circle" size={16} color="#8b8b8b" />
+                <FontAwesome5 name="circle" size={16} color={colors.text.secondary} />
                 <SkeletonPlaceholder width={60} height={14} borderRadius={4} style={{ marginLeft: 8 }} />
               </View>
             ))}
@@ -141,9 +143,9 @@ const CommunityScreen = () => {
           <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
             <View style={styles.section}>
               {[1, 2, 3].map((index) => (
-                <View key={index} style={styles.eventCard}>
+                <View key={index} style={[styles.eventCard, {backgroundColor: colors.background.secondary}]}>
                   <View style={styles.eventHeader}>
-                    <FontAwesome5 name="calendar-alt" size={16} color="#e94560" />
+                    <FontAwesome5 name="calendar-alt" size={16} color={colors.primary} />
                     <SkeletonPlaceholder width={150} height={18} borderRadius={4} style={{ marginLeft: 10 }} />
                   </View>
                   <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
@@ -164,9 +166,9 @@ const CommunityScreen = () => {
       return (
         <View style={styles.section}>
           {[1, 2, 3].map((index) => (
-            <View key={index} style={styles.eventCard}>
+            <View key={index} style={[styles.eventCard, {backgroundColor: colors.background.secondary}]}>
               <View style={styles.eventHeader}>
-                <FontAwesome5 name="calendar-alt" size={16} color="#e94560" />
+                <FontAwesome5 name="calendar-alt" size={16} color={colors.primary} />
                 <SkeletonPlaceholder width={150} height={18} borderRadius={4} style={{ marginLeft: 10 }} />
               </View>
               <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
@@ -182,17 +184,17 @@ const CommunityScreen = () => {
     return (
       <View style={styles.section}>
         {communityData.events.data.map((event, index) => (
-          <View key={index} style={styles.eventCard}>
+          <View key={index} style={[styles.eventCard, {backgroundColor: colors.background.secondary}]}>
             <View style={styles.eventHeader}>
-              <FontAwesome5 name="calendar-alt" size={16} color="#e94560" />
-              <Text style={styles.eventTitle}>
+              <FontAwesome5 name="calendar-alt" size={16} color={colors.primary} />
+              <Text style={[styles.eventTitle, {color: colors.text.primary}]}>
                 {getLocalizedContent(event.title)}
               </Text>
             </View>
-            <Text style={styles.eventDescription}>
+            <Text style={[styles.eventDescription, {color: colors.text.primary}]}>
               {getLocalizedContent(event.description)}
             </Text>
-            <Text style={styles.eventDate}>
+            <Text style={[styles.eventDate, {color: colors.primary}]}>
               {getLocalizedContent(event.when)}
             </Text>
           </View>
@@ -206,9 +208,9 @@ const CommunityScreen = () => {
       return (
         <View style={styles.section}>
           {[1, 2, 3].map((index) => (
-            <View key={index} style={styles.messageCard}>
+            <View key={index} style={[styles.messageCard, {backgroundColor: colors.background.secondary}]}>
               <View style={styles.messageHeader}>
-                <FontAwesome5 name="user" size={16} color="#e94560" />
+                <FontAwesome5 name="user" size={16} color={colors.primary} />
                 <SkeletonPlaceholder width={100} height={16} borderRadius={4} style={{ marginLeft: 10 }} />
               </View>
               <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
@@ -224,13 +226,13 @@ const CommunityScreen = () => {
     return (
       <View style={styles.section}>
         {communityData.messages.data.map((message, index) => (
-          <View key={index} style={styles.messageCard}>
+          <View key={index} style={[styles.messageCard, {backgroundColor: colors.background.secondary}]}>
             <View style={styles.messageHeader}>
-              <FontAwesome5 name="user" size={16} color="#e94560" />
-              <Text style={styles.messageName}>{message.name}</Text>
+              <FontAwesome5 name="user" size={16} color={colors.primary} />
+              <Text style={[styles.messageName, {color: colors.text.primary}]}>{message.name}</Text>
             </View>
-            <Text style={styles.messageText}>{message.message}</Text>
-            <Text style={styles.messageTime}>{message.date} {message.time}</Text>
+            <Text style={[styles.messageText, {color: colors.text.primary}]}>{message.message}</Text>
+            <Text style={[styles.messageTime, {color: colors.text.secondary}]}>{message.date} {message.time}</Text>
           </View>
         ))}
       </View>
@@ -241,7 +243,7 @@ const CommunityScreen = () => {
     if (!communityData?.biography?.data) {
       return (
         <View style={styles.section}>
-          <View style={styles.biographyCard}>
+          <View style={[styles.biographyCard, {backgroundColor: colors.background.secondary}]}>
             {[1, 2, 3, 4].map((index) => (
               <View key={index} style={{ marginBottom: 16 }}>
                 <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
@@ -257,9 +259,9 @@ const CommunityScreen = () => {
     
     return (
       <View style={styles.section}>
-        <View style={styles.biographyCard}>
+        <View style={[styles.biographyCard, {backgroundColor: colors.background.secondary}]}>
           {communityData.biography.data.map((paragraph, index) => (
-            <Text key={index} style={styles.biographyText}>
+            <Text key={index} style={[styles.biographyText, {color: colors.text.primary}]}>
               {getLocalizedContent(paragraph)}
             </Text>
           ))}
@@ -283,21 +285,21 @@ const CommunityScreen = () => {
 
   return (
     <Fragment>
-      <SafeAreaView style={{flex: 0, backgroundColor: '#1a1a2e'}}></SafeAreaView>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
+      <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
         {/* Header */}
-        <View style={styles.header}>
-          <FontAwesome5 name="users" size={22} color="#e94560" />
+        <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
+          <FontAwesome5 name="users" size={22} color={colors.primary} />
           {menuData?.community ? (
-            <Text style={styles.headerTitle}>
+            <Text style={[styles.headerTitle, {color: colors.text.primary}]}>
               {getLocalizedContent(menuData.community)}
             </Text>
           ) : (
             <SkeletonPlaceholder width={120} height={22} borderRadius={4} style={{ marginLeft: 10, flex: 1 }} />
           )}
           {menuData?.joinUs ? (
-            <TouchableOpacity style={styles.joinUsButton} onPress={showJoinUs}>
-              <Text style={styles.joinUsButtonText}>
+            <TouchableOpacity style={[styles.joinUsButton, {backgroundColor: colors.primary}]} onPress={showJoinUs}>
+              <Text style={[styles.joinUsButtonText, {color: colors.text.primary}]}>
                 {getLocalizedContent(menuData.joinUs)}
               </Text>
             </TouchableOpacity>
@@ -307,25 +309,25 @@ const CommunityScreen = () => {
         </View>
 
         {/* Tab Navigation */}
-        <View style={styles.tabContainer}>
+        <View style={[styles.tabContainer, {backgroundColor: colors.background.secondary}]}>
           {communityData?.tabs ? (
             tabs.map((tab) => (
               <TouchableOpacity
                 key={tab.key}
                 style={[
                   styles.tabButton,
-                  activeTab === tab.key && styles.activeTabButton
+                  activeTab === tab.key && [styles.activeTabButton, {backgroundColor: colors.background.tertiary}]
                 ]}
                 onPress={() => setActiveTab(tab.key as 'events' | 'messages' | 'biography')}
               >
                 <FontAwesome5 
                   name={tab.icon} 
                   size={16} 
-                  color={activeTab === tab.key ? '#e94560' : '#8b8b8b'} 
+                  color={activeTab === tab.key ? colors.primary : colors.text.secondary} 
                 />
                 <Text style={[
                   styles.tabText,
-                  activeTab === tab.key && styles.activeTabText
+                  {color: activeTab === tab.key ? colors.primary : colors.text.secondary}
                 ]}>
                   {getLocalizedContent(communityData.tabs[tab.key as keyof typeof communityData.tabs])}
                 </Text>
@@ -335,7 +337,7 @@ const CommunityScreen = () => {
             // Show skeleton placeholders for tabs
             tabs.map((tab) => (
               <View key={tab.key} style={styles.tabButton}>
-                <FontAwesome5 name={tab.icon} size={16} color="#8b8b8b" />
+                <FontAwesome5 name={tab.icon} size={16} color={colors.text.secondary} />
                 <SkeletonPlaceholder width={60} height={14} borderRadius={4} style={{ marginLeft: 8 }} />
               </View>
             ))
@@ -350,10 +352,10 @@ const CommunityScreen = () => {
         {/* Floating Action Button - Only visible in Messages tab */}
         {activeTab === 'messages' && communityData?.messages?.announcement && (
           <TouchableOpacity 
-            style={styles.fab}
+            style={[styles.fab, {backgroundColor: colors.primary}]}
             onPress={() => setShowAnnouncementModal(true)}
           >
-            <FontAwesome5 name="plus" size={20} color="#ffffff" />
+            <FontAwesome5 name="plus" size={20} color={colors.text.primary} />
           </TouchableOpacity>
         )}
 
@@ -365,11 +367,11 @@ const CommunityScreen = () => {
           onRequestClose={() => setShowAnnouncementModal(false)}
         >
           <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <View style={styles.modalHeader}>
-                <FontAwesome5 name="info-circle" size={24} color="#e94560" />
+            <View style={[styles.modalContent, {backgroundColor: colors.background.secondary}]}>
+              <View style={[styles.modalHeader, {backgroundColor: colors.background.secondary, borderBottomColor: colors.border.primary}]}>
+                <FontAwesome5 name="info-circle" size={24} color={colors.primary} />
                 {communityData?.messages?.announcement?.title ? (
-                  <Text style={styles.modalTitle}>
+                  <Text style={[styles.modalTitle, {color: colors.text.primary}]}>
                     {getLocalizedContent(communityData.messages.announcement.title)}
                   </Text>
                 ) : (
@@ -379,12 +381,12 @@ const CommunityScreen = () => {
                   style={styles.closeButton}
                   onPress={() => setShowAnnouncementModal(false)}
                 >
-                  <FontAwesome5 name="times" size={20} color="#8b8b8b" />
+                  <FontAwesome5 name="times" size={20} color={colors.text.secondary} />
                 </TouchableOpacity>
               </View>
               <View style={styles.modalBody}>
                 {communityData?.messages?.announcement ? (
-                  <Text style={styles.modalMessage}>
+                  <Text style={[styles.modalMessage, {color: colors.text.primary}]}>
                     {getLocalizedContent({
                       ban: communityData.messages.announcement.ban,
                       eng: communityData.messages.announcement.eng,
@@ -402,15 +404,15 @@ const CommunityScreen = () => {
               </View>
               {communityData?.messages?.announcement?.button ? (
                 <TouchableOpacity 
-                  style={styles.modalButton}
+                  style={[styles.modalButton, {backgroundColor: colors.primary}]}
                   onPress={() => setShowAnnouncementModal(false)}
                 >
-                  <Text style={styles.modalButtonText}>
+                  <Text style={[styles.modalButtonText, {color: colors.text.primary}]}>
                     {getLocalizedContent(communityData.messages.announcement.button)}
                   </Text>
                 </TouchableOpacity>
               ) : (
-                <View style={styles.modalButton}>
+                <View style={[styles.modalButton, {backgroundColor: colors.primary}]}>
                   <SkeletonPlaceholder width={100} height={20} borderRadius={4} />
                 </View>
               )}

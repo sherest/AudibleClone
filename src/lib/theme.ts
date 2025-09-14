@@ -1,43 +1,43 @@
 export const theme = {
   colors: {
-    // Primary accent color (matching screenshot theme)
-    primary: '#c50303', // Header/tab background color
-    
-    // Background colors (matching screenshot)
+    // Primary accent color (warm orange from image)
+    primary: "#ff6b35", // Orange accent color for buttons and highlights
+
+    // Background colors (warm orange/brown palette from image)
     background: {
-      primary: '#b90101',    // Screen background color
-      secondary: '#c50303',  // Header, tab background color
-      tertiary: '#bf1f1f',   // Card background color
+      primary: "#d2691e", // Main screen background (saddle brown)
+      secondary: "#ff8c00", // Header, tab background (dark orange)
+      tertiary: "#cd853f", // Card background (peru brown)
     },
-    
-    // Text colors (matching screenshot)
+
+    // Text colors (white text on dark backgrounds)
     text: {
-      primary: '#ffffff',    // Main text color (white)
-      secondary: '#ffffff',  // Secondary text (also white for consistency)
-      accent: '#ffffff',     // Accent text (white)
+      primary: "#ffffff", // Main text color (white)
+      secondary: "#ffffff", // Secondary text (also white for consistency)
+      accent: "#ffffff", // Accent text (white)
     },
-    
+
     // Interactive elements
     interactive: {
-      active: '#c50303',     // Active states (header color)
-      inactive: '#bf1f1f',   // Inactive states (card color)
-      hover: '#a00000',      // Hover states (darker red)
+      active: "#ff6b35", // Active states (orange accent)
+      inactive: "#cd853f", // Inactive states (card color)
+      hover: "#ff8c00", // Hover states (darker orange)
     },
-    
-    // Borders (matching screenshot)
+
+    // Borders (warm orange tones)
     border: {
-      primary: '#ffafa7',    // Card border color (1px solid)
-      accent: '#c50303',     // Accent border (header color)
+      primary: "#ffa500", // Card border color (orange)
+      accent: "#ff6b35", // Accent border (primary orange)
     },
-    
+
     // Status colors
     status: {
-      success: '#16a34a',    // Green-600
-      warning: '#d97706',    // Amber-600
-      error: '#dc2626',      // Red-600
-    }
+      success: "#16a34a", // Green-600
+      warning: "#d97706", // Amber-600
+      error: "#dc2626", // Red-600
+    },
   },
-  
+
   // Spacing and sizing
   spacing: {
     xs: 4,
@@ -47,29 +47,29 @@ export const theme = {
     xl: 24,
     xxl: 32,
   },
-  
+
   // Border radius
   borderRadius: {
     sm: 8,
     md: 12,
     lg: 15,
     xl: 20,
-  }
+  },
 };
 
 // Helper function to get theme colors
 export const getThemeColor = (path: string) => {
-  const keys = path.split('.');
+  const keys = path.split(".");
   let value: any = theme;
-  
+
   for (const key of keys) {
     value = value[key];
     if (value === undefined) {
       console.warn(`Theme color not found: ${path}`);
-      return '#c50303'; // fallback to primary
+      return "#c50303"; // fallback to primary
     }
   }
-  
+
   return value;
 };
 

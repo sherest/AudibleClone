@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useLanguage } from '../providers/LanguageContext';
+import { useTheme } from '../providers/ThemeProvider';
 import { realtimeDb } from '../lib/firebase';
 import { ref, onValue } from 'firebase/database';
 
@@ -20,6 +21,7 @@ interface SettingsModalProps {
 
 const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
   const { selectedLanguage, setSelectedLanguage } = useLanguage();
+  const { colors } = useTheme();
   const [languages, setLanguages] = useState<Language[]>([]);
 
 
@@ -182,7 +184,7 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
     <TouchableOpacity 
       style={[
         styles.languageItem,
-        selectedLanguage?.code === item.code && styles.selectedLanguageItem
+        selectedLanguage?.code === item.code && [styles.selectedLanguageItem, {backgroundColor: colors.primary}]
       ]}
       onPress={() => {
         setSelectedLanguage(item);
@@ -191,12 +193,13 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
     >
       <Text style={[
         styles.languageText,
+        {color: colors.text.primary},
         selectedLanguage?.code === item.code && styles.selectedLanguageText
       ]}>
         {item.name}
       </Text>
       {selectedLanguage?.code === item.code && (
-        <Text style={styles.checkmark}>✓</Text>
+        <Text style={[styles.checkmark, {color: colors.text.primary}]}>✓</Text>
       )}
     </TouchableOpacity>
   );
@@ -209,11 +212,11 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
       onRequestClose={onClose}
     >
       <BlurView intensity={20} style={styles.overlay}>
-        <View style={styles.modalContainer}>
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Select Language</Text>
+        <View style={[styles.modalContainer, {backgroundColor: colors.background.secondary, borderColor: colors.border.primary}]}>
+          <View style={[styles.header, {backgroundColor: colors.background.secondary, borderBottomColor: colors.border.primary}]}>
+            <Text style={[styles.headerTitle, {color: colors.text.primary}]}>Select Language</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>✕</Text>
+              <Text style={[styles.closeButtonText, {color: colors.text.primary}]}>✕</Text>
             </TouchableOpacity>
           </View>
           
@@ -303,10 +306,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectedLanguageItem: {
-    backgroundColor: '#e94560',
+    backgroundColor: '#e94560', // This will be overridden by theme
   },
   languageText: {
-    color: '#FFFFFF',
+    color: '#FFFFFF', // This will be overridden by theme
     fontSize: 16,
   },
   selectedLanguageText: {
