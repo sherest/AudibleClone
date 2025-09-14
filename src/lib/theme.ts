@@ -1,13 +1,13 @@
 export const theme = {
   colors: {
-    // Primary accent color (warm orange from image)
-    primary: "#ff6b35", // Orange accent color for buttons and highlights
+    // Primary accent color (light cream from reference image)
+    primary: "#f7da80", // Light cream color for buttons and highlights
 
-    // Background colors (warm orange/brown palette from image)
+    // Background colors (corrected based on reference image)
     background: {
-      primary: "#d2691e", // Main screen background (saddle brown)
-      secondary: "#ff8c00", // Header, tab background (dark orange)
-      tertiary: "#cd853f", // Card background (peru brown)
+      primary: "#d97706", // Main screen background (warm orange)
+      secondary: "#b3530a", // Card/header background (darker orange/brown)
+      tertiary: "#f7da80", // Subtitle/button background (light cream)
     },
 
     // Text colors (white text on dark backgrounds)
@@ -19,15 +19,15 @@ export const theme = {
 
     // Interactive elements
     interactive: {
-      active: "#ff6b35", // Active states (orange accent)
-      inactive: "#cd853f", // Inactive states (card color)
-      hover: "#ff8c00", // Hover states (darker orange)
+      active: "#f7da80", // Active states (light cream)
+      inactive: "#b3530a", // Inactive states (darker orange)
+      hover: "#d97706", // Hover states (main background color)
     },
 
     // Borders (warm orange tones)
     border: {
-      primary: "#ffa500", // Card border color (orange)
-      accent: "#ff6b35", // Accent border (primary orange)
+      primary: "#f7da80", // Card border color (light cream)
+      accent: "#f7da80", // Accent border (light cream)
     },
 
     // Status colors

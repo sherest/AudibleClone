@@ -199,7 +199,7 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
         {item.name}
       </Text>
       {selectedLanguage?.code === item.code && (
-        <Text style={[styles.checkmark, {color: colors.text.primary}]}>✓</Text>
+        <Text style={[styles.checkmark, {color: colors.background.secondary}]}>✓</Text>
       )}
     </TouchableOpacity>
   );

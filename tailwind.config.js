@@ -5,13 +5,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Primary accent color (warm orange from image)
-        primary: "#ff6b35",
+        // Primary accent color (light cream from reference image)
+        primary: "#f7da80",
 
-        // Background colors (warm orange/brown palette from image)
-        "bg-primary": "#d2691e",
-        "bg-secondary": "#ff8c00",
-        "bg-tertiary": "#cd853f",
+        // Background colors (corrected based on reference image)
+        "bg-primary": "#d97706",
+        "bg-secondary": "#b3530a",
+        "bg-tertiary": "#f7da80",
 
         // Text colors (white text on dark backgrounds)
         "text-primary": "#ffffff",
@@ -19,13 +19,13 @@ module.exports = {
         "text-accent": "#ffffff",
 
         // Interactive colors
-        "interactive-active": "#ff6b35",
-        "interactive-inactive": "#cd853f",
-        "interactive-hover": "#ff8c00",
+        "interactive-active": "#f7da80",
+        "interactive-inactive": "#b3530a",
+        "interactive-hover": "#d97706",
 
-        // Border colors (warm orange tones)
-        "border-primary": "#ffa500",
-        "border-accent": "#ff6b35",
+        // Border colors (light cream tones)
+        "border-primary": "#f7da80",
+        "border-accent": "#f7da80",
 
         // Status colors
         "status-success": "#16a34a",

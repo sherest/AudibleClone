@@ -139,11 +139,11 @@ const Kirtan = () => {
         {/* Left Side - Thumbnail */}
         <View style={styles.thumbnailContainer}>
           <View style={[styles.thumbnail, {backgroundColor: colors.primary}]}>
-            <FontAwesome5 name="music" size={24} color={colors.text.primary} />
+            <FontAwesome5 name="music" size={24} color={colors.background.secondary} />
           </View>
           {/* Song Count Badge */}
           <View style={[styles.songCountBadge, {backgroundColor: colors.primary, borderColor: colors.background.secondary}]}>
-            <Text style={[styles.songCountText, {color: colors.text.primary}]}>{songCount}</Text>
+            <Text style={[styles.songCountText, {color: colors.background.secondary}]}>{songCount}</Text>
           </View>
         </View>
 

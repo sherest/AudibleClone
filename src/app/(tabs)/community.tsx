@@ -299,7 +299,7 @@ const CommunityScreen = () => {
           )}
           {menuData?.joinUs ? (
             <TouchableOpacity style={[styles.joinUsButton, {backgroundColor: colors.primary}]} onPress={showJoinUs}>
-              <Text style={[styles.joinUsButtonText, {color: colors.text.primary}]}>
+              <Text style={[styles.joinUsButtonText, {color: colors.background.secondary}]}>
                 {getLocalizedContent(menuData.joinUs)}
               </Text>
             </TouchableOpacity>
@@ -407,7 +407,7 @@ const CommunityScreen = () => {
                   style={[styles.modalButton, {backgroundColor: colors.primary}]}
                   onPress={() => setShowAnnouncementModal(false)}
                 >
-                  <Text style={[styles.modalButtonText, {color: colors.text.primary}]}>
+                  <Text style={[styles.modalButtonText, {color: colors.background.secondary}]}>
                     {getLocalizedContent(communityData.messages.announcement.button)}
                   </Text>
                 </TouchableOpacity>

@@ -51,14 +51,14 @@ const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) 
       <View style={[styles.carouselOverlay, {backgroundColor: `rgba(${colors.background.secondary.replace('#', '')}, 0.8)`}]}>
         <View style={styles.carouselContent}>
           <View style={[styles.categoryBadge, {backgroundColor: colors.primary}]}>
-            <Text style={[styles.categoryText, {color: colors.text.primary}]}>
+            <Text style={[styles.categoryText, {color: colors.background.secondary}]}>
               {item.album_name.eng}
             </Text>
           </View>
           <Text style={[styles.carouselTitle, {color: colors.text.primary}]}>
             {item.title.eng}
           </Text>
-          <Text style={[styles.carouselDescription, {color: colors.text.secondary}]} numberOfLines={2}>
+          <Text style={[styles.carouselDescription, {color: colors.text.primary}]} numberOfLines={2}>
             {item.description.eng}
           </Text>
           <View style={styles.dateContainer}>

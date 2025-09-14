@@ -158,7 +158,7 @@ export default function PlayerScreen() {
           onPress={clearPlayer}
           style={{marginTop: 24, alignSelf: 'center', backgroundColor: colors.primary, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 20}}
         >
-          <Text style={{color: colors.text.primary, fontWeight: '600'}}>Clear Player</Text>
+          <Text style={{color: colors.background.secondary, fontWeight: '600'}}>Clear Player</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

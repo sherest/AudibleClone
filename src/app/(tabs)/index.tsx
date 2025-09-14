@@ -114,7 +114,7 @@ const HomeScreen = () => {
                                         style={[styles.joinUsButton, {backgroundColor: colors.primary}]}
                                         onPress={showJoinUs}
                                     >
-                                        <Text style={[styles.joinUsButtonText, {color: colors.text.primary}]}>
+                                        <Text style={[styles.joinUsButtonText, {color: colors.background.secondary}]}>
                                             {menuData.joinUs[selectedLanguage?.code || 'eng']}
                                         </Text>
                                     </TouchableOpacity>
