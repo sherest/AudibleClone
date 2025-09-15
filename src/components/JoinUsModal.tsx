@@ -170,7 +170,7 @@ const JoinUsModal = () => {
                 {getLocalizedText(joinUsData?.fields?.name)} *
               </Text>
               <TextInput
-                style={[styles.textInput, {backgroundColor: colors.background.tertiary, color: colors.text.primary, borderColor: colors.border.primary}]}
+                style={[styles.textInput, {backgroundColor: colors.background.primary, color: colors.text.primary, borderColor: colors.border.primary}]}
                 value={formData.name}
                 onChangeText={(text) => setFormData({...formData, name: text})}
                 placeholder="Enter your name"
@@ -184,7 +184,7 @@ const JoinUsModal = () => {
                 {getLocalizedText(joinUsData?.fields?.email)} *
               </Text>
               <TextInput
-                style={[styles.textInput, {backgroundColor: colors.background.tertiary, color: colors.text.primary, borderColor: colors.border.primary}]}
+                style={[styles.textInput, {backgroundColor: colors.background.primary, color: colors.text.primary, borderColor: colors.border.primary}]}
                 value={formData.email}
                 onChangeText={(text) => setFormData({...formData, email: text})}
                 placeholder="Enter your email"
@@ -199,7 +199,7 @@ const JoinUsModal = () => {
                 {getLocalizedText(joinUsData?.fields?.mobile)}
               </Text>
               <TextInput
-                style={[styles.textInput, {backgroundColor: colors.background.tertiary, color: colors.text.primary, borderColor: colors.border.primary}]}
+                style={[styles.textInput, {backgroundColor: colors.background.primary, color: colors.text.primary, borderColor: colors.border.primary}]}
                 value={formData.mobile}
                 onChangeText={(text) => setFormData({...formData, mobile: text})}
                 placeholder="Enter your mobile number"
@@ -214,7 +214,7 @@ const JoinUsModal = () => {
                 {getLocalizedText(joinUsData?.fields?.city)}
               </Text>
               <TextInput
-                style={[styles.textInput, {backgroundColor: colors.background.tertiary, color: colors.text.primary, borderColor: colors.border.primary}]}
+                style={[styles.textInput, {backgroundColor: colors.background.primary, color: colors.text.primary, borderColor: colors.border.primary}]}
                 value={formData.city}
                 onChangeText={(text) => setFormData({...formData, city: text})}
                 placeholder="Enter your city"
@@ -228,7 +228,7 @@ const JoinUsModal = () => {
                 {getLocalizedText(joinUsData?.fields?.country)}
               </Text>
               <TextInput
-                style={[styles.textInput, {backgroundColor: colors.background.tertiary, color: colors.text.primary, borderColor: colors.border.primary}]}
+                style={[styles.textInput, {backgroundColor: colors.background.primary, color: colors.text.primary, borderColor: colors.border.primary}]}
                 value={formData.country}
                 onChangeText={(text) => setFormData({...formData, country: text})}
                 placeholder="Enter your country"
@@ -242,7 +242,7 @@ const JoinUsModal = () => {
                 {getLocalizedText(joinUsData?.fields?.comments)}
               </Text>
               <TextInput
-                style={[styles.textArea, {backgroundColor: colors.background.tertiary, color: colors.text.primary, borderColor: colors.border.primary}]}
+                style={[styles.textArea, {backgroundColor: colors.background.primary, color: colors.text.primary, borderColor: colors.border.primary}]}
                 value={formData.comments}
                 onChangeText={(text) => setFormData({...formData, comments: text})}
                 placeholder="Enter your comments"
@@ -259,7 +259,7 @@ const JoinUsModal = () => {
               onPress={handleSubmit}
               disabled={loading}
             >
-              <Text style={[styles.submitButtonText, {color: colors.text.primary}]}>
+              <Text style={[styles.submitButtonText, {color: colors.background.secondary}]}>
                 {loading ? 'Submitting...' : getLocalizedText(menuData?.joinUs)}
               </Text>
             </TouchableOpacity>
@@ -273,6 +273,7 @@ const JoinUsModal = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingBottom: 90,
   },
   header: {
     flexDirection: 'row',

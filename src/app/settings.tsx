@@ -212,7 +212,7 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
       onRequestClose={onClose}
     >
       <BlurView intensity={20} style={styles.overlay}>
-        <View style={[styles.modalContainer, {backgroundColor: colors.background.secondary, borderColor: colors.border.primary}]}>
+        <View style={[styles.modalContainer, {backgroundColor: colors.background.primary, borderColor: colors.border.primary}]}>
           <View style={[styles.header, {backgroundColor: colors.background.secondary, borderBottomColor: colors.border.primary}]}>
             <Text style={[styles.headerTitle, {color: colors.text.primary}]}>Select Language</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -314,6 +314,7 @@ const styles = StyleSheet.create({
   },
   selectedLanguageText: {
     fontWeight: 'bold',
+    color: '#b3530a',
   },
   checkmark: {
     color: '#FFFFFF',

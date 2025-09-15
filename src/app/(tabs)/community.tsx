@@ -323,11 +323,11 @@ const CommunityScreen = () => {
                 <FontAwesome5 
                   name={tab.icon} 
                   size={16} 
-                  color={activeTab === tab.key ? colors.primary : colors.text.secondary} 
+                  color={activeTab === tab.key ? colors.background.secondary : colors.text.secondary} 
                 />
                 <Text style={[
                   styles.tabText,
-                  {color: activeTab === tab.key ? colors.primary : colors.text.secondary}
+                  {color: activeTab === tab.key ? colors.background.secondary : colors.text.secondary}
                 ]}>
                   {getLocalizedContent(communityData.tabs[tab.key as keyof typeof communityData.tabs])}
                 </Text>
@@ -355,7 +355,7 @@ const CommunityScreen = () => {
             style={[styles.fab, {backgroundColor: colors.primary}]}
             onPress={() => setShowAnnouncementModal(true)}
           >
-            <FontAwesome5 name="plus" size={20} color={colors.text.primary} />
+            <FontAwesome5 name="plus" size={20} color={colors.background.secondary} />
           </TouchableOpacity>
         )}
 
