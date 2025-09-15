@@ -59,7 +59,7 @@ const HomeScreen = () => {
     }, [selectedLanguage]);
     return (
         <Fragment>
-            <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
+            <SafeAreaView style={{flex: 0, backgroundColor: colors.background.primary}}></SafeAreaView>
             <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
                 {/* Header with Greeting */}
                 <View style={[styles.header, {backgroundColor: 'transparent'}]}>

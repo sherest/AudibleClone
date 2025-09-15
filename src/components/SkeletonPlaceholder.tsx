@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
 import { useEffect, useRef } from 'react';
+import { useTheme } from '../providers/ThemeProvider';
 
 interface SkeletonPlaceholderProps {
   width?: number | string;
@@ -15,6 +16,7 @@ const SkeletonPlaceholder: React.FC<SkeletonPlaceholderProps> = ({
   borderRadius = 4,
   style
 }) => {
+  const { colors } = useTheme();
   const animatedValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -51,6 +53,7 @@ const SkeletonPlaceholder: React.FC<SkeletonPlaceholderProps> = ({
           height,
           borderRadius,
           opacity,
+          backgroundColor: colors.primary,
         },
         style,
       ]}
@@ -60,7 +63,7 @@ const SkeletonPlaceholder: React.FC<SkeletonPlaceholderProps> = ({
 
 const styles = StyleSheet.create({
   skeleton: {
-    backgroundColor: '#2a2a3e',
+    // Background color is now set dynamically using theme colors
   },
 });
 
