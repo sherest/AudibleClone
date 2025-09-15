@@ -7,15 +7,17 @@ import {useLanguage} from '../../providers/LanguageContext';
 import {useTheme} from '../../providers/ThemeProvider';
 import {realtimeDb} from '../../lib/firebase';
 import {ref, onValue} from 'firebase/database';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 
 const fontSize = {
     small: 10,
     medium: 12
 }
 
-export default function TabsLayout() {
-    const {selectedLanguage} = useLanguage();
-    const {colors} = useTheme();
+// Custom Tab Bar Component
+function CustomTabBar({ state, descriptors, navigation }: any) {
+    const { colors } = useTheme();
+    const { selectedLanguage } = useLanguage();
     const [menuData, setMenuData] = useState<any>({});
 
     useEffect(() => {
@@ -28,98 +30,129 @@ export default function TabsLayout() {
                 }
             });
         };
-
         fetchMenuData();
     }, [selectedLanguage]);
 
+    const getTabTitle = (routeName: string) => {
+        switch (routeName) {
+            case 'about':
+                return menuData?.about?.[selectedLanguage?.code || 'eng'] || 'About';
+            case 'satprasanga':
+                return menuData?.satprasanga?.[selectedLanguage?.code || 'eng'] || 'Satprasanga';
+            case 'index':
+                return menuData?.home?.[selectedLanguage?.code || 'eng'] || 'Home';
+            case 'kirtan':
+                return menuData?.kirtan?.[selectedLanguage?.code || 'eng'] || 'Kirtan';
+            case 'community':
+                return menuData?.community?.[selectedLanguage?.code || 'eng'] || 'Community';
+            default:
+                return routeName;
+        }
+    };
+
+    const getTabIcon = (routeName: string, color: string, size: number) => {
+        switch (routeName) {
+            case 'about':
+                return <FontAwesome5 name='info-circle' size={size} color={color}/>;
+            case 'satprasanga':
+                return <FontAwesome5 name='book-open' size={size} color={color}/>;
+            case 'index':
+                return <FontAwesome5 name='praying-hands' size={size} color={color}/>;
+            case 'kirtan':
+                return <MaterialIcons name='music-note' size={size} color={color}/>;
+            case 'community':
+                return <FontAwesome5 name='users' size={size} color={color}/>;
+            default:
+                return null;
+        }
+    };
+
+    return (
+        <View style={[styles.tabBar, { backgroundColor: colors.background.secondary }]}>
+            {state.routes.map((route: any, index: number) => {
+                const { options } = descriptors[route.key];
+                const isFocused = state.index === index;
+
+                const onPress = () => {
+                    const event = navigation.emit({
+                        type: 'tabPress',
+                        target: route.key,
+                        canPreventDefault: true,
+                    });
+
+                    if (!isFocused && !event.defaultPrevented) {
+                        navigation.navigate(route.name);
+                    }
+                };
+
+                const tabTitle = getTabTitle(route.name);
+                const iconColor = isFocused ? colors.primary : colors.text.primary;
+                const textColor = isFocused ? colors.primary : colors.text.primary;
+
+                return (
+                    <TouchableOpacity
+                        key={route.key}
+                        onPress={onPress}
+                        style={styles.tabItem}
+                    >
+                        {getTabIcon(route.name, iconColor, 20)}
+                        <Text style={[
+                            styles.tabLabel,
+                            { color: textColor },
+                            { fontSize: selectedLanguage?.code === 'eng' ? fontSize.small : fontSize.medium }
+                        ]}>
+                            {tabTitle}
+                        </Text>
+                    </TouchableOpacity>
+                );
+            })}
+        </View>
+    );
+}
+
+export default function TabsLayout() {
     return (
         <Tabs
             tabBar={(props) => (
                 <>
                     <FloatingPlayer/>
-                    <BottomTabBar {...props} />
+                    <CustomTabBar {...props} />
                 </>
             )}
             screenOptions={{
-                tabBarStyle: {
-                    backgroundColor: colors.background.secondary,
-                    borderTopColor: colors.border.primary,
-                    paddingTop: 10,
-                    paddingBottom: 10,
-                    height: 90,
-                },
-                tabBarActiveTintColor: colors.text.primary,
-                tabBarInactiveTintColor: colors.text.secondary,
-                headerStyle: {
-                    backgroundColor: colors.background.secondary,
-                },
-                headerTintColor: colors.text.primary,
                 headerShown: false,
             }}
         >
-            <Tabs.Screen
-                name='about'
-                options={{
-                    title: menuData?.about?.[selectedLanguage?.code || 'eng'] || 'About',
-                    tabBarIcon: ({color, size}) => (
-                        <FontAwesome5 name='info-circle' size={size} color={color}/>
-                    ),
-                    tabBarLabelStyle: {
-                        fontSize: selectedLanguage?.code === 'eng' ? fontSize.small : fontSize.medium,
-                        fontWeight: '600',
-                    },
-                }}/>
-            <Tabs.Screen
-                name='satprasanga'
-                options={{
-                    title: menuData?.satprasanga?.[selectedLanguage?.code || 'eng'] || 'Satprasanga',
-                    tabBarIcon: ({color, size}) => (
-                        <FontAwesome5 name='book-open' size={size} color={color}/>
-                    ),
-                    tabBarLabelStyle: {
-                        fontSize: selectedLanguage?.code === 'eng' ? fontSize.small : fontSize.medium,
-                        fontWeight: '600',
-                    },
-                }}
-            />
-            <Tabs.Screen
-                name='index'
-                options={{
-                    title: menuData?.home?.[selectedLanguage?.code || 'eng'] || 'Home',
-                    tabBarIcon: ({color, size}) => (
-                        <FontAwesome5 name='praying-hands' size={size} color={color}/>
-                    ),
-                    tabBarLabelStyle: {
-                        fontSize: selectedLanguage?.code === 'eng' ? fontSize.small : fontSize.medium,
-                        fontWeight: '600',
-                    },
-                }}/>
-            <Tabs.Screen
-                name='kirtan'
-                options={{
-                    title: menuData?.kirtan?.[selectedLanguage?.code || 'eng'] || 'Kirtan',
-                    tabBarIcon: ({color, size}) => (
-                        <MaterialIcons name='music-note' size={size} color={color}/>
-                    ),
-                    tabBarLabelStyle: {
-                        fontSize: selectedLanguage?.code === 'eng' ? fontSize.small : fontSize.medium,
-                        fontWeight: '600',
-                    },
-                }}
-            />
-            <Tabs.Screen
-                name='community'
-                options={{
-                    title: menuData?.community?.[selectedLanguage?.code || 'eng'] || 'Community',
-                    tabBarIcon: ({color, size}) => (
-                        <FontAwesome5 name='users' size={size} color={color}/>
-                    ),
-                    tabBarLabelStyle: {
-                        fontSize: selectedLanguage?.code === 'eng' ? fontSize.small : fontSize.medium,
-                        fontWeight: '600',
-                    },
-                }}
-            />
+            <Tabs.Screen name='about' />
+            <Tabs.Screen name='satprasanga' />
+            <Tabs.Screen name='index' />
+            <Tabs.Screen name='kirtan' />
+            <Tabs.Screen name='community' />
         </Tabs>
     );
 }
+
+const styles = StyleSheet.create({
+    tabBar: {
+        flexDirection: 'row',
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingHorizontal: 10,
+        height: 90,
+        borderTopWidth: 1,
+        borderTopColor: '#974608',
+    },
+    tabItem: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 8,
+        paddingHorizontal: 4,
+        marginHorizontal: 2,
+    },
+    tabLabel: {
+        marginTop: 4,
+        fontWeight: '600',
+        textAlign: 'center',
+    },
+});

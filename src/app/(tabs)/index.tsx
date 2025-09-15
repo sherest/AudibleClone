@@ -62,7 +62,7 @@ const HomeScreen = () => {
             <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
             <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
                 {/* Header with Greeting */}
-                <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
+                <View style={[styles.header, {backgroundColor: 'transparent'}]}>
                     <View style={styles.greetingContainer}>
                         <FontAwesome5 name="praying-hands" size={22} color={colors.text.secondary} style={{marginRight: 10}}/>
                         {informationData?.greeting?.[selectedLanguage?.code || 'eng'] ? (

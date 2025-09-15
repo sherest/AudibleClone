@@ -74,7 +74,7 @@ const AboutScreen = () => {
         <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
         <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
           {/* Header Skeleton */}
-          <View style={[styles.header, {backgroundColor: colors.background.secondary, borderBottomColor: colors.border.primary}]}>
+          <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
             <View style={styles.headerLeft}>
               <FontAwesome5 name="info-circle" size={22} color={colors.primary} />
               <SkeletonPlaceholder width={150} height={22} borderRadius={4} style={{ marginLeft: 15 }} />
@@ -105,7 +105,7 @@ const AboutScreen = () => {
         <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
 
       {/* Header */}
-      <View style={[styles.header, {backgroundColor: colors.background.secondary, borderBottomColor: colors.border.primary}]}>
+      <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
         <View style={styles.headerLeft}>
           <FontAwesome5 name="info-circle" size={22} color={colors.primary} />
           {aboutData?.title ? (
@@ -158,8 +158,6 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 20,
     paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#16213e', // This will be overridden by theme
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
