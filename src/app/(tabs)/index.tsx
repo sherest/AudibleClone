@@ -1,5 +1,5 @@
 import React, {Fragment, useState, useEffect} from 'react';
-import {View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, SafeAreaView, Linking} from 'react-native';
+import {View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, SafeAreaView, Linking, ImageBackground} from 'react-native';
 import {useLanguage} from '../../providers/LanguageContext';
 import {useTheme} from '../../providers/ThemeProvider';
 import {FontAwesome5} from '@expo/vector-icons';
@@ -61,6 +61,13 @@ const HomeScreen = () => {
         <Fragment>
             <SafeAreaView style={{flex: 0, backgroundColor: colors.background.primary}}></SafeAreaView>
             <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
+                {/* Background Image */}
+                <ImageBackground 
+                    source={require('../../../assets/gurujibackground.png')} 
+                    style={styles.backgroundImage}
+                    resizeMode="repeat"
+                    
+                />
                 {/* Header with Greeting */}
                 <View style={[styles.header, {backgroundColor: 'transparent'}]}>
                     <View style={styles.greetingContainer}>
@@ -83,7 +90,7 @@ const HomeScreen = () => {
                         <FontAwesome5 name="chevron-down" size={12} color={colors.text.secondary}/>
                     </TouchableOpacity>
                 </View>
-                <ScrollView style={[styles.container, {backgroundColor: colors.background.primary}]}>
+                <ScrollView style={[styles.container]}>
 
                     {/* Home Carousel */}
                     <HomeCarousel autoPlayInterval={5000}/>
@@ -315,6 +322,17 @@ const styles = StyleSheet.create({
     versionText: {
       fontSize: 12,
       fontStyle: 'italic',
+    },
+    backgroundImage: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: '100%',
+      height: '100%',
+      opacity: 0.65,
+      zIndex: -1,
     },
 });
 
