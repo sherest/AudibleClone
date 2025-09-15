@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, Dimensions, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, Dimensions, Image, ImageBackground } from 'react-native';
 import { realtimeDb } from '../../lib/firebase';
 import { ref, onValue } from 'firebase/database';
 import { getStorage, ref as storageRef, getDownloadURL } from 'firebase/storage';
@@ -212,6 +212,12 @@ const Kirtan = () => {
     <Fragment>
       <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
       <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
+        {/* Background Image */}
+        <ImageBackground 
+          source={require('../../../assets/gurujibackground.png')} 
+          style={styles.backgroundImage}
+          resizeMode="repeat"
+        />
         {/* Header */}
         <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
           <MaterialIcons name="music-note" size={22} color={colors.primary} style={{ marginRight: 10 }} />
@@ -326,7 +332,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    opacity: 0.65,
+    zIndex: -1,
+  },
 });
 
 export default Kirtan; 

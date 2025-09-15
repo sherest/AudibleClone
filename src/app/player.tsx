@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Pressable, Image, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -75,6 +75,12 @@ export default function PlayerScreen() {
 
   return (
     <SafeAreaView style={{flex: 1, paddingHorizontal: 20, paddingVertical: 8, gap: 16, backgroundColor: colors.background.primary}}>
+      {/* Background Image */}
+      <ImageBackground 
+        source={require('../../assets/gurujibackground.png')} 
+        style={styles.backgroundImage}
+        resizeMode="repeat"
+      />
       <Pressable
         onPress={() => router.back()}
         style={{position: 'absolute', top: 60, left: 16, backgroundColor: colors.background.secondary, borderRadius: 20, padding: 8, zIndex: 20}}
@@ -163,4 +169,18 @@ export default function PlayerScreen() {
       </View>
     </SafeAreaView>
   );
-} 
+}
+
+const styles = StyleSheet.create({
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    opacity: 0.65,
+    zIndex: -1,
+  },
+}); 

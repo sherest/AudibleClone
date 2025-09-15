@@ -7,7 +7,8 @@ import {
   TextInput, 
   Modal,
   Alert,
-  StyleSheet
+  StyleSheet,
+  ImageBackground
 } from 'react-native';
 import { useLanguage } from '../providers/LanguageContext';
 import { useTheme } from '../providers/ThemeProvider';
@@ -135,6 +136,12 @@ const JoinUsModal = () => {
       onRequestClose={hideJoinUs}
     >
       <View style={[styles.container, {backgroundColor: colors.background.primary}]}>
+        {/* Background Image */}
+        <ImageBackground 
+          source={require('../../assets/gurujibackground.png')} 
+          style={styles.backgroundImage}
+          resizeMode="repeat"
+        />
         {/* Header */}
         <View style={[styles.header, {backgroundColor: colors.background.secondary, borderBottomColor: colors.border.primary}]}>
           <TouchableOpacity onPress={hideJoinUs} style={styles.backButton}>
@@ -356,6 +363,18 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    opacity: 0.65,
+    zIndex: -1,
+    borderWidth: 1,
   },
 });
 

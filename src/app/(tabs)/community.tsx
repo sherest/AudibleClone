@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator, Modal } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator, Modal, ImageBackground } from 'react-native';
 import { useLanguage } from '../../providers/LanguageContext';
 import { useTheme } from '../../providers/ThemeProvider';
 import { useJoinUs } from '../../providers/JoinUsProvider';
@@ -287,6 +287,12 @@ const CommunityScreen = () => {
     <Fragment>
       <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
       <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
+        {/* Background Image */}
+        <ImageBackground 
+          source={require('../../../assets/gurujibackground.png')} 
+          style={styles.backgroundImage}
+          resizeMode="repeat"
+        />
         {/* Header */}
         <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
           <FontAwesome5 name="users" size={22} color={colors.primary} />
@@ -633,6 +639,17 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    opacity: 0.65,
+    zIndex: -1,
   },
 });
 
