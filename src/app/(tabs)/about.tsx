@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity, SafeAreaView, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, SafeAreaView } from 'react-native';
+
 import { useLanguage } from '../../providers/LanguageContext';
 import { useTheme } from '../../providers/ThemeProvider';
 import { ref, onValue } from 'firebase/database';
@@ -7,6 +8,10 @@ import { realtimeDb } from '../../lib/firebase';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useJoinUs } from '../../providers/JoinUsProvider';
 import SkeletonPlaceholder from '../../components/SkeletonPlaceholder';
+import AboutModal from '../../components/AboutModal';
+import AboutList from '../../components/AboutList';
+import AboutDetail from '../../components/AboutDetail';
+import { useAboutScreen, AboutItem } from '../../hooks/useAboutScreen';
 
 interface AboutData {
   data: Array<{
@@ -21,6 +26,7 @@ interface AboutData {
   };
 }
 
+
 interface MenuData {
   amritaLahari: { [key: string]: string };
   community: { [key: string]: string };
@@ -34,8 +40,44 @@ const AboutScreen = () => {
   const { colors } = useTheme();
   const { showJoinUs } = useJoinUs();
   const [aboutData, setAboutData] = useState<AboutData | null>(null);
+  const [aboutItems, setAboutItems] = useState<AboutItem[]>([]);
   const [menuData, setMenuData] = useState<MenuData | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  const {
+    currentView,
+    selectedItem,
+    hasSeenModal,
+    closeModal,
+    navigateToDetail,
+    navigateBackToList,
+  } = useAboutScreen();
+
+  // Fallback if hook fails
+  if (!currentView) {
+    return (
+      <Fragment>
+        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
+        <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
+          <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
+            <View style={styles.headerLeft}>
+              <FontAwesome5 name="info-circle" size={22} color={colors.primary} />
+              <Text style={[styles.headerTitle, {color: colors.text.primary}]}>
+                About
+              </Text>
+            </View>
+          </View>
+          <View style={styles.content}>
+            <View style={[styles.contentCard, {backgroundColor: colors.background.secondary}]}>
+              <Text style={[styles.paragraphText, {color: colors.text.primary}]}>
+                Loading...
+              </Text>
+            </View>
+          </View>
+        </SafeAreaView>
+      </Fragment>
+    );
+  }
 
   const getLocalizedContent = (content: Record<string, string>, fallback: string = 'eng') => {
     const langCode = selectedLanguage?.code || fallback;
@@ -49,9 +91,63 @@ const AboutScreen = () => {
       // Fetch about data
       const aboutRef = ref(realtimeDb, 'amrita_lahari/about');
       onValue(aboutRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setAboutData(data);
+        try {
+          const data = snapshot.val();
+          if (data) {
+            setAboutData(data);
+            // Convert about data to list items
+            if (data.data && Array.isArray(data.data)) {
+              const items: AboutItem[] = data.data.map((item: any, index: number) => ({
+                id: `about-${index}`,
+                title: item.title || { ban: '', eng: '', hin: '' },
+                description: {
+                  ban: item.ban ? item.ban.substring(0, 100) + '...' : '',
+                  eng: item.eng ? item.eng.substring(0, 100) + '...' : '',
+                  hin: item.hin ? item.hin.substring(0, 100) + '...' : '',
+                },
+                content: {
+                  ban: item.ban || '',
+                  eng: item.eng || '',
+                  hin: item.hin || '',
+                },
+              }));
+              setAboutItems(items);
+            } else {
+              // If no data, create some default items
+              const defaultItems: AboutItem[] = [
+                {
+                  id: 'about-1',
+                  title: { ban: 'About Us', eng: 'About Us', hin: 'हमारे बारे में' },
+                  description: { ban: 'Learn more about our mission...', eng: 'Learn more about our mission...', hin: 'हमारे मिशन के बारे में और जानें...' },
+                  content: { ban: 'Default content', eng: 'Default content', hin: 'डिफ़ॉल्ट सामग्री' },
+                }
+              ];
+              setAboutItems(defaultItems);
+            }
+          } else {
+            // If no data from Firebase, create default items
+            const defaultItems: AboutItem[] = [
+              {
+                id: 'about-1',
+                title: { ban: 'About Us', eng: 'About Us', hin: 'हमारे बारे में' },
+                description: { ban: 'Learn more about our mission...', eng: 'Learn more about our mission...', hin: 'हमारे मिशन के बारे में और जानें...' },
+                content: { ban: 'Default content', eng: 'Default content', hin: 'डिफ़ॉल्ट सामग्री' },
+              }
+            ];
+            setAboutItems(defaultItems);
+          }
+        } catch (error) {
+          console.error('Error processing about data:', error);
+          // Set default items on error
+          const defaultItems: AboutItem[] = [
+            {
+              id: 'about-1',
+              title: { ban: 'About Us', eng: 'About Us', hin: 'हमारे बारे में' },
+              description: { ban: 'Learn more about our mission...', eng: 'Learn more about our mission...', hin: 'हमारे मिशन के बारे में और जानें...' },
+              content: { ban: 'Default content', eng: 'Default content', hin: 'डिफ़ॉल्ट सामग्री' },
+            }
+          ];
+          setAboutItems(defaultItems);
         }
       });
 
@@ -68,7 +164,7 @@ const AboutScreen = () => {
     fetchData();
   }, [selectedLanguage]);
 
-  if (loading) {
+  if (loading || hasSeenModal === null) {
     return (
       <Fragment>
         <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
@@ -82,7 +178,7 @@ const AboutScreen = () => {
           </View>
 
           {/* Content Skeleton */}
-          <ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
+          <View style={styles.content}>
             <View style={[styles.contentCard, {backgroundColor: colors.background.secondary}]}>
               {[1, 2, 3, 4].map((index) => (
                 <View key={index} style={styles.paragraphContainer}>
@@ -93,7 +189,7 @@ const AboutScreen = () => {
                 </View>
               ))}
             </View>
-          </ScrollView>
+          </View>
         </SafeAreaView>
       </Fragment>
     );
@@ -101,65 +197,39 @@ const AboutScreen = () => {
 
   return (
     <Fragment>
-        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
-        <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
-          {/* Background Image */}
-          <ImageBackground 
-            source={require('../../../assets/gurujibackground.png')} 
-            style={styles.backgroundImage}
-            resizeMode="repeat"
-          />
-      {/* Header */}
-      <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
-        <View style={styles.headerLeft}>
-          <FontAwesome5 name="info-circle" size={22} color={colors.primary} />
-          {aboutData?.title ? (
-            <Text style={[styles.headerTitle, {color: colors.text.primary}]}>
-              {getLocalizedContent(aboutData.title)}
-            </Text>
-          ) : (
-            <SkeletonPlaceholder width={150} height={22} borderRadius={4} style={{ marginLeft: 15 }} />
-          )}
-        </View>
-      </View>
+      {/* Modal for first-time users */}
+      {currentView === 'modal' && (
+        <AboutModal
+          visible={true}
+          onClose={closeModal}
+          aboutData={aboutData}
+        />
+      )}
 
-      {/* Content */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
-        <View style={[styles.contentCard, {backgroundColor: colors.background.secondary}]}>
-          {aboutData?.data ? (
-            aboutData.data.map((paragraph, index) => (
-              <View key={index} style={styles.paragraphContainer}>
-                <Text style={[styles.paragraphText, {color: colors.text.primary}]}>
-                  {getLocalizedContent(paragraph)}
-                </Text>
-              </View>
-            ))
-          ) : (
-            // Show skeleton placeholders for paragraphs
-            [1, 2, 3, 4].map((index) => (
-              <View key={index} style={styles.paragraphContainer}>
-                <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
-                <SkeletonPlaceholder width="95%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
-                <SkeletonPlaceholder width="90%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
-                <SkeletonPlaceholder width="85%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
-              </View>
-            ))
-          )}
-        </View>
-      </ScrollView>
-      </SafeAreaView>
-      </Fragment>
+      {/* List view for returning users */}
+      {currentView === 'list' && (
+        <AboutList
+          items={aboutItems}
+          onItemPress={navigateToDetail}
+        />
+      )}
+
+      {/* Detail view for selected item */}
+      {currentView === 'detail' && selectedItem && (
+        <AboutDetail
+          item={selectedItem}
+          onBack={navigateBackToList}
+        />
+      )}
+    </Fragment>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f3460', // This will be overridden by theme
   },
-
   header: {
-    backgroundColor: '#1a1a2e', // This will be overridden by theme
     paddingTop: 20,
     paddingBottom: 20,
     paddingHorizontal: 20,
@@ -172,29 +242,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#ffffff', // This will be overridden by theme
-    marginLeft: 15,
-  },
-  joinUsButton: {
-    backgroundColor: '#e94560', // This will be overridden by theme
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  joinUsButtonText: {
-    color: '#ffffff', // This will be overridden by theme
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
   content: {
     flex: 1,
     padding: 20,
   },
   contentCard: {
-    backgroundColor: '#1a1a2e', // This will be overridden by theme
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
@@ -202,22 +254,15 @@ const styles = StyleSheet.create({
   paragraphContainer: {
     marginBottom: 20,
   },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginLeft: 15,
+  },
   paragraphText: {
     fontSize: 16,
-    color: '#ffffff', // This will be overridden by theme
     lineHeight: 24,
     textAlign: 'justify',
-  },
-  backgroundImage: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: '100%',
-    height: '100%',
-    opacity: 0.65,
-    zIndex: -1,
   },
 });
 
