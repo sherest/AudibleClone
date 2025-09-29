@@ -50,12 +50,21 @@ interface KirtanData {
   year: string;
 }
 
+interface MenuData {
+  amritaLahari: { [key: string]: string };
+  community: { [key: string]: string };
+  joinUs: { [key: string]: string };
+  kirtan: { [key: string]: string };
+  satprasanga: { [key: string]: string };
+}
+
 const Kirtan = () => {
   const { setAlbum } = usePlayer();
   const { selectedLanguage } = useLanguage();
   const { colors } = useTheme();
   const [kirtanData, setKirtanData] = useState<KirtanData[]>([]);
   const [basePath, setBasePath] = useState({ image: '', audio: '' });
+  const [menuData, setMenuData] = useState<MenuData | null>(null);
   const [loading, setLoading] = useState(true);
 
   const getLocalizedContent = (content: Record<string, string>, fallback: string = 'eng') => {
@@ -75,8 +84,15 @@ const Kirtan = () => {
             image: data.basePath.image,
             audio: data.isFirebaseAudio ? data.basePath.audio : data.fallbackBasePath.audio,
           });
-          
+        }
+      });
 
+      // Fetch menu data
+      const menuRef = ref(realtimeDb, 'menu');
+      onValue(menuRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          setMenuData(data);
         }
         setLoading(false);
       });
@@ -221,7 +237,13 @@ const Kirtan = () => {
         {/* Header */}
         <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
           <MaterialIcons name="music-note" size={22} color={colors.primary} style={{ marginRight: 10 }} />
-          <Text style={[styles.headerTitle, {color: colors.text.primary}]}>Kirtan</Text>
+          {menuData?.kirtan ? (
+            <Text style={[styles.headerTitle, {color: colors.text.primary}]}>
+              {getLocalizedContent(menuData.kirtan)}
+            </Text>
+          ) : (
+            <SkeletonPlaceholder width={120} height={22} borderRadius={4} style={{ flex: 1 }} />
+          )}
         </View>
 
         {/* Content */}

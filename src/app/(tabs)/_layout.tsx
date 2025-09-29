@@ -7,7 +7,7 @@ import {useLanguage} from '../../providers/LanguageContext';
 import {useTheme} from '../../providers/ThemeProvider';
 import {realtimeDb} from '../../lib/firebase';
 import {ref, onValue} from 'firebase/database';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 
 const fontSize = {
     small: 10,
@@ -53,7 +53,7 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
     const getTabIcon = (routeName: string, color: string, size: number) => {
         switch (routeName) {
             case 'about':
-                return <FontAwesome5 name='info-circle' size={size} color={color}/>;
+                return <Image source={require('../../../assets/img/icons/amritalahri.png')} style={{width: size, height: size}} />;
             case 'satprasanga':
                 return <FontAwesome5 name='book-open' size={size} color={color}/>;
             case 'index':
