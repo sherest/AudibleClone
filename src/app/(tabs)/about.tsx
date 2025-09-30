@@ -12,6 +12,9 @@ import AboutModal from '../../components/AboutModal';
 import AboutList from '../../components/AboutList';
 import AboutDetail from '../../components/AboutDetail';
 import { useAboutScreen, AboutItem } from '../../hooks/useAboutScreen';
+import { useFonts } from '../../lib/useFonts';
+// @ts-ignore
+import amritaLahariData from '../../../assets/amrita_lehri.json';
 
 interface AboutData {
   data: Array<{
@@ -26,7 +29,6 @@ interface AboutData {
   };
 }
 
-
 interface MenuData {
   amritaLahari: { [key: string]: string };
   community: { [key: string]: string };
@@ -39,6 +41,7 @@ const AboutScreen = () => {
   const { selectedLanguage } = useLanguage();
   const { colors } = useTheme();
   const { showJoinUs } = useJoinUs();
+  const { fontsLoaded, fontError } = useFonts();
   const [aboutData, setAboutData] = useState<AboutData | null>(null);
   const [aboutItems, setAboutItems] = useState<AboutItem[]>([]);
   const [menuData, setMenuData] = useState<MenuData | null>(null);
@@ -88,66 +91,16 @@ const AboutScreen = () => {
     const fetchData = () => {
       setLoading(true);
       
-      // Fetch about data
+      // Fetch Firebase data for modal
       const aboutRef = ref(realtimeDb, 'amrita_lahari/about');
       onValue(aboutRef, (snapshot) => {
         try {
           const data = snapshot.val();
           if (data) {
             setAboutData(data);
-            // Convert about data to list items
-            if (data.data && Array.isArray(data.data)) {
-              const items: AboutItem[] = data.data.map((item: any, index: number) => ({
-                id: `about-${index}`,
-                title: item.title || { ban: '', eng: '', hin: '' },
-                description: {
-                  ban: item.ban ? item.ban.substring(0, 100) + '...' : '',
-                  eng: item.eng ? item.eng.substring(0, 100) + '...' : '',
-                  hin: item.hin ? item.hin.substring(0, 100) + '...' : '',
-                },
-                content: {
-                  ban: item.ban || '',
-                  eng: item.eng || '',
-                  hin: item.hin || '',
-                },
-              }));
-              setAboutItems(items);
-            } else {
-              // If no data, create some default items
-              const defaultItems: AboutItem[] = [
-                {
-                  id: 'about-1',
-                  title: { ban: 'About Us', eng: 'About Us', hin: 'हमारे बारे में' },
-                  description: { ban: 'Learn more about our mission...', eng: 'Learn more about our mission...', hin: 'हमारे मिशन के बारे में और जानें...' },
-                  content: { ban: 'Default content', eng: 'Default content', hin: 'डिफ़ॉल्ट सामग्री' },
-                }
-              ];
-              setAboutItems(defaultItems);
-            }
-          } else {
-            // If no data from Firebase, create default items
-            const defaultItems: AboutItem[] = [
-              {
-                id: 'about-1',
-                title: { ban: 'About Us', eng: 'About Us', hin: 'हमारे बारे में' },
-                description: { ban: 'Learn more about our mission...', eng: 'Learn more about our mission...', hin: 'हमारे मिशन के बारे में और जानें...' },
-                content: { ban: 'Default content', eng: 'Default content', hin: 'डिफ़ॉल्ट सामग्री' },
-              }
-            ];
-            setAboutItems(defaultItems);
           }
         } catch (error) {
           console.error('Error processing about data:', error);
-          // Set default items on error
-          const defaultItems: AboutItem[] = [
-            {
-              id: 'about-1',
-              title: { ban: 'About Us', eng: 'About Us', hin: 'हमारे बारे में' },
-              description: { ban: 'Learn more about our mission...', eng: 'Learn more about our mission...', hin: 'हमारे मिशन के बारे में और जानें...' },
-              content: { ban: 'Default content', eng: 'Default content', hin: 'डिफ़ॉल्ट सामग्री' },
-            }
-          ];
-          setAboutItems(defaultItems);
         }
       });
 
@@ -158,13 +111,30 @@ const AboutScreen = () => {
         if (data) {
           setMenuData(data);
         }
-        setLoading(false);
       });
-    };
-    fetchData();
-  }, [selectedLanguage]);
 
-  if (loading || hasSeenModal === null) {
+      // Load JSON data for list
+      try {
+        const items: AboutItem[] = amritaLahariData.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          content: item.content,
+        }));
+        setAboutItems(items);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading Amrita Lahari data:', error);
+        setLoading(false);
+      }
+    };
+    
+    // Only fetch data when fonts are loaded
+    if (fontsLoaded) {
+      fetchData();
+    }
+  }, [selectedLanguage, fontsLoaded]);
+
+  if (loading || hasSeenModal === null || !fontsLoaded) {
     return (
       <Fragment>
         <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
@@ -180,14 +150,20 @@ const AboutScreen = () => {
           {/* Content Skeleton */}
           <View style={styles.content}>
             <View style={[styles.contentCard, {backgroundColor: colors.background.secondary}]}>
-              {[1, 2, 3, 4].map((index) => (
-                <View key={index} style={styles.paragraphContainer}>
-                  <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
-                  <SkeletonPlaceholder width="95%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
-                  <SkeletonPlaceholder width="90%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
-                  <SkeletonPlaceholder width="85%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
-                </View>
-              ))}
+              {fontError ? (
+                <Text style={[styles.paragraphText, {color: colors.text.primary}]}>
+                  Font loading error: {fontError}
+                </Text>
+              ) : (
+                [1, 2, 3, 4].map((index) => (
+                  <View key={index} style={styles.paragraphContainer}>
+                    <SkeletonPlaceholder width="100%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                    <SkeletonPlaceholder width="95%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                    <SkeletonPlaceholder width="90%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                    <SkeletonPlaceholder width="85%" height={16} borderRadius={4} style={{ marginBottom: 8 }} />
+                  </View>
+                ))
+              )}
             </View>
           </View>
         </SafeAreaView>

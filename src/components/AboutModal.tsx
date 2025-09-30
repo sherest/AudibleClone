@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, ImageBackground, SafeAreaView } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useTheme } from '../providers/ThemeProvider';
@@ -39,54 +39,57 @@ const AboutModal: React.FC<AboutModalProps> = ({ visible, onClose, aboutData }) 
       presentationStyle="fullScreen"
       onRequestClose={onClose}
     >
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
-        {/* Background Image */}
-        <ImageBackground 
-          source={require('../../assets/gurujibackground.png')} 
-          style={styles.backgroundImage}
-          resizeMode="repeat"
-        />
-        
-        {/* Header */}
-        <View style={[styles.header, { backgroundColor: colors.background.secondary }]}>
-          <View style={styles.headerLeft}>
-            <FontAwesome5 name="info-circle" size={22} color={colors.primary} />
-            {aboutData?.title ? (
-              <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
-                {getLocalizedContent(aboutData.title)}
-              </Text>
-            ) : (
-              <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
-                About
-              </Text>
-            )}
+      <Fragment>
+        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+          {/* Background Image */}
+          <ImageBackground 
+            source={require('../../assets/gurujibackground.png')} 
+            style={styles.backgroundImage}
+            resizeMode="repeat"
+          />
+          
+          {/* Header */}
+          <View style={[styles.header, { backgroundColor: colors.background.secondary }]}>
+            <View style={styles.headerLeft}>
+              <FontAwesome5 name="info-circle" size={22} color={colors.primary} />
+              {aboutData?.title ? (
+                <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
+                  {getLocalizedContent(aboutData.title)}
+                </Text>
+              ) : (
+                <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
+                  About
+                </Text>
+              )}
+            </View>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <FontAwesome5 name="times" size={20} color={colors.text.primary} />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <FontAwesome5 name="times" size={20} color={colors.text.primary} />
-          </TouchableOpacity>
-        </View>
 
-        {/* Content */}
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
-        <View style={[styles.contentCard, { backgroundColor: colors.background.secondary }]}>
-          {aboutData?.data && Array.isArray(aboutData.data) ? (
-            aboutData.data.map((paragraph, index) => (
-              <View key={index} style={styles.paragraphContainer}>
+          {/* Content */}
+          <ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
+          <View style={[styles.contentCard, { backgroundColor: colors.background.secondary }]}>
+            {aboutData?.data && Array.isArray(aboutData.data) ? (
+              aboutData.data.map((paragraph, index) => (
+                <View key={index} style={styles.paragraphContainer}>
+                  <Text style={[styles.paragraphText, { color: colors.text.primary }]}>
+                    {getLocalizedContent(paragraph)}
+                  </Text>
+                </View>
+              ))
+            ) : (
+              <View style={styles.paragraphContainer}>
                 <Text style={[styles.paragraphText, { color: colors.text.primary }]}>
-                  {getLocalizedContent(paragraph)}
+                  Welcome to our app! This is the about section where you can learn more about our mission and values.
                 </Text>
               </View>
-            ))
-          ) : (
-            <View style={styles.paragraphContainer}>
-              <Text style={[styles.paragraphText, { color: colors.text.primary }]}>
-                Welcome to our app! This is the about section where you can learn more about our mission and values.
-              </Text>
-            </View>
-          )}
-        </View>
-        </ScrollView>
-      </SafeAreaView>
+            )}
+          </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Fragment>
     </Modal>
   );
 };

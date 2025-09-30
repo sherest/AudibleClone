@@ -6,7 +6,10 @@ import { useLanguage } from '../providers/LanguageContext';
 import { AboutItem } from '../hooks/useAboutScreen';
 import { ref, onValue } from 'firebase/database';
 import { realtimeDb } from '../lib/firebase';
+import { Fonts } from '../lib/fonts';
 import SkeletonPlaceholder from './SkeletonPlaceholder';
+// @ts-ignore
+import amritaLahariData from '../../assets/amrita_lehri.json';
 
 interface AboutListProps {
   items: AboutItem[];
@@ -19,14 +22,12 @@ interface MenuData {
   joinUs: { [key: string]: string };
   kirtan: { [key: string]: string };
   satprasanga: { [key: string]: string };
-  about: { [key: string]: string };
 }
 
 const AboutList: React.FC<AboutListProps> = ({ items, onItemPress }) => {
   const { colors } = useTheme();
   const { selectedLanguage } = useLanguage();
   const [menuData, setMenuData] = useState<MenuData | null>(null);
-  const [loading, setLoading] = useState(true);
 
   const getLocalizedContent = (content: Record<string, string>, fallback: string = 'eng') => {
     const langCode = selectedLanguage?.code || fallback;
@@ -41,7 +42,6 @@ const AboutList: React.FC<AboutListProps> = ({ items, onItemPress }) => {
         if (data) {
           setMenuData(data);
         }
-        setLoading(false);
       });
     };
     fetchMenuData();
@@ -55,14 +55,11 @@ const AboutList: React.FC<AboutListProps> = ({ items, onItemPress }) => {
     >
       <View style={styles.itemContent}>
         <View style={styles.itemHeader}>
-          <FontAwesome5 name="info-circle" size={18} color={colors.primary} />
-          <Text style={[styles.itemTitle, { color: colors.text.primary }]}>
-            {getLocalizedContent(item.title)}
+          <FontAwesome5 name="book" size={18} color={colors.primary} />
+          <Text style={[styles.itemTitle, { color: colors.text.primary }]} numberOfLines={1}>
+            {item.title}
           </Text>
         </View>
-        <Text style={[styles.itemDescription, { color: colors.text.secondary }]} numberOfLines={2}>
-          {getLocalizedContent(item.description)}
-        </Text>
         <View style={styles.itemFooter}>
           <FontAwesome5 name="chevron-right" size={14} color={colors.text.secondary} />
         </View>
@@ -72,15 +69,15 @@ const AboutList: React.FC<AboutListProps> = ({ items, onItemPress }) => {
 
   return (
     <Fragment>
-    <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
-      {/* Background Image */}
-      <ImageBackground 
-        source={require('../../assets/gurujibackground.png')} 
-        style={styles.backgroundImage}
-        resizeMode="repeat"
-      />
-      
+      <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+        {/* Background Image */}
+        <ImageBackground 
+          source={require('../../assets/gurujibackground.png')} 
+          style={styles.backgroundImage}
+          resizeMode="repeat"
+        />
+        
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.background.secondary }]}>
         <View style={styles.headerLeft}>
@@ -100,7 +97,7 @@ const AboutList: React.FC<AboutListProps> = ({ items, onItemPress }) => {
       <FlatList
         data={items || []}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={true}
         ListEmptyComponent={
@@ -111,7 +108,7 @@ const AboutList: React.FC<AboutListProps> = ({ items, onItemPress }) => {
           </View>
         }
       />
-    </SafeAreaView>
+      </SafeAreaView>
     </Fragment>
   );
 };
@@ -164,7 +161,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2.22,
   },
   itemContent: {
-    padding: 16,
+    padding: 10,
   },
   itemHeader: {
     flexDirection: 'row',
@@ -172,10 +169,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   itemTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     marginLeft: 12,
     flex: 1,
+    fontFamily: Fonts.bengali,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
   itemDescription: {
     fontSize: 14,

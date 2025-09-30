@@ -4,22 +4,9 @@ import { AppState } from "react-native";
 export type AboutScreenView = "modal" | "list" | "detail";
 
 export interface AboutItem {
-  id: string;
-  title: {
-    ban: string;
-    eng: string;
-    hin: string;
-  };
-  description: {
-    ban: string;
-    eng: string;
-    hin: string;
-  };
-  content: {
-    ban: string;
-    eng: string;
-    hin: string;
-  };
+  id: number;
+  title: string;
+  content: string;
 }
 
 export const useAboutScreen = () => {
