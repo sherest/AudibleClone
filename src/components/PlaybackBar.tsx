@@ -41,14 +41,42 @@ export default function PlaybackBar({
       <Pressable
         onPress={onHandleSeek}
         onLayout={(event) => setWidth(event.nativeEvent.layout.width)}
-        style={{width: '100%', backgroundColor: colors.background.tertiary, height: 8, borderRadius: 4, justifyContent: 'center'}}
+        style={{
+          width: '100%', 
+          backgroundColor: colors.background.secondary, 
+          height: 8, 
+          borderRadius: 4, 
+          justifyContent: 'center',
+          opacity: 0.6 // Make track darker
+        }}
         hitSlop={20}
       >
         <View
-          style={{backgroundColor: colors.primary, height: '100%', borderRadius: 4, width: `${progress * 100}%`}}
+          style={{
+            backgroundColor: colors.primary, 
+            height: '100%', 
+            borderRadius: 4, 
+            width: `${progress * 100}%`,
+            opacity: 0.9 // Slightly transparent progress
+          }}
         />
         <View
-          style={{position: 'absolute', width: 12, height: 12, transform: [{translateX: -6}], borderRadius: 6, backgroundColor: colors.primary, left: `${progress * 100}%`}}
+          style={{
+            position: 'absolute', 
+            width: 16, 
+            height: 16, 
+            transform: [{translateX: -8}], 
+            borderRadius: 8, 
+            backgroundColor: colors.text.primary, // Different color for handler
+            left: `${progress * 100}%`,
+            borderWidth: 2,
+            borderColor: colors.background.primary,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 3,
+            elevation: 3
+          }}
         />
       </Pressable>
       <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
