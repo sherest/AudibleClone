@@ -3,6 +3,7 @@ import { Entypo } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
 
 import PlaybackBar from '@/components/PlaybackBar';
 import SkeletonPlaceholder from '@/components/SkeletonPlaceholder';
@@ -17,6 +18,7 @@ export default function PlayerScreen() {
   const { selectedLanguage } = useLanguage();
   const { colors } = useTheme();
   const playerStatus = useAudioPlayerStatus(player);
+  const [showMore, setShowMore] = useState(false);
 
   // Debug logging
   console.log('Player Debug:', { 
@@ -99,11 +101,21 @@ export default function PlayerScreen() {
 
       {/* Album Cover */}
       {isThumbnailLoading ? (
-        <SkeletonPlaceholder width="95%" height={300} borderRadius={30} style={{ alignSelf: 'center' }} />
+        <SkeletonPlaceholder 
+          width={showMore ? "70%" : "85%"} 
+          height={showMore ? 200 : 250} 
+          borderRadius={30} 
+          style={{ alignSelf: 'center' }} 
+        />
       ) : (
         <Image
           source={{ uri: book.thumbnail_url }}
-          style={{width: '95%', aspectRatio: 1, borderRadius: 30, alignSelf: 'center'}}
+          style={{
+            width: showMore ? '50%' : '65%', 
+            aspectRatio: 1, 
+            borderRadius: 30, 
+            alignSelf: 'center'
+          }}
         />
       )}
 
@@ -112,12 +124,22 @@ export default function PlayerScreen() {
         {isTitleLoading ? (
           <SkeletonPlaceholder width="80%" height={32} borderRadius={4} style={{ alignSelf: 'center' }} />
         ) : (
-          <Text style={{color: colors.text.primary, fontSize: 20, fontWeight: 'bold', textAlign: 'center'}}
-            numberOfLines={2}
-            ellipsizeMode='tail'
-          >
-            {getLocalizedContent(book.title, 'eng') || 'Unknown Title'}
-          </Text>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={{color: colors.text.primary, fontSize: 20, fontWeight: 'bold', textAlign: 'center'}}
+              numberOfLines={showMore ? undefined : 2}
+              ellipsizeMode='tail'
+            >
+              {getLocalizedContent(book.title, 'eng') || 'Unknown Title'}
+            </Text>
+            <TouchableOpacity 
+              onPress={() => setShowMore(!showMore)}
+              style={{ marginTop: 8, paddingHorizontal: 12, paddingVertical: 4, backgroundColor: colors.background.secondary, borderRadius: 12 }}
+            >
+              <Text style={{ color: colors.text.primary, fontSize: 14, fontWeight: '600' }}>
+                {showMore ? 'Less' : 'More'}
+              </Text>
+            </TouchableOpacity>
+          </View>
         )}
 
         {/* Author */}
