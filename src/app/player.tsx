@@ -1,9 +1,9 @@
-import { View, Text, Pressable, Image, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Image, TouchableOpacity, ImageBackground, StyleSheet, Animated } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import PlaybackBar from '@/components/PlaybackBar';
 import SkeletonPlaceholder from '@/components/SkeletonPlaceholder';
@@ -19,6 +19,26 @@ export default function PlayerScreen() {
   const { colors } = useTheme();
   const playerStatus = useAudioPlayerStatus(player);
   const [showMore, setShowMore] = useState(false);
+  
+  // Animation values
+  const animatedWidth = useRef(new Animated.Value(65)).current; // Start with collapsed size
+  const animatedHeight = useRef(new Animated.Value(250)).current;
+
+  // Animation effect
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(animatedWidth, {
+        toValue: showMore ? 50 : 65,
+        duration: 300,
+        useNativeDriver: false,
+      }),
+      Animated.timing(animatedHeight, {
+        toValue: showMore ? 200 : 250,
+        duration: 300,
+        useNativeDriver: false,
+      }),
+    ]).start();
+  }, [showMore]);
 
   // Debug logging
   console.log('Player Debug:', { 
@@ -101,17 +121,22 @@ export default function PlayerScreen() {
 
       {/* Album Cover */}
       {isThumbnailLoading ? (
-        <SkeletonPlaceholder 
-          width={showMore ? "70%" : "85%"} 
-          height={showMore ? 200 : 250} 
-          borderRadius={30} 
-          style={{ alignSelf: 'center' }} 
-        />
+        <Animated.View style={{ alignSelf: 'center' }}>
+          <SkeletonPlaceholder 
+            width="65%" 
+            height={250} 
+            borderRadius={30} 
+            style={{ alignSelf: 'center' }} 
+          />
+        </Animated.View>
       ) : (
-        <Image
+        <Animated.Image
           source={{ uri: book.thumbnail_url }}
           style={{
-            width: showMore ? '50%' : '65%', 
+            width: animatedWidth.interpolate({
+              inputRange: [50, 65],
+              outputRange: ['45%', '65%'],
+            }), 
             aspectRatio: 1, 
             borderRadius: 30, 
             alignSelf: 'center'
