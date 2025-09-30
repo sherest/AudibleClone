@@ -50,10 +50,16 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
         }
     };
 
-    const getTabIcon = (routeName: string, color: string, size: number) => {
+    const getTabIcon = (routeName: string, color: string, size: number, isFocused: boolean) => {
         switch (routeName) {
             case 'about':
-                return <Image source={require('../../../assets/img/icons/amritalahri.png')} style={{width: size, height: size}} />;
+                return <Image 
+                    source={isFocused 
+                        ? require('../../../assets/img/lahari-icon-selected.png') 
+                        : require('../../../assets/img/lahari-icon.png')
+                    } 
+                    style={{width: 24, height: 24, borderRadius: 100}} 
+                />;
             case 'satprasanga':
                 return <FontAwesome5 name='book-open' size={size} color={color}/>;
             case 'index':
@@ -95,7 +101,7 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
                         onPress={onPress}
                         style={styles.tabItem}
                     >
-                        {getTabIcon(route.name, iconColor, 20)}
+                        {getTabIcon(route.name, iconColor, 20, isFocused)}
                         <Text style={[
                             styles.tabLabel,
                             { color: textColor },

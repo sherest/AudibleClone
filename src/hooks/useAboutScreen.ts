@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AppState } from "react-native";
 
 export type AboutScreenView = "modal" | "list" | "detail";
 
@@ -26,38 +26,41 @@ export const useAboutScreen = () => {
   const [currentView, setCurrentView] = useState<AboutScreenView>("modal");
   const [selectedItem, setSelectedItem] = useState<AboutItem | null>(null);
   const [hasSeenModal, setHasSeenModal] = useState<boolean | null>(null);
+  const [isSessionStarted, setIsSessionStarted] = useState<boolean>(false);
 
-  // Check if user has seen the modal before
+  // Track app state changes to detect cold start vs background return
   useEffect(() => {
-    const checkModalStatus = async () => {
-      try {
-        const hasSeen = await AsyncStorage.getItem("hasSeenAboutModal");
-        if (hasSeen === "true") {
-          setHasSeenModal(true);
-          setCurrentView("list");
-        } else {
-          setHasSeenModal(false);
-          setCurrentView("modal");
-        }
-      } catch (error) {
-        console.error("Error checking modal status:", error);
+    const handleAppStateChange = (nextAppState: string) => {
+      if (nextAppState === "active" && !isSessionStarted) {
+        // This is a cold start - show modal
+        setIsSessionStarted(true);
         setHasSeenModal(false);
         setCurrentView("modal");
+      } else if (nextAppState === "active" && isSessionStarted) {
+        // This is returning from background - show list
+        setHasSeenModal(true);
+        setCurrentView("list");
       }
     };
 
-    checkModalStatus();
-  }, []);
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
 
-  const closeModal = async () => {
-    try {
-      await AsyncStorage.setItem("hasSeenAboutModal", "true");
-      setHasSeenModal(true);
-      setCurrentView("list");
-    } catch (error) {
-      console.error("Error saving modal status:", error);
-      setCurrentView("list");
+    // Initialize on first load
+    if (!isSessionStarted) {
+      setIsSessionStarted(true);
+      setHasSeenModal(false);
+      setCurrentView("modal");
     }
+
+    return () => subscription?.remove();
+  }, [isSessionStarted]);
+
+  const closeModal = () => {
+    setHasSeenModal(true);
+    setCurrentView("list");
   };
 
   const navigateToDetail = (item: AboutItem) => {
@@ -70,15 +73,10 @@ export const useAboutScreen = () => {
     setCurrentView("list");
   };
 
-  const resetToModal = async () => {
-    try {
-      await AsyncStorage.removeItem("hasSeenAboutModal");
-      setHasSeenModal(false);
-      setCurrentView("modal");
-      setSelectedItem(null);
-    } catch (error) {
-      console.error("Error resetting modal status:", error);
-    }
+  const resetToModal = () => {
+    setHasSeenModal(false);
+    setCurrentView("modal");
+    setSelectedItem(null);
   };
 
   return {

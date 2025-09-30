@@ -197,7 +197,7 @@ const AboutScreen = () => {
 
   return (
     <Fragment>
-      {/* Modal for first-time users */}
+      {/* Modal for cold start users */}
       {currentView === 'modal' && (
         <AboutModal
           visible={true}
@@ -206,7 +206,7 @@ const AboutScreen = () => {
         />
       )}
 
-      {/* List view for returning users */}
+      {/* List view for users who have seen modal or returned from background */}
       {currentView === 'list' && (
         <AboutList
           items={aboutItems}
