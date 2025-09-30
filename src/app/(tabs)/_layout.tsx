@@ -129,7 +129,7 @@ export default function TabsLayout() {
                 headerShown: false,
             }}
         >
-            <Tabs.Screen name='about' />
+            <Tabs.Screen name='about' options={{ href: '/about' }} />
             <Tabs.Screen name='satprasanga' />
             <Tabs.Screen name='index' />
             <Tabs.Screen name='kirtan' />

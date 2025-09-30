@@ -1,33 +1,20 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, useCallback } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, SafeAreaView } from 'react-native';
 
-import { useLanguage } from '../../providers/LanguageContext';
-import { useTheme } from '../../providers/ThemeProvider';
+import { useLanguage } from '../../../providers/LanguageContext';
+import { useTheme } from '../../../providers/ThemeProvider';
 import { ref, onValue } from 'firebase/database';
-import { realtimeDb } from '../../lib/firebase';
+import { realtimeDb } from '../../../lib/firebase';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useJoinUs } from '../../providers/JoinUsProvider';
-import SkeletonPlaceholder from '../../components/SkeletonPlaceholder';
-import AboutModal from '../../components/AboutModal';
-import AboutList from '../../components/AboutList';
-import AboutDetail from '../../components/AboutDetail';
-import { useAboutScreen, AboutItem } from '../../hooks/useAboutScreen';
-import { useFonts } from '../../lib/useFonts';
+import { useJoinUs } from '../../../providers/JoinUsProvider';
+import SkeletonPlaceholder from '../../../components/SkeletonPlaceholder';
+import AboutList from '../../../components/AboutList';
+import { AboutItem } from '../../../hooks/useAboutScreen';
+import { useFonts } from '../../../lib/useFonts';
+import { useRouter, useFocusEffect } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // @ts-ignore
-import amritaLahariData from '../../../assets/amrita_lehri.json';
-
-interface AboutData {
-  data: Array<{
-    ban: string;
-    eng: string;
-    hin: string;
-  }>;
-  title: {
-    ban: string;
-    eng: string;
-    hin: string;
-  };
-}
+import amritaLahariData from '../../../../assets/amrita_lehri.json';
 
 interface MenuData {
   amritaLahari: { [key: string]: string };
@@ -42,68 +29,58 @@ const AboutScreen = () => {
   const { colors } = useTheme();
   const { showJoinUs } = useJoinUs();
   const { fontsLoaded, fontError } = useFonts();
-  const [aboutData, setAboutData] = useState<AboutData | null>(null);
   const [aboutItems, setAboutItems] = useState<AboutItem[]>([]);
   const [menuData, setMenuData] = useState<MenuData | null>(null);
   const [loading, setLoading] = useState(true);
-  
-  const {
-    currentView,
-    selectedItem,
-    hasSeenModal,
-    closeModal,
-    navigateToDetail,
-    navigateBackToList,
-  } = useAboutScreen();
-
-  // Fallback if hook fails
-  if (!currentView) {
-    return (
-      <Fragment>
-        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
-        <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
-          <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
-            <View style={styles.headerLeft}>
-              <FontAwesome5 name="info-circle" size={22} color={colors.primary} />
-              <Text style={[styles.headerTitle, {color: colors.text.primary}]}>
-                About
-              </Text>
-            </View>
-          </View>
-          <View style={styles.content}>
-            <View style={[styles.contentCard, {backgroundColor: colors.background.secondary}]}>
-              <Text style={[styles.paragraphText, {color: colors.text.primary}]}>
-                Loading...
-              </Text>
-            </View>
-          </View>
-        </SafeAreaView>
-      </Fragment>
-    );
-  }
+  const [hasSeenAboutModal, setHasSeenAboutModal] = useState<boolean | null>(null);
+  const router = useRouter();
 
   const getLocalizedContent = (content: Record<string, string>, fallback: string = 'eng') => {
     const langCode = selectedLanguage?.code || fallback;
     return content[langCode] || content[fallback] || '';
   };
 
+  const handleItemPress = (item: AboutItem) => {
+    router.push({
+      pathname: '/about/detail',
+      params: { 
+        id: item.id.toString(),
+        title: item.title,
+        content: item.content
+      }
+    });
+  };
+
+  // Check if user has seen the about modal
+  useEffect(() => {
+    const checkModalStatus = async () => {
+      try {
+        const hasSeen = await AsyncStorage.getItem('hasSeenAboutModal');
+        setHasSeenAboutModal(hasSeen === 'true');
+      } catch (error) {
+        console.error('Error checking modal status:', error);
+        setHasSeenAboutModal(false);
+      }
+    };
+    checkModalStatus();
+  }, []);
+
+  // Show modal when user first navigates to about screen
+  useFocusEffect(
+    useCallback(() => {
+      if (hasSeenAboutModal === false) {
+        router.push('/about-modal');
+        // Mark as seen after showing
+        AsyncStorage.setItem('hasSeenAboutModal', 'true');
+        setHasSeenAboutModal(true);
+      }
+    }, [hasSeenAboutModal, router])
+  );
+
   useEffect(() => {
     const fetchData = () => {
       setLoading(true);
       
-      // Fetch Firebase data for modal
-      const aboutRef = ref(realtimeDb, 'amrita_lahari/about');
-      onValue(aboutRef, (snapshot) => {
-        try {
-          const data = snapshot.val();
-          if (data) {
-            setAboutData(data);
-          }
-        } catch (error) {
-          console.error('Error processing about data:', error);
-        }
-      });
-
       // Fetch menu data
       const menuRef = ref(realtimeDb, 'menu');
       onValue(menuRef, (snapshot) => {
@@ -134,7 +111,7 @@ const AboutScreen = () => {
     }
   }, [selectedLanguage, fontsLoaded]);
 
-  if (loading || hasSeenModal === null || !fontsLoaded) {
+  if (loading || !fontsLoaded) {
     return (
       <Fragment>
         <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
@@ -172,32 +149,10 @@ const AboutScreen = () => {
   }
 
   return (
-    <Fragment>
-      {/* Modal for cold start users */}
-      {currentView === 'modal' && (
-        <AboutModal
-          visible={true}
-          onClose={closeModal}
-          aboutData={aboutData}
-        />
-      )}
-
-      {/* List view for users who have seen modal or returned from background */}
-      {currentView === 'list' && (
-        <AboutList
-          items={aboutItems}
-          onItemPress={navigateToDetail}
-        />
-      )}
-
-      {/* Detail view for selected item */}
-      {currentView === 'detail' && selectedItem && (
-        <AboutDetail
-          item={selectedItem}
-          onBack={navigateBackToList}
-        />
-      )}
-    </Fragment>
+    <AboutList
+      items={aboutItems}
+      onItemPress={handleItemPress}
+    />
   );
 };
 
@@ -242,4 +197,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AboutScreen; 
+export default AboutScreen;

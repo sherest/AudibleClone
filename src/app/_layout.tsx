@@ -30,6 +30,14 @@ export default function RootLayout() {
                   name='player'
                   options={{ headerShown: false, animation: 'fade_from_bottom' }}
                 />
+                <Stack.Screen
+                  name='about-modal'
+                  options={{ 
+                    headerShown: false, 
+                    presentation: 'modal',
+                    animation: 'slide_from_bottom'
+                  }}
+                />
               </Stack>
               <JoinUsModal />
             </JoinUsProvider>
