@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, Pressable, GestureResponderEvent } from 'react-native';
+import { useTheme } from '../providers/ThemeProvider';
 
 type PlaybackBarProps = {
   currentTime: number;
@@ -12,6 +13,7 @@ export default function PlaybackBar({
   duration,
   onSeek,
 }: PlaybackBarProps) {
+  const { colors } = useTheme();
   const [width, setWidth] = useState(0);
 
   const progress = currentTime / duration;
@@ -35,25 +37,51 @@ export default function PlaybackBar({
   };
 
   return (
-    <View className='gap-4'>
+    <View style={{gap: 16}}>
       <Pressable
         onPress={onHandleSeek}
         onLayout={(event) => setWidth(event.nativeEvent.layout.width)}
-        className='w-full bg-slate-900 h-2 rounded-full justify-center'
+        style={{
+          width: '100%', 
+          backgroundColor: colors.background.secondary, 
+          height: 8, 
+          borderRadius: 4, 
+          justifyContent: 'center',
+          opacity: 0.6 // Make track darker
+        }}
         hitSlop={20}
       >
         <View
-          className='bg-orange-400 h-full rounded-full'
-          style={{ width: `${progress * 100}%` }}
+          style={{
+            backgroundColor: colors.primary, 
+            height: '100%', 
+            borderRadius: 4, 
+            width: `${progress * 100}%`,
+            opacity: 0.9 // Slightly transparent progress
+          }}
         />
         <View
-          className='absolute w-3 h-3 -translate-x-1/2 rounded-full bg-orange-400'
-          style={{ left: `${progress * 100}%` }}
+          style={{
+            position: 'absolute', 
+            width: 16, 
+            height: 16, 
+            transform: [{translateX: -8}], 
+            borderRadius: 8, 
+            backgroundColor: colors.text.primary, // Different color for handler
+            left: `${progress * 100}%`,
+            borderWidth: 2,
+            borderColor: colors.background.primary,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 3,
+            elevation: 3
+          }}
         />
       </Pressable>
-      <View className='flex-row items-center justify-between'>
-        <Text className='text-gray-400'>{formatTime(currentTime)}</Text>
-        <Text className='text-gray-400'>{formatTime(duration)}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+        <Text style={{color: colors.text.secondary}}>{formatTime(currentTime)}</Text>
+        <Text style={{color: colors.text.secondary}}>{formatTime(duration)}</Text>
       </View>
     </View>
   );

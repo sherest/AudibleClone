@@ -1,9 +1,10 @@
 import '../../global.css';
 import { Stack } from 'expo-router';
-import { DarkTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import PlayerProvider from '@/providers/PlayerProvider';
 import { LanguageProvider } from '../providers/LanguageContext';
 import { JoinUsProvider } from '../providers/JoinUsProvider';
+import { ThemeProvider } from '../providers/ThemeProvider';
 import JoinUsModal from '../components/JoinUsModal';
 
 const theme = {
@@ -18,21 +19,23 @@ const theme = {
 
 export default function RootLayout() {
   return (
-    <LanguageProvider>
-      <ThemeProvider value={theme}>
-        <PlayerProvider>
-          <JoinUsProvider>
-            <Stack>
-              <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-              <Stack.Screen
-                name='player'
-                options={{ headerShown: false, animation: 'fade_from_bottom' }}
-              />
-            </Stack>
-            <JoinUsModal />
-          </JoinUsProvider>
-        </PlayerProvider>
-      </ThemeProvider>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <NavigationThemeProvider value={theme}>
+          <PlayerProvider>
+            <JoinUsProvider>
+              <Stack>
+                <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+                <Stack.Screen
+                  name='player'
+                  options={{ headerShown: false, animation: 'fade_from_bottom' }}
+                />
+              </Stack>
+              <JoinUsModal />
+            </JoinUsProvider>
+          </PlayerProvider>
+        </NavigationThemeProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
