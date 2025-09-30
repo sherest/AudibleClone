@@ -1,23 +1,51 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ImageBackground, SafeAreaView } from 'react-native';
+import React, { Fragment, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ImageBackground, SafeAreaView, Image } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useTheme } from '../providers/ThemeProvider';
 import { useLanguage } from '../providers/LanguageContext';
 import { AboutItem } from '../hooks/useAboutScreen';
+import { ref, onValue } from 'firebase/database';
+import { realtimeDb } from '../lib/firebase';
+import SkeletonPlaceholder from './SkeletonPlaceholder';
 
 interface AboutListProps {
   items: AboutItem[];
   onItemPress: (item: AboutItem) => void;
 }
 
+interface MenuData {
+  amritaLahari: { [key: string]: string };
+  community: { [key: string]: string };
+  joinUs: { [key: string]: string };
+  kirtan: { [key: string]: string };
+  satprasanga: { [key: string]: string };
+  about: { [key: string]: string };
+}
+
 const AboutList: React.FC<AboutListProps> = ({ items, onItemPress }) => {
   const { colors } = useTheme();
   const { selectedLanguage } = useLanguage();
+  const [menuData, setMenuData] = useState<MenuData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const getLocalizedContent = (content: Record<string, string>, fallback: string = 'eng') => {
     const langCode = selectedLanguage?.code || fallback;
     return content[langCode] || content[fallback] || '';
   };
+
+  useEffect(() => {
+    const fetchMenuData = () => {
+      const menuRef = ref(realtimeDb, 'menu');
+      onValue(menuRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          setMenuData(data);
+        }
+        setLoading(false);
+      });
+    };
+    fetchMenuData();
+  }, [selectedLanguage]);
 
   const renderItem = ({ item }: { item: AboutItem }) => (
     <TouchableOpacity
@@ -43,6 +71,8 @@ const AboutList: React.FC<AboutListProps> = ({ items, onItemPress }) => {
   );
 
   return (
+    <Fragment>
+    <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
       {/* Background Image */}
       <ImageBackground 
@@ -54,10 +84,15 @@ const AboutList: React.FC<AboutListProps> = ({ items, onItemPress }) => {
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.background.secondary }]}>
         <View style={styles.headerLeft}>
-          <FontAwesome5 name="list" size={22} color={colors.primary} />
-          <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
-            Amrita Lahari
-          </Text>
+          <Image source={require('../../assets/img/lahari-icon-selected.png')} 
+          style={{width: 24, height: 24, borderRadius: 100}} resizeMode='contain' />
+          {menuData?.amritaLahari ? (
+            <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
+              {getLocalizedContent(menuData.amritaLahari)}
+            </Text>
+          ) : (
+            <SkeletonPlaceholder width={120} height={22} borderRadius={4} style={{ marginLeft: 15 }} />
+          )}
         </View>
       </View>
 
@@ -77,6 +112,7 @@ const AboutList: React.FC<AboutListProps> = ({ items, onItemPress }) => {
         }
       />
     </SafeAreaView>
+    </Fragment>
   );
 };
 

@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   musicIcon: {
-    opacity: 0.7,
+    opacity: 0.1,
   },
   carouselOverlay: {
     position: 'absolute',
