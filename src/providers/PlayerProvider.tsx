@@ -156,9 +156,28 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
     }
   };
 
+  const ensureQueue = async () => {
+    const queue = await TrackPlayer.getQueue();
+    if (!queue.length && currentAlbum?.songs?.length) {
+      const mapped = currentAlbum.songs.map((track: any, index: number) => ({
+        id: `${currentAlbum.title?.eng || currentAlbum.albumName?.eng || 'album'}-${index}`,
+        url: `${currentAlbum.basePath?.audio || ''}${track.fileName}`,
+        title: getLocalizedText(track.title),
+        artist: getLocalizedText(track.singer),
+        artwork: currentAlbum.coverPath,
+      }));
+      await TrackPlayer.reset();
+      await TrackPlayer.add(mapped);
+    }
+  };
+
   const playNextSong = async () => {
     try {
-      await TrackPlayer.skipToNext();
+      await ensureQueue();
+      const queue = await TrackPlayer.getQueue();
+      if (!queue.length) return;
+      const nextIndex = (currentSongIndex + 1) % queue.length;
+      await TrackPlayer.skip(nextIndex);
       await TrackPlayer.play();
     } catch (error) {
       console.warn('No next track to skip to:', error);
@@ -167,7 +186,11 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
 
   const playPreviousSong = async () => {
     try {
-      await TrackPlayer.skipToPrevious();
+      await ensureQueue();
+      const queue = await TrackPlayer.getQueue();
+      if (!queue.length) return;
+      const prevIndex = currentSongIndex === 0 ? queue.length - 1 : currentSongIndex - 1;
+      await TrackPlayer.skip(prevIndex);
       await TrackPlayer.play();
     } catch (error) {
       console.warn('No previous track to skip to:', error);
@@ -199,26 +222,23 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
 
   // Keep book/currentSongIndex in sync with TrackPlayer events
   useEffect(() => {
-    const sub = TrackPlayer.addEventListener(Event.PlaybackTrackChanged, async ({ nextTrack }) => {
-      if (nextTrack === undefined || nextTrack === null) return;
+    const sub = TrackPlayer.addEventListener(Event.PlaybackActiveTrackChanged, async ({ index, track }) => {
+      if (index === undefined || index === null || track === undefined) return;
       try {
-        const track = await TrackPlayer.getTrack(nextTrack);
-        if (track) {
-          setCurrentSongIndex(nextTrack);
-          setBook((prev: any) => ({
-            ...(prev || {}),
-            id: track.id,
-            title: track.title || prev?.title,
-            author: track.artist || prev?.author,
-            audio_url: (track as any).url,
-            thumbnail_url: (track as any).artwork || prev?.thumbnail_url,
-          }));
-          await TrackPlayer.updateMetadataForTrack(track.id, {
-            title: track.title,
-            artist: track.artist,
-            artwork: (track as any).artwork,
-          });
-        }
+        setCurrentSongIndex(index);
+        setBook((prev: any) => ({
+          ...(prev || {}),
+          id: track.id,
+          title: track.title || prev?.title,
+          author: track.artist || prev?.author,
+          audio_url: (track as any).url,
+          thumbnail_url: (track as any).artwork || prev?.thumbnail_url,
+        }));
+        await TrackPlayer.updateMetadataForTrack(track.id, {
+          title: track.title,
+          artist: track.artist,
+          artwork: (track as any).artwork,
+        });
       } catch (error) {
         console.error('Failed to handle track change:', error);
       }
