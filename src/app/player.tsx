@@ -8,16 +8,14 @@ import { useState, useRef, useEffect } from 'react';
 import PlaybackBar from '@/components/PlaybackBar';
 import SkeletonPlaceholder from '@/components/SkeletonPlaceholder';
 
-import { useAudioPlayerStatus } from 'expo-audio';
 import { usePlayer } from '@/providers/PlayerProvider';
 import { useLanguage } from '@/providers/LanguageContext';
 import { useTheme } from '@/providers/ThemeProvider';
 
 export default function PlayerScreen() {
-  const { player, book, currentAlbum, playNextSong, playPreviousSong, clearPlayer } = usePlayer();
+  const { book, currentAlbum, playNextSong, playPreviousSong, clearPlayer, isPlaying, currentTime, duration, play, pause, seekTo } = usePlayer();
   const { selectedLanguage } = useLanguage();
   const { colors } = useTheme();
-  const playerStatus = useAudioPlayerStatus(player);
   const [showMore, setShowMore] = useState(false);
   
   // Animation values
@@ -175,9 +173,9 @@ export default function PlayerScreen() {
         )}
 
         <PlaybackBar
-          currentTime={playerStatus.currentTime}
-          duration={playerStatus.duration}
-          onSeek={(seconds: number) => player.seekTo(seconds)}
+          currentTime={currentTime}
+          duration={duration}
+          onSeek={(seconds: number) => seekTo(seconds)}
         />
 
         <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
@@ -189,11 +187,11 @@ export default function PlayerScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
-              playerStatus.playing ? player.pause() : player.play()
+              isPlaying ? pause() : play()
             }
           >
             <Ionicons
-              name={playerStatus.playing ? 'pause' : 'play'}
+              name={isPlaying ? 'pause' : 'play'}
               size={50}
               color={colors.text.primary}
             />

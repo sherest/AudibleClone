@@ -1,4 +1,13 @@
-import { AudioPlayer } from 'expo-audio';
+import { setAudioModeAsync, setIsAudioActiveAsync } from 'expo-audio';
+import TrackPlayer, {
+  Capability,
+  Event,
+  AppKilledPlaybackBehavior,
+  RepeatMode,
+  State,
+  usePlaybackState,
+  useProgress,
+} from 'react-native-track-player';
 import {
   createContext,
   PropsWithChildren,
@@ -6,13 +15,10 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { useAudioPlayer } from 'expo-audio';
-import * as FileSystem from 'expo-file-system';
 // TODO: Import Firebase storage functions when implementing Firebase integration
 // import { storage } from '@/lib/firebase';
 
 type PlayerContextType = {
-  player: AudioPlayer;
   book: any;
   setBook: (book: any) => void;
   currentAlbum: any;
@@ -22,6 +28,13 @@ type PlayerContextType = {
   playPreviousSong: () => void;
   setAlbum: (album: any, songIndex?: number) => void;
   clearPlayer: () => void;
+  isPlaying: boolean;
+  isBuffering: boolean;
+  currentTime: number;
+  duration: number;
+  play: () => Promise<void>;
+  pause: () => Promise<void>;
+  seekTo: (seconds: number) => Promise<void>;
 };
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -32,14 +45,71 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
   // const storage = getStorage();
   
   const [book, setBook] = useState<any | null>(null);
-  const [audioUri, setAudioUri] = useState<string | undefined>();
   const [currentAlbum, setCurrentAlbum] = useState<any | null>(null);
   const [currentSongIndex, setCurrentSongIndex] = useState<number>(0);
   const [albumSongs, setAlbumSongs] = useState<any[]>([]);
 
+  // Configure audio session for background playback
   useEffect(() => {
-    getAudioUri();
-  }, [book?.id]);
+    const setupAudioSession = async () => {
+      try {
+        await setAudioModeAsync({
+          shouldPlayInBackground: true,
+          playsInSilentMode: true,
+          interruptionMode: 'doNotMix',
+          allowsRecording: false,
+          shouldRouteThroughEarpiece: false,
+        });
+        await setIsAudioActiveAsync(true);
+        console.log('Audio session configured for background playback');
+      } catch (error) {
+        console.error('Failed to configure audio session:', error);
+      }
+    };
+
+    setupAudioSession();
+  }, []);
+
+  // Set up Track Player once
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        await TrackPlayer.setupPlayer();
+        await TrackPlayer.setRepeatMode(RepeatMode.Queue);
+        await TrackPlayer.updateOptions({
+          android: {
+            appKilledPlaybackBehavior: AppKilledPlaybackBehavior.ContinuePlayback,
+          },
+          capabilities: [
+            Capability.Play,
+            Capability.Pause,
+            Capability.SkipToNext,
+            Capability.SkipToPrevious,
+            Capability.SeekTo,
+            Capability.Stop,
+          ],
+          notificationCapabilities: [
+            Capability.Play,
+            Capability.Pause,
+            Capability.SkipToNext,
+            Capability.SkipToPrevious,
+            Capability.SeekTo,
+          ],
+          progressUpdateEventInterval: 2,
+          alwaysPauseOnInterruption: true,
+        });
+        console.log('TrackPlayer setup complete');
+      } catch (error) {
+        console.error('Failed to setup TrackPlayer:', error);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+      // Do not destroy TrackPlayer to allow background playback to continue
+    };
+  }, []);
 
   const setAlbum = async (album: any, songIndex: number = 0) => {
     setCurrentAlbum(album);
@@ -62,76 +132,128 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
       };
       console.log('Setting new book:', newBook);
       setBook(newBook);
+
+      try {
+        await TrackPlayer.reset();
+        const queue = album.songs.map((track: any, index: number) => ({
+          id: `${album.title?.eng || 'album'}-${index}`,
+          url: `${album.basePath?.audio || ''}${track.fileName}`,
+          title: getLocalizedText(track.title),
+          artist: getLocalizedText(track.singer),
+          artwork: album.coverPath,
+        }));
+        await TrackPlayer.add(queue);
+        await TrackPlayer.skip(songIndex);
+        await TrackPlayer.play();
+        await TrackPlayer.updateMetadataForTrack(queue[songIndex].id, {
+          title: queue[songIndex].title,
+          artist: queue[songIndex].artist,
+          artwork: queue[songIndex].artwork,
+        });
+      } catch (error) {
+        console.error('Failed to set album queue in TrackPlayer:', error);
+      }
     }
   };
 
-  const playNextSong = () => {
-    if (currentAlbum && albumSongs.length > 0) {
-      const nextIndex = (currentSongIndex + 1) % albumSongs.length;
-      setAlbum(currentAlbum, nextIndex);
+  const playNextSong = async () => {
+    try {
+      await TrackPlayer.skipToNext();
+      await TrackPlayer.play();
+    } catch (error) {
+      console.warn('No next track to skip to:', error);
     }
   };
 
-  const playPreviousSong = () => {
-    if (currentAlbum && albumSongs.length > 0) {
-      const prevIndex = currentSongIndex === 0 ? albumSongs.length - 1 : currentSongIndex - 1;
-      setAlbum(currentAlbum, prevIndex);
+  const playPreviousSong = async () => {
+    try {
+      await TrackPlayer.skipToPrevious();
+      await TrackPlayer.play();
+    } catch (error) {
+      console.warn('No previous track to skip to:', error);
     }
   };
 
-  const clearPlayer = () => {
-    // Stop the player if it's playing
-    if (player) {
-      player.pause();
+  const clearPlayer = async () => {
+    try {
+      await TrackPlayer.stop();
+      await TrackPlayer.reset();
+    } catch (error) {
+      console.error('Failed to clear TrackPlayer:', error);
     }
-    // Clear all state
     setBook(null);
     setCurrentAlbum(null);
     setCurrentSongIndex(0);
     setAlbumSongs([]);
-    setAudioUri(undefined);
   };
 
-  const getAudioUri = async () => {
-    if (!book) {
-      return;
-    }
+  // TrackPlayer status hooks
+  const playbackState = usePlaybackState();
+  const progress = useProgress();
 
-    const localUri = await getLocalAudioUri();
-    if (localUri) {
-      setAudioUri(localUri);
-      console.log('Local audio file found');
-    } else if (book?.audio_url) {
-      setAudioUri(book.audio_url);
-      console.log('External audio file found');
-    } else if (book.audio_file) {
-      // TODO: Replace with Firebase Storage logic
-      // const storageRef = ref(storage, `audios/${book.audio_file}`);
-      // const downloadURL = await getDownloadURL(storageRef);
-      // setAudioUri(downloadURL);
-      
-      // DUMMY CODE: For now, use a placeholder or external URL
-      console.log('Audio file would be fetched from Firebase Storage');
-      // Fallback to external URL if available
-      setAudioUri(book.audio_url || undefined);
+  // Derived flags
+  const currentPlaybackState =
+    typeof playbackState === 'object' ? playbackState.state : playbackState;
+  const isPlaying = currentPlaybackState === State.Playing;
+  const isBuffering = currentPlaybackState === State.Buffering;
+
+  // Keep book/currentSongIndex in sync with TrackPlayer events
+  useEffect(() => {
+    const sub = TrackPlayer.addEventListener(Event.PlaybackTrackChanged, async ({ nextTrack }) => {
+      if (nextTrack === undefined || nextTrack === null) return;
+      try {
+        const track = await TrackPlayer.getTrack(nextTrack);
+        if (track) {
+          setCurrentSongIndex(nextTrack);
+          setBook((prev: any) => ({
+            ...(prev || {}),
+            id: track.id,
+            title: track.title || prev?.title,
+            author: track.artist || prev?.author,
+            audio_url: (track as any).url,
+            thumbnail_url: (track as any).artwork || prev?.thumbnail_url,
+          }));
+          await TrackPlayer.updateMetadataForTrack(track.id, {
+            title: track.title,
+            artist: track.artist,
+            artwork: (track as any).artwork,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to handle track change:', error);
+      }
+    });
+
+    return () => sub.remove();
+  }, []);
+
+  // Helper function to get localized content
+  const getLocalizedText = (content: any, fallback: string = 'eng'): string => {
+    if (!content) return '';
+    if (typeof content === 'string') return content;
+    if (typeof content === 'object' && content !== null) {
+      return content[fallback] || content['eng'] || '';
     }
+    return '';
   };
 
-  const getLocalAudioUri = async () => {
-    const file = `${FileSystem.documentDirectory}${book.id}.mp3`;
-    const exists = await FileSystem.getInfoAsync(file);
-    if (exists.exists) {
-      return file;
-    }
-    return null;
+  const play = async () => {
+    await TrackPlayer.play();
   };
 
-  const player = useAudioPlayer({ uri: audioUri });
-  console.log('Playing: ', audioUri);
+  const pause = async () => {
+    await TrackPlayer.pause();
+  };
+
+  const seekTo = async (seconds: number) => {
+    await TrackPlayer.seekTo(seconds);
+  };
+
+  // expo-audio currently does not expose lock-screen metadata helpers.
+  // Playback continues in background via audio mode set above.
 
   return (
     <PlayerContext.Provider value={{ 
-      player, 
       book, 
       setBook, 
       currentAlbum, 
@@ -140,7 +262,14 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
       playNextSong, 
       playPreviousSong, 
       setAlbum,
-      clearPlayer
+      clearPlayer,
+      isPlaying,
+      isBuffering,
+      currentTime: progress.position,
+      duration: progress.duration,
+      play,
+      pause,
+      seekTo
     }}>
       {children}
     </PlayerContext.Provider>

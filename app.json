@@ -19,9 +19,12 @@
       "buildNumber": "1",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "This app uses the microphone for voice recording during meditation sessions.",
-        "UIBackgroundModes": ["audio"],
+        "UIBackgroundModes": [
+          "audio"
+        ],
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "appleTeamId": "L2Y254U5HA"
     },
     "android": {
       "adaptiveIcon": {
@@ -40,15 +43,11 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "assetBundlePatterns": ["assets/font/*"],
+    "assetBundlePatterns": [
+      "assets/font/*"
+    ],
     "plugins": [
-      "expo-router",
-      [
-        "expo-audio",
-        {
-          "microphonePermission": "Allow Amrita Lahari to access your microphone for voice recording during meditation sessions."
-        }
-      ]
+      "expo-router"
     ],
     "extra": {
       "eas": {

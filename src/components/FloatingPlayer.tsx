@@ -1,24 +1,21 @@
 import { Text, View, Image, Pressable, TouchableOpacity } from 'react-native';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
-import { useAudioPlayerStatus } from 'expo-audio';
 import { usePlayer } from '@/providers/PlayerProvider';
 import { useLanguage } from '@/providers/LanguageContext';
 import { useTheme } from '@/providers/ThemeProvider';
 import SkeletonPlaceholder from './SkeletonPlaceholder';
 
 export default function FloatingPlayer() {
-  const { player, book, clearPlayer } = usePlayer();
+  const { book, clearPlayer, isPlaying, isBuffering, play, pause } = usePlayer();
   const { selectedLanguage } = useLanguage();
   const { colors } = useTheme();
-  const playerStatus = useAudioPlayerStatus(player);
 
   const getLocalizedContent = (content: any, fallback: string = 'eng') => {
     if (!content) return '';
     
     // If content is already a string, return it directly
     if (typeof content === 'string') {
-      console.log('FloatingPlayer: Content is string, returning directly:', content);
       return content;
     }
     
@@ -26,7 +23,6 @@ export default function FloatingPlayer() {
     if (typeof content === 'object' && content !== null) {
       const langCode = selectedLanguage?.code || fallback;
       const result = content[langCode] || content[fallback] || '';
-      console.log('FloatingPlayer Localization:', { content, langCode, result });
       return result;
     }
     
@@ -71,16 +67,16 @@ export default function FloatingPlayer() {
         {/* Play Button */}
         <AntDesign
           name={
-            playerStatus.isBuffering
+            isBuffering
               ? 'loading2'
-              : playerStatus.playing
+              : isPlaying
               ? 'pause'
               : 'playcircleo'
           }
           size={24}
           color={colors.text.secondary}
           onPress={() =>
-            playerStatus.playing ? player.pause() : player.play()
+            isPlaying ? pause() : play()
           }
         />
 
