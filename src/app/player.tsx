@@ -178,13 +178,13 @@ export default function PlayerScreen() {
           onSeek={(seconds: number) => seekTo(seconds)}
         />
 
-        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+        <View style={{flexDirection: 'row', width: '60%', alignSelf: 'center', alignItems: 'center', justifyContent: 'space-between'}}>
           <TouchableOpacity onPress={playPreviousSong}>
             <Ionicons name='play-skip-back' size={24} color={colors.text.primary} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={playPreviousSong}>
+          {/* <TouchableOpacity onPress={playPreviousSong}>
             <Ionicons name='play-back' size={24} color={colors.text.primary} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity
             onPress={() =>
               isPlaying ? pause() : play()
@@ -196,9 +196,9 @@ export default function PlayerScreen() {
               color={colors.text.primary}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={playNextSong}>
+          {/* <TouchableOpacity onPress={playNextSong}>
             <Ionicons name='play-forward' size={24} color={colors.text.primary} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity onPress={playNextSong}>
             <Ionicons name='play-skip-forward' size={24} color={colors.text.primary} />
           </TouchableOpacity>
