@@ -51,10 +51,6 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  if (isLoading) {
-    return null; // or a loading spinner
-  }
-
   return (
     <LanguageContext.Provider value={{ selectedLanguage, setSelectedLanguage: updateSelectedLanguage }}>
       {children}

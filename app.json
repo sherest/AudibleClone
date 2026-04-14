@@ -32,17 +32,23 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.WAKE_LOCK",
-        "android.permission.FOREGROUND_SERVICE"
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE"
       ],
-      "package": "com.app.lahari.amrita"
+      "package": "com.app.lahari.amrita",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "assetBundlePatterns": ["assets/font/*"],
+    "assetBundlePatterns": [
+      "assets/**/*"
+    ],
     "plugins": [
       "expo-router",
+      "expo-splash-screen",
       [
         "expo-audio",
         {
@@ -52,7 +58,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "your-project-id-here"
+        "projectId": "4c99151e-4a4b-4bc3-a30d-ff38d9f1511f"
       }
     }
   }

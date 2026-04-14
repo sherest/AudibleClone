@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
-import { CarouselMomentum, CarouselMomentumAnimationType } from 'react-native-momentum-carousel';
+import CarouselMomentum, { CarouselMomentumAnimationType } from './Carousel';
 import { realtimeDb } from '../lib/firebase';
 import { ref, onValue } from 'firebase/database';
 import { useLanguage } from '../providers/LanguageContext';

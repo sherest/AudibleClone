@@ -6,6 +6,10 @@ import { LanguageProvider } from '../providers/LanguageContext';
 import { JoinUsProvider } from '../providers/JoinUsProvider';
 import { ThemeProvider } from '../providers/ThemeProvider';
 import JoinUsModal from '../components/JoinUsModal';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+
+SplashScreen.preventAutoHideAsync();
 
 const theme = {
   ...DarkTheme,
@@ -18,6 +22,10 @@ const theme = {
 };
 
 export default function RootLayout() {
+  useEffect(() => {
+    SplashScreen.hideAsync();
+  }, []);
+
   return (
     <ThemeProvider>
       <LanguageProvider>
