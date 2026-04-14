@@ -50,9 +50,13 @@
       "expo-router"
     ],
     "extra": {
+      "router": {
+        "origin": false
+      },
       "eas": {
-        "projectId": "your-project-id-here"
+        "projectId": "4c99151e-4a4b-4bc3-a30d-ff38d9f1511f"
       }
-    }
+    },
+    "owner": "amlahari"
   }
 }
