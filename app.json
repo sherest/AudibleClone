@@ -2,6 +2,7 @@
   "expo": {
     "name": "Amrita Lahari",
     "slug": "amrita-lahari",
+    "owner": "triptamwss-team",
     "scheme": "amritalahari",
     "version": "1.2.1",
     "orientation": "portrait",
@@ -18,7 +19,6 @@
       "bundleIdentifier": "com.app.lahari.amrita",
       "buildNumber": "1",
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "This app uses the microphone for voice recording during meditation sessions.",
         "UIBackgroundModes": ["audio"],
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -29,10 +29,10 @@
         "backgroundColor": "#b90101"
       },
       "permissions": [
-        "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.WAKE_LOCK",
         "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
         "android.permission.INTERNET",
         "android.permission.ACCESS_NETWORK_STATE"
       ],
@@ -52,13 +52,13 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "Allow Amrita Lahari to access your microphone for voice recording during meditation sessions."
+          "microphonePermission": false
         }
       ]
     ],
     "extra": {
       "eas": {
-        "projectId": "4c99151e-4a4b-4bc3-a30d-ff38d9f1511f"
+        "projectId": "45399a07-7a9f-405a-b935-712aad8a18d1"
       }
     }
   }

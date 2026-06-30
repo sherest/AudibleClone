@@ -2,6 +2,9 @@
 
 .env
 
+# Google Play service account key (sensitive — never commit)
+google-services-account.json
+
 android/
 ios/
 
