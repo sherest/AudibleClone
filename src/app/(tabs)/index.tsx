@@ -23,40 +23,30 @@ const HomeScreen = () => {
     const [informationData, setInformationData] = useState<any>({});
 
     useEffect(() => {
-        const fetchMenuData = () => {
-            const menuRef = ref(realtimeDb, 'menu');
-            onValue(menuRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    setMenuData(data);
-                }
-            });
-        };
+        const menuRef = ref(realtimeDb, 'menu');
+        const unsubMenu = onValue(menuRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) setMenuData(data);
+        });
 
-        const fetchJoinUsData = () => {
-            const joinUsRef = ref(realtimeDb, 'join_us');
-            onValue(joinUsRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    setJoinUsData(data);
-                }
-            });
-        };
+        const joinUsRef = ref(realtimeDb, 'join_us');
+        const unsubJoinUs = onValue(joinUsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) setJoinUsData(data);
+        });
 
-        const fetchInformationData = () => {
-            const informationRef = ref(realtimeDb, 'information');
-            onValue(informationRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    setInformationData(data);
-                }
-            });
-        };
+        const informationRef = ref(realtimeDb, 'information');
+        const unsubInfo = onValue(informationRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) setInformationData(data);
+        });
 
-        fetchMenuData();
-        fetchJoinUsData();
-        fetchInformationData();
-    }, [selectedLanguage]);
+        return () => {
+            unsubMenu();
+            unsubJoinUs();
+            unsubInfo();
+        };
+    }, []);
     return (
         <Fragment>
             <SafeAreaView style={{flex: 0, backgroundColor: colors.background.primary}}></SafeAreaView>

@@ -52,31 +52,25 @@ const JoinUsModal = () => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(true);
 
   useEffect(() => {
-    if (isJoinUsVisible) {
-      const fetchJoinUsData = () => {
-        const joinUsRef = ref(realtimeDb, 'join_us');
-        onValue(joinUsRef, (snapshot) => {
-          const data = snapshot.val();
-          if (data) {
-            setJoinUsData(data);
-          }
-        });
-      };
+    if (!isJoinUsVisible) return;
 
-      const fetchMenuData = () => {
-        const menuRef = ref(realtimeDb, 'menu');
-        onValue(menuRef, (snapshot) => {
-          const data = snapshot.val();
-          if (data) {
-            setMenuData(data);
-          }
-        });
-      };
+    const joinUsRef = ref(realtimeDb, 'join_us');
+    const unsubJoinUs = onValue(joinUsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) setJoinUsData(data);
+    });
 
-      fetchJoinUsData();
-      fetchMenuData();
-    }
-  }, [isJoinUsVisible, selectedLanguage]);
+    const menuRef = ref(realtimeDb, 'menu');
+    const unsubMenu = onValue(menuRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) setMenuData(data);
+    });
+
+    return () => {
+      unsubJoinUs();
+      unsubMenu();
+    };
+  }, [isJoinUsVisible]);
 
   const getLocalizedText = (textObj: { [key: string]: string } | undefined) => {
     if (!textObj) return '';

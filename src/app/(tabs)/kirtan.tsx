@@ -73,33 +73,31 @@ const Kirtan = () => {
   };
 
   useEffect(() => {
-    const fetchKirtanData = () => {
-      setLoading(true);
-      const kirtanRef = ref(realtimeDb, 'kirtan');
-      onValue(kirtanRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setKirtanData(data.data || []);
-          setBasePath({
-            image: data.basePath.image,
-            audio: data.isFirebaseAudio ? data.basePath.audio : data.fallbackBasePath.audio,
-          });
-        }
-      });
+    setLoading(true);
+    const kirtanRef = ref(realtimeDb, 'kirtan');
+    const unsubKirtan = onValue(kirtanRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setKirtanData(data.data || []);
+        setBasePath({
+          image: data.basePath.image,
+          audio: data.isFirebaseAudio ? data.basePath.audio : data.fallbackBasePath.audio,
+        });
+      }
+    });
 
-      // Fetch menu data
-      const menuRef = ref(realtimeDb, 'menu');
-      onValue(menuRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setMenuData(data);
-        }
-        setLoading(false);
-      });
+    const menuRef = ref(realtimeDb, 'menu');
+    const unsubMenu = onValue(menuRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) setMenuData(data);
+      setLoading(false);
+    });
+
+    return () => {
+      unsubKirtan();
+      unsubMenu();
     };
-
-    fetchKirtanData();
-  }, [selectedLanguage]);
+  }, []);
 
 
 

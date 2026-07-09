@@ -29,19 +29,15 @@ const HomeCarousel: React.FC<HomeCarouselProps> = ({ autoPlayInterval = 4000 }) 
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    const fetchCarouselData = () => {
-      // Fetch from 'latest' section in Firebase
-      const carouselRef = ref(realtimeDb, 'latest');
-      onValue(carouselRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data && data.data && Array.isArray(data.data)) {
-          setCarouselData(data.data);
-        }
-      });
-    };
-
-    fetchCarouselData();
-  }, [selectedLanguage]);
+    const carouselRef = ref(realtimeDb, 'latest');
+    const unsubscribe = onValue(carouselRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data && data.data && Array.isArray(data.data)) {
+        setCarouselData(data.data);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const renderCarouselItem = ({ item }: { item: CarouselItem }) => (
     <View style={[styles.carouselItem, {backgroundColor: colors.background.secondary}]}>

@@ -88,51 +88,44 @@ const AboutScreen = () => {
   };
 
   useEffect(() => {
-    const fetchData = () => {
-      setLoading(true);
-      
-      // Fetch Firebase data for modal
-      const aboutRef = ref(realtimeDb, 'amrita_lahari/about');
-      onValue(aboutRef, (snapshot) => {
-        try {
-          const data = snapshot.val();
-          if (data) {
-            setAboutData(data);
-          }
-        } catch (error) {
-          console.error('Error processing about data:', error);
-        }
-      });
+    if (!fontsLoaded) return;
 
-      // Fetch menu data
-      const menuRef = ref(realtimeDb, 'menu');
-      onValue(menuRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setMenuData(data);
-        }
-      });
+    setLoading(true);
 
-      // Load JSON data for list
+    const aboutRef = ref(realtimeDb, 'amrita_lahari/about');
+    const unsubAbout = onValue(aboutRef, (snapshot) => {
       try {
-        const items: AboutItem[] = amritaLahariData.map((item: any) => ({
-          id: item.id,
-          title: item.title,
-          content: item.content,
-        }));
-        setAboutItems(items);
-        setLoading(false);
+        const data = snapshot.val();
+        if (data) setAboutData(data);
       } catch (error) {
-        console.error('Error loading Amrita Lahari data:', error);
-        setLoading(false);
+        console.error('Error processing about data:', error);
       }
-    };
-    
-    // Only fetch data when fonts are loaded
-    if (fontsLoaded) {
-      fetchData();
+    });
+
+    const menuRef = ref(realtimeDb, 'menu');
+    const unsubMenu = onValue(menuRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) setMenuData(data);
+    });
+
+    try {
+      const items: AboutItem[] = amritaLahariData.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        content: item.content,
+      }));
+      setAboutItems(items);
+    } catch (error) {
+      console.error('Error loading Amrita Lahari data:', error);
+    } finally {
+      setLoading(false);
     }
-  }, [selectedLanguage, fontsLoaded]);
+
+    return () => {
+      unsubAbout();
+      unsubMenu();
+    };
+  }, [fontsLoaded]);
 
   if (loading || hasSeenModal === null || !fontsLoaded) {
     return (

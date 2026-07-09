@@ -73,33 +73,31 @@ const SatprasangaScreen = () => {
   };
 
   useEffect(() => {
-    const fetchSatprasangaData = () => {
-      setLoading(true);
-      const satprasangaRef = ref(realtimeDb, 'satprasanga');
-      onValue(satprasangaRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setSatprasangaData(data.data || []);
-          setBasePath({
-            image: data.basePath.image,
-            audio: data.isFirebaseAudio ? data.basePath.audio : data.fallbackBasePath.audio,
-          });
-        }
-      });
+    setLoading(true);
+    const satprasangaRef = ref(realtimeDb, 'satprasanga');
+    const unsubSatprasanga = onValue(satprasangaRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setSatprasangaData(data.data || []);
+        setBasePath({
+          image: data.basePath.image,
+          audio: data.isFirebaseAudio ? data.basePath.audio : data.fallbackBasePath.audio,
+        });
+      }
+    });
 
-      // Fetch menu data
-      const menuRef = ref(realtimeDb, 'menu');
-      onValue(menuRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setMenuData(data);
-        }
-        setLoading(false);
-      });
+    const menuRef = ref(realtimeDb, 'menu');
+    const unsubMenu = onValue(menuRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) setMenuData(data);
+      setLoading(false);
+    });
+
+    return () => {
+      unsubSatprasanga();
+      unsubMenu();
     };
-
-    fetchSatprasangaData();
-  }, [selectedLanguage]);
+  }, []);
 
   const addToPlayList = async (index: number) => {
     const oSatprasanga = satprasangaData[index];

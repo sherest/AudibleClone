@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, ImageBackg
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useTheme } from '../providers/ThemeProvider';
 import { useLanguage } from '../providers/LanguageContext';
+import { Fonts } from '../lib/fonts';
 
 interface AboutData {
   data: Array<{
@@ -26,6 +27,8 @@ interface AboutModalProps {
 const AboutModal: React.FC<AboutModalProps> = ({ visible, onClose, aboutData }) => {
   const { colors } = useTheme();
   const { selectedLanguage } = useLanguage();
+
+  const needsHindiFont = selectedLanguage?.code === 'hin' || selectedLanguage?.code === 'ban';
 
   const getLocalizedContent = (content: Record<string, string>, fallback: string = 'eng') => {
     const langCode = selectedLanguage?.code || fallback;
@@ -74,7 +77,7 @@ const AboutModal: React.FC<AboutModalProps> = ({ visible, onClose, aboutData }) 
             {aboutData?.data && Array.isArray(aboutData.data) ? (
               aboutData.data.map((paragraph, index) => (
                 <View key={index} style={styles.paragraphContainer}>
-                  <Text style={[styles.paragraphText, { color: colors.text.primary }]}>
+                  <Text style={[styles.paragraphText, { color: colors.text.primary, fontFamily: needsHindiFont ? (Fonts.bengali ?? undefined) : undefined }]}>
                     {getLocalizedContent(paragraph)}
                   </Text>
                 </View>

@@ -15,21 +15,11 @@ export default function FloatingPlayer() {
 
   const getLocalizedContent = (content: any, fallback: string = 'eng') => {
     if (!content) return '';
-    
-    // If content is already a string, return it directly
-    if (typeof content === 'string') {
-      console.log('FloatingPlayer: Content is string, returning directly:', content);
-      return content;
-    }
-    
-    // If content is an object with language keys
+    if (typeof content === 'string') return content;
     if (typeof content === 'object' && content !== null) {
       const langCode = selectedLanguage?.code || fallback;
-      const result = content[langCode] || content[fallback] || '';
-      console.log('FloatingPlayer Localization:', { content, langCode, result });
-      return result;
+      return content[langCode] || content[fallback] || '';
     }
-    
     return '';
   };
 

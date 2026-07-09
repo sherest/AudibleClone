@@ -21,18 +21,18 @@ export default function PlayerScreen() {
   const [showMore, setShowMore] = useState(false);
   
   // Animation values
-  const animatedWidth = useRef(new Animated.Value(65)).current; // Start with collapsed size
-  const animatedHeight = useRef(new Animated.Value(250)).current;
+  const animatedWidth = useRef(new Animated.Value(65));
+  const animatedHeight = useRef(new Animated.Value(250));
 
   // Animation effect
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(animatedWidth, {
+      Animated.timing(animatedWidth.current, {
         toValue: showMore ? 50 : 65,
         duration: 300,
         useNativeDriver: false,
       }),
-      Animated.timing(animatedHeight, {
+      Animated.timing(animatedHeight.current, {
         toValue: showMore ? 200 : 250,
         duration: 300,
         useNativeDriver: false,
@@ -40,30 +40,13 @@ export default function PlayerScreen() {
     ]).start();
   }, [showMore]);
 
-  // Debug logging
-  console.log('Player Debug:', { 
-    book: book ? { title: book.title, author: book.author } : null,
-    currentAlbum: currentAlbum ? { albumName: currentAlbum.albumName } : null,
-    selectedLanguage 
-  });
-
   const getLocalizedContent = (content: any, fallback: string = 'eng') => {
     if (!content) return '';
-    
-    // If content is already a string, return it directly
-    if (typeof content === 'string') {
-      console.log('Content is string, returning directly:', content);
-      return content;
-    }
-    
-    // If content is an object with language keys
+    if (typeof content === 'string') return content;
     if (typeof content === 'object' && content !== null) {
       const langCode = selectedLanguage?.code || fallback;
-      const result = content[langCode] || content[fallback] || '';
-      console.log('Localization:', { content, langCode, result });
-      return result;
+      return content[langCode] || content[fallback] || '';
     }
-    
     return '';
   };
 
@@ -133,7 +116,7 @@ export default function PlayerScreen() {
         <Animated.Image
           source={{ uri: book.thumbnail_url }}
           style={{
-            width: animatedWidth.interpolate({
+            width: animatedWidth.current.interpolate({
               inputRange: [50, 65],
               outputRange: ['45%', '65%'],
             }), 

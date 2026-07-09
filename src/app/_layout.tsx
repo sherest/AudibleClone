@@ -8,6 +8,7 @@ import { ThemeProvider } from '../providers/ThemeProvider';
 import JoinUsModal from '../components/JoinUsModal';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { useFonts } from '../lib/useFonts';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,9 +23,13 @@ const theme = {
 };
 
 export default function RootLayout() {
+  const { fontsLoaded, fontError } = useFonts();
+
   useEffect(() => {
-    SplashScreen.hideAsync();
-  }, []);
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
 
   return (
     <ThemeProvider>

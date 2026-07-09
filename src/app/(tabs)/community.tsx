@@ -85,31 +85,25 @@ const CommunityScreen = () => {
   };
 
   useEffect(() => {
-    const fetchData = () => {
-      setLoading(true);
-      
-      // Fetch community data
-      const communityRef = ref(realtimeDb, 'community');
-      onValue(communityRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setCommunityData(data);
-        }
-      });
+    setLoading(true);
+    const communityRef = ref(realtimeDb, 'community');
+    const unsubCommunity = onValue(communityRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) setCommunityData(data);
+    });
 
-      // Fetch menu data
-      const menuRef = ref(realtimeDb, 'menu');
-      onValue(menuRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setMenuData(data);
-        }
-        setLoading(false);
-      });
+    const menuRef = ref(realtimeDb, 'menu');
+    const unsubMenu = onValue(menuRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) setMenuData(data);
+      setLoading(false);
+    });
+
+    return () => {
+      unsubCommunity();
+      unsubMenu();
     };
-
-    fetchData();
-  }, [selectedLanguage]);
+  }, []);
 
   const tabs = [
     { key: 'events', icon: 'calendar-alt' },

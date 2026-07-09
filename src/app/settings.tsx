@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
-import { BlurView } from 'expo-blur';
 import { useLanguage } from '../providers/LanguageContext';
 import { useTheme } from '../providers/ThemeProvider';
 import { realtimeDb } from '../lib/firebase';
@@ -27,35 +26,19 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
 
 
   useEffect(() => {
-    const fetchLanguages = async () => {
-      try {
-        const languagesRef = ref(realtimeDb, 'languages');
-        onValue(languagesRef, (snapshot) => {
-          const data = snapshot.val();
-          if (data) {
-            const languageList: Language[] = Object.keys(data).map(key => ({ 
-              code: data[key].code, 
-              name: data[key].name 
-            }));
-
-            setLanguages(languageList);
-            // Only set default language if no language is currently selected
-            if (!selectedLanguage) {
-              const defaultLanguage = languageList.find(lang => lang.name.toLowerCase() === 'english');
-              if (defaultLanguage) {
-
-                setSelectedLanguage(defaultLanguage);
-              }
-            }
-          }
-        });
-      } catch (error) {
-        console.error('Error fetching languages:', error);
+    const languagesRef = ref(realtimeDb, 'languages');
+    const unsubscribe = onValue(languagesRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const languageList: Language[] = Object.keys(data).map(key => ({
+          code: data[key].code,
+          name: data[key].name,
+        }));
+        setLanguages(languageList);
       }
-    };
-
-    fetchLanguages();
-  }, [selectedLanguage]);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const getLocalizedLanguageName = (languageCode: string, englishName: string) => {
     const localizedNames: { [key: string]: string } = {
@@ -163,117 +146,103 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
   return (
     <Modal
       visible={visible}
-      transparent={true}
       animationType="slide"
       onRequestClose={onClose}
+      statusBarTranslucent={true}
     >
-      <BlurView intensity={20} style={styles.overlay}>
-        <View style={[styles.modalContainer, {backgroundColor: colors.background.primary, borderColor: colors.border.primary}]}>
-          <View style={[styles.header, {backgroundColor: colors.background.secondary, borderBottomColor: colors.border.primary}]}>
-            <Text style={[styles.headerTitle, {color: colors.text.primary}]}>Select Language</Text>
+      <View style={styles.backdrop}>
+        {/* Tap backdrop to close */}
+        <TouchableOpacity style={styles.backdropTouchable} onPress={onClose} activeOpacity={1} />
+
+        {/* Sheet */}
+        <View style={[styles.sheet, { backgroundColor: colors.background.primary }]}>
+          <View style={[styles.handle]} />
+
+          {/* Header */}
+          <View style={[styles.header, { borderBottomColor: colors.border?.primary ?? '#333' }]}>
+            <Text style={[styles.headerTitle, { color: colors.text.primary }]}>Select Language</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Text style={[styles.closeButtonText, {color: colors.text.primary}]}>✕</Text>
+              <Text style={[styles.closeButtonText, { color: colors.text.primary }]}>✕</Text>
             </TouchableOpacity>
           </View>
-          
-          <View style={styles.content}>
-            <FlatList
-              data={languages}
-              renderItem={renderLanguageItem}
-              keyExtractor={(item) => item.code}
-              style={styles.languageList}
-            />
-          </View>
+
+          <FlatList
+            data={languages}
+            renderItem={renderLanguageItem}
+            keyExtractor={(item) => item.code}
+            style={styles.list}
+            showsVerticalScrollIndicator={true}
+          />
         </View>
-      </BlurView>
+      </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  overlay: {
+  backdrop: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'flex-end',
   },
-  modalContainer: {
-    width: width * 0.8,
+  backdropTouchable: {
+    flex: 1,
+  },
+  sheet: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     maxHeight: height * 0.6,
-    backgroundColor: '#333',
-    borderRadius: 10,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 15,
-    borderWidth: 1,
-    borderColor: '#16213e',
+    paddingBottom: 20,
+  },
+  handle: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#555',
+    alignSelf: 'center',
+    marginTop: 10,
+    marginBottom: 6,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#1a1a2e',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#16213e',
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#ffffff',
   },
   closeButton: {
-    padding: 5,
+    padding: 6,
   },
   closeButtonText: {
     fontSize: 20,
-    color: '#ffffff',
   },
-  content: {
-    padding: 20,
-  },
-  currentLanguage: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  currentLanguageCode: {
-    color: '#8b8b8b',
-    fontSize: 14,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  languageList: {
-    maxHeight: 300,
+  list: {
+    paddingHorizontal: 10,
   },
   languageItem: {
-    padding: 15,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#444',
+    borderBottomColor: '#333',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderRadius: 8,
+    marginVertical: 2,
   },
-  selectedLanguageItem: {
-    backgroundColor: '#e94560', // This will be overridden by theme
-  },
+  selectedLanguageItem: {},
   languageText: {
-    color: '#FFFFFF', // This will be overridden by theme
     fontSize: 16,
   },
   selectedLanguageText: {
     fontWeight: 'bold',
-    color: '#b3530a',
   },
   checkmark: {
-    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
   },

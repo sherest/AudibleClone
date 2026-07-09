@@ -35,17 +35,13 @@ const AboutList: React.FC<AboutListProps> = ({ items, onItemPress }) => {
   };
 
   useEffect(() => {
-    const fetchMenuData = () => {
-      const menuRef = ref(realtimeDb, 'menu');
-      onValue(menuRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setMenuData(data);
-        }
-      });
-    };
-    fetchMenuData();
-  }, [selectedLanguage]);
+    const menuRef = ref(realtimeDb, 'menu');
+    const unsubscribe = onValue(menuRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) setMenuData(data);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const renderItem = ({ item }: { item: AboutItem }) => (
     <TouchableOpacity
@@ -170,7 +166,6 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
     marginLeft: 12,
     flex: 1,
     fontFamily: Fonts.bengali,

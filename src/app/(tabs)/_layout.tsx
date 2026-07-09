@@ -8,6 +8,7 @@ import {useTheme} from '../../providers/ThemeProvider';
 import {realtimeDb} from '../../lib/firebase';
 import {ref, onValue} from 'firebase/database';
 import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const fontSize = {
     small: 10,
@@ -18,20 +19,17 @@ const fontSize = {
 function CustomTabBar({ state, descriptors, navigation }: any) {
     const { colors } = useTheme();
     const { selectedLanguage } = useLanguage();
+    const insets = useSafeAreaInsets();
     const [menuData, setMenuData] = useState<any>({});
 
     useEffect(() => {
-        const fetchMenuData = () => {
-            const menuRef = ref(realtimeDb, 'menu');
-            onValue(menuRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    setMenuData(data);
-                }
-            });
-        };
-        fetchMenuData();
-    }, [selectedLanguage]);
+        const menuRef = ref(realtimeDb, 'menu');
+        const unsubscribe = onValue(menuRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) setMenuData(data);
+        });
+        return () => unsubscribe();
+    }, []);
 
     const getTabTitle = (routeName: string) => {
         switch (routeName) {
@@ -74,7 +72,7 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
     };
 
     return (
-        <View style={[styles.tabBar, { backgroundColor: colors.background.secondary }]}>
+        <View style={[styles.tabBar, { backgroundColor: colors.background.secondary, paddingBottom: insets.bottom + 10 }]}>
             {state.routes.map((route: any, index: number) => {
                 const { options } = descriptors[route.key];
                 const isFocused = state.index === index;
@@ -142,7 +140,6 @@ const styles = StyleSheet.create({
     tabBar: {
         flexDirection: 'row',
         paddingTop: 10,
-        paddingBottom: 10,
         paddingHorizontal: 10,
         height: 90,
         borderTopWidth: 1,

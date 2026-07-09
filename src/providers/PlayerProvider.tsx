@@ -42,25 +42,21 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
   }, [book?.id]);
 
   const setAlbum = async (album: any, songIndex: number = 0) => {
+    // Pause current playback before switching to prevent native audio conflicts
+    player.pause();
     setCurrentAlbum(album);
     setAlbumSongs(album.songs || []);
     setCurrentSongIndex(songIndex);
-    
-    // Set the first song as the current book
+
     if (album.songs && album.songs[songIndex]) {
       const song = album.songs[songIndex];
-      console.log('Raw song data from album:', song);
-      console.log('Song title type:', typeof song.title, song.title);
-      console.log('Song singer type:', typeof song.singer, song.singer);
-      
       const newBook = {
         id: `${album.title?.eng || 'album'}-${songIndex}`,
-        title: song.title || {}, // Ensure it's an object
-        author: song.singer || {}, // Ensure it's an object
+        title: song.title || {},
+        author: song.singer || {},
         audio_url: `${album.basePath?.audio || ''}${song.fileName}`,
         thumbnail_url: album.coverPath || undefined
       };
-      console.log('Setting new book:', newBook);
       setBook(newBook);
     }
   };
@@ -126,8 +122,13 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
     return null;
   };
 
-  const player = useAudioPlayer({ uri: audioUri });
-  console.log('Playing: ', audioUri);
+  const player = useAudioPlayer(audioUri ? { uri: audioUri } : undefined);
+
+  // Explicitly replace source when audioUri changes (handles track switching)
+  useEffect(() => {
+    if (!audioUri) return;
+    player.replace({ uri: audioUri });
+  }, [audioUri]);
 
   return (
     <PlayerContext.Provider value={{ 
