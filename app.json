@@ -24,8 +24,14 @@
       }
     },
     "android": {
+      "icon": "./assets/android-icon.png",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/android-adaptive-icon.png",
+        "backgroundColor": "#b90101"
+      },
+      "splash": {
+        "image": "./assets/android-splash-icon.png",
+        "resizeMode": "cover",
         "backgroundColor": "#b90101"
       },
       "permissions": [
