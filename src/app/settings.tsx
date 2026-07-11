@@ -146,9 +146,9 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
   return (
     <Modal
       visible={visible}
-      animationType="slide"
+      animationType="fade"
+      transparent={true}
       onRequestClose={onClose}
-      statusBarTranslucent={true}
     >
       <View style={styles.backdrop}>
         {/* Tap backdrop to close */}
@@ -182,7 +182,7 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(0,0,0,0.85)',
     justifyContent: 'flex-end',
   },
   backdropTouchable: {

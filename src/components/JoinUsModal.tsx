@@ -125,8 +125,8 @@ const JoinUsModal = () => {
   return (
     <Modal
       visible={isJoinUsVisible}
-      animationType="slide"
-      presentationStyle="pageSheet"
+      animationType="fade"
+      transparent={true}
       onRequestClose={hideJoinUs}
     >
       <View style={[styles.container, {backgroundColor: colors.background.primary}]}>
