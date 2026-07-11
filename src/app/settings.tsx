@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Modal, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, FlatList, StyleSheet, useWindowDimensions, Platform, BackHandler } from 'react-native';
 import { useLanguage } from '../providers/LanguageContext';
 import { useTheme } from '../providers/ThemeProvider';
 import { realtimeDb } from '../lib/firebase';
 import { ref, onValue } from 'firebase/database';
-
-const { width, height } = Dimensions.get('window');
 
 // Define types for languages and snapshot
 interface Language {
@@ -21,6 +19,8 @@ interface SettingsModalProps {
 const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
   const { selectedLanguage, setSelectedLanguage } = useLanguage();
   const { colors } = useTheme();
+  const { height } = useWindowDimensions();
+  const sheetHeight = Math.min(height * 0.7, 560);
   const [languages, setLanguages] = useState<Language[]>([]);
 
 
@@ -39,6 +39,17 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
     });
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (Platform.OS !== 'android' || !visible) return;
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      onClose();
+      return true;
+    });
+
+    return () => subscription.remove();
+  }, [onClose, visible]);
 
   const getLocalizedLanguageName = (languageCode: string, englishName: string) => {
     const localizedNames: { [key: string]: string } = {
@@ -143,56 +154,81 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
     </TouchableOpacity>
   );
 
+  const content = (
+    <View style={styles.backdrop}>
+      {/* Tap backdrop to close */}
+      <TouchableOpacity style={styles.backdropTouchable} onPress={onClose} activeOpacity={1} />
+
+      {/* Sheet */}
+      <View style={[styles.sheet, { backgroundColor: colors.background.primary, height: sheetHeight }]}> 
+        <View style={[styles.handle]} />
+
+        {/* Header */}
+        <View style={[styles.header, { borderBottomColor: colors.border?.primary ?? '#333' }]}> 
+          <Text style={[styles.headerTitle, { color: colors.text.primary }]}>Select Language</Text>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Text style={[styles.closeButtonText, { color: colors.text.primary }]}>✕</Text>
+          </TouchableOpacity>
+        </View>
+
+        <FlatList
+          data={languages}
+          renderItem={renderLanguageItem}
+          keyExtractor={(item) => item.code}
+          style={styles.list}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={true}
+        />
+      </View>
+    </View>
+  );
+
+  if (!visible) {
+    return null;
+  }
+
+  if (Platform.OS === 'android') {
+    return <View style={styles.androidOverlay}>{content}</View>;
+  }
+
   return (
     <Modal
       visible={visible}
       animationType="fade"
       transparent={true}
       onRequestClose={onClose}
+      statusBarTranslucent
     >
-      <View style={styles.backdrop}>
-        {/* Tap backdrop to close */}
-        <TouchableOpacity style={styles.backdropTouchable} onPress={onClose} activeOpacity={1} />
-
-        {/* Sheet */}
-        <View style={[styles.sheet, { backgroundColor: colors.background.primary }]}>
-          <View style={[styles.handle]} />
-
-          {/* Header */}
-          <View style={[styles.header, { borderBottomColor: colors.border?.primary ?? '#333' }]}>
-            <Text style={[styles.headerTitle, { color: colors.text.primary }]}>Select Language</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Text style={[styles.closeButtonText, { color: colors.text.primary }]}>✕</Text>
-            </TouchableOpacity>
-          </View>
-
-          <FlatList
-            data={languages}
-            renderItem={renderLanguageItem}
-            keyExtractor={(item) => item.code}
-            style={styles.list}
-            showsVerticalScrollIndicator={true}
-          />
-        </View>
-      </View>
+      {content}
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  androidOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1000,
+    elevation: 1000,
+  },
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.85)',
     justifyContent: 'flex-end',
   },
   backdropTouchable: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
   },
   sheet: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: height * 0.6,
     paddingBottom: 20,
+    elevation: 12,
+    zIndex: 1,
   },
   handle: {
     width: 40,
@@ -222,7 +258,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   list: {
+    flex: 1,
     paddingHorizontal: 10,
+  },
+  listContent: {
+    paddingBottom: 10,
   },
   languageItem: {
     paddingVertical: 14,

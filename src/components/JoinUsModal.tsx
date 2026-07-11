@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -6,6 +6,9 @@ import {
   ScrollView, 
   TextInput, 
   Modal,
+  Platform,
+  SafeAreaView,
+  BackHandler,
   Alert,
   StyleSheet,
   ImageBackground
@@ -72,6 +75,17 @@ const JoinUsModal = () => {
     };
   }, [isJoinUsVisible]);
 
+  useEffect(() => {
+    if (Platform.OS !== 'android' || !isJoinUsVisible) return;
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      hideJoinUs();
+      return true;
+    });
+
+    return () => subscription.remove();
+  }, [hideJoinUs, isJoinUsVisible]);
+
   const getLocalizedText = (textObj: { [key: string]: string } | undefined) => {
     if (!textObj) return '';
     return textObj[selectedLanguage?.code as keyof typeof textObj] || textObj.eng || '';
@@ -122,33 +136,33 @@ const JoinUsModal = () => {
     }
   };
 
-  return (
-    <Modal
-      visible={isJoinUsVisible}
-      animationType="fade"
-      transparent={true}
-      onRequestClose={hideJoinUs}
-    >
-      <View style={[styles.container, {backgroundColor: colors.background.primary}]}>
-        {/* Background Image */}
-        <ImageBackground 
-          source={require('../../assets/gurujibackground.png')} 
-          style={styles.backgroundImage}
-          resizeMode="repeat"
-        />
-        {/* Header */}
-        <View style={[styles.header, {backgroundColor: colors.background.secondary, borderBottomColor: colors.border.primary}]}>
-          <TouchableOpacity onPress={hideJoinUs} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
-            <Text style={[styles.backText, {color: colors.text.primary}]}>Back</Text>
-          </TouchableOpacity>
-          <Text style={[styles.headerTitle, {color: colors.text.primary}]}>
-            {getLocalizedText(menuData?.joinUs)}
-          </Text>
-          <View style={styles.placeholder} />
-        </View>
+  const content = (
+      <Fragment>
+        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}} />
+        <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}> 
+          {/* Background Image */}
+          <ImageBackground 
+            source={require('../../assets/gurujibackground.png')} 
+            style={styles.backgroundImage}
+            resizeMode="repeat"
+          />
+          {/* Header */}
+          <View style={[styles.header, {backgroundColor: colors.background.secondary, borderBottomColor: colors.border.primary}]}> 
+            <TouchableOpacity onPress={hideJoinUs} style={styles.backButton}>
+              <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
+              <Text style={[styles.backText, {color: colors.text.primary}]}>Back</Text>
+            </TouchableOpacity>
+            <Text style={[styles.headerTitle, {color: colors.text.primary}]}> 
+              {getLocalizedText(menuData?.joinUs)}
+            </Text>
+            <View style={styles.placeholder} />
+          </View>
 
-        <ScrollView style={styles.content}>
+          <ScrollView
+            style={styles.content}
+            contentContainerStyle={styles.contentContainer}
+            keyboardShouldPersistTaps="handled"
+          >
           {/* Description Card */}
           <View style={[styles.card, {backgroundColor: colors.background.secondary}]}>
             <Text style={[styles.descriptionTitle, {color: colors.text.primary}]}>
@@ -265,23 +279,45 @@ const JoinUsModal = () => {
               </Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
-      </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Fragment>
+  );
+
+  if (Platform.OS === 'android') {
+    if (!isJoinUsVisible) {
+      return null;
+    }
+
+    return <View style={styles.androidOverlay}>{content}</View>;
+  }
+
+  return (
+    <Modal
+      visible={isJoinUsVisible}
+      animationType="slide"
+      presentationStyle="fullScreen"
+      onRequestClose={hideJoinUs}
+    >
+      {content}
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  androidOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1000,
+    elevation: 1000,
+  },
   container: {
     flex: 1,
-    paddingBottom: 90,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
-    paddingTop: 60,
     borderBottomWidth: 1,
   },
   backButton: {
@@ -302,6 +338,9 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
+  },
+  contentContainer: {
+    paddingBottom: 32,
   },
   card: {
     borderRadius: 16,
