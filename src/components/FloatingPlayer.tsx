@@ -62,10 +62,10 @@ export default function FloatingPlayer() {
         <AntDesign
           name={
             playerStatus.isBuffering
-              ? 'loading2'
+              ? 'loading-3-quarters'
               : playerStatus.playing
               ? 'pause'
-              : 'playcircleo'
+              : 'play-circle'
           }
           size={24}
           color={colors.text.secondary}

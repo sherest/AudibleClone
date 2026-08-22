@@ -206,7 +206,7 @@ const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
 
 const styles = StyleSheet.create({
   androidOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1000,
     elevation: 1000,
   },
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   backdropTouchable: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 0,
   },
   sheet: {

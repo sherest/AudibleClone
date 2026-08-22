@@ -6,10 +6,26 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
-import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
+import {
+  useAudioPlayer,
+  setAudioModeAsync,
+  requestNotificationPermissionsAsync,
+  type AudioMetadata,
+} from 'expo-audio';
+import * as FileSystem from 'expo-file-system/legacy';
 // TODO: Import Firebase storage functions when implementing Firebase integration
 // import { storage } from '@/lib/firebase';
+
+// Flattens a localized value ({ eng, hin, ... }) or plain string into display text.
+const pickText = (value: any): string | undefined => {
+  if (!value) return undefined;
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object') {
+    return value.eng || Object.values(value).find((v) => typeof v === 'string');
+  }
+  return undefined;
+};
 
 type PlayerContextType = {
   player: AudioPlayer;
@@ -37,14 +53,20 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
   const [currentSongIndex, setCurrentSongIndex] = useState<number>(0);
   const [albumSongs, setAlbumSongs] = useState<any[]>([]);
 
-  // Keep audio playing when the app moves to the background / screen locks.
-  // Without this, expo-audio pauses all players on backgrounding.
+  // Keep audio playing when the app moves to the background / screen locks,
+  // and request the Android 13+ permission needed to show the media notification.
   useEffect(() => {
     setAudioModeAsync({
       playsInSilentMode: true,
       shouldPlayInBackground: true,
       interruptionMode: 'doNotMix',
     }).catch((e) => console.warn('Failed to set audio mode', e));
+
+    if (Platform.OS === 'android') {
+      requestNotificationPermissionsAsync().catch((e) =>
+        console.warn('Failed to request notification permission', e)
+      );
+    }
   }, []);
 
   useEffect(() => {
@@ -89,6 +111,8 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
     // Stop the player if it's playing
     if (player) {
       player.pause();
+      // Remove the media notification / lock-screen controls
+      player.clearLockScreenControls();
     }
     // Clear all state
     setBook(null);
@@ -134,10 +158,21 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
 
   const player = useAudioPlayer(audioUri ? { uri: audioUri } : undefined);
 
-  // Explicitly replace source when audioUri changes (handles track switching)
+  // Explicitly replace source when audioUri changes (handles track switching),
+  // then (re)register the lock-screen / notification media controls for the track.
   useEffect(() => {
     if (!audioUri) return;
     player.replace({ uri: audioUri });
+
+    const metadata: AudioMetadata = {
+      title: pickText(book?.title) || 'Amrita Lahari',
+      artist: pickText(book?.author) || '',
+      albumTitle: pickText(currentAlbum?.albumName) || pickText(currentAlbum?.title),
+      artworkUrl:
+        typeof book?.thumbnail_url === 'string' ? book.thumbnail_url : undefined,
+    };
+    // Shows the media notification on Android and lock-screen/Control Center on iOS.
+    player.setActiveForLockScreen(true, metadata);
   }, [audioUri]);
 
   return (

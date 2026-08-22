@@ -306,7 +306,7 @@ const JoinUsModal = () => {
 
 const styles = StyleSheet.create({
   androidOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1000,
     elevation: 1000,
   },
