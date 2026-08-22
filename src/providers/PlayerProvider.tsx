@@ -6,7 +6,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { useAudioPlayer } from 'expo-audio';
+import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import * as FileSystem from 'expo-file-system';
 // TODO: Import Firebase storage functions when implementing Firebase integration
 // import { storage } from '@/lib/firebase';
@@ -36,6 +36,16 @@ export default function PlayerProvider({ children }: PropsWithChildren) {
   const [currentAlbum, setCurrentAlbum] = useState<any | null>(null);
   const [currentSongIndex, setCurrentSongIndex] = useState<number>(0);
   const [albumSongs, setAlbumSongs] = useState<any[]>([]);
+
+  // Keep audio playing when the app moves to the background / screen locks.
+  // Without this, expo-audio pauses all players on backgrounding.
+  useEffect(() => {
+    setAudioModeAsync({
+      playsInSilentMode: true,
+      shouldPlayInBackground: true,
+      interruptionMode: 'doNotMix',
+    }).catch((e) => console.warn('Failed to set audio mode', e));
+  }, []);
 
   useEffect(() => {
     getAudioUri();
