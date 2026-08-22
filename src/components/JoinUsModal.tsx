@@ -7,12 +7,12 @@ import {
   TextInput, 
   Modal,
   Platform,
-  SafeAreaView,
   BackHandler,
   Alert,
   StyleSheet,
   ImageBackground
 } from 'react-native';
+import ScreenSafeArea from './ScreenSafeArea';
 import { useLanguage } from '../providers/LanguageContext';
 import { useTheme } from '../providers/ThemeProvider';
 import { realtimeDb } from '../lib/firebase';
@@ -138,8 +138,7 @@ const JoinUsModal = () => {
 
   const content = (
       <Fragment>
-        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}} />
-        <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}> 
+        <ScreenSafeArea topColor={colors.background.secondary} style={[styles.container, {backgroundColor: colors.background.primary}]}> 
           {/* Background Image */}
           <ImageBackground 
             source={require('../../assets/gurujibackground.png')} 
@@ -280,7 +279,7 @@ const JoinUsModal = () => {
             </TouchableOpacity>
           </View>
           </ScrollView>
-        </SafeAreaView>
+        </ScreenSafeArea>
       </Fragment>
   );
 

@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, Dimensions, Image, ImageBackground } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Image, ImageBackground } from 'react-native';
 import { realtimeDb } from '../../lib/firebase';
 import { ref, onValue } from 'firebase/database';
 import { getStorage, ref as storageRef, getDownloadURL } from 'firebase/storage';
@@ -8,6 +8,7 @@ import { usePlayer } from '../../providers/PlayerProvider';
 import { useLanguage } from '../../providers/LanguageContext';
 import { useTheme } from '../../providers/ThemeProvider';
 import SkeletonPlaceholder from '../../components/SkeletonPlaceholder';
+import ScreenSafeArea from '../../components/ScreenSafeArea';
 
 // Import fallback satprasanga icon
 const satprasangaIcon = require('../../../assets/img/icons/parvachan.png');
@@ -180,8 +181,7 @@ const SatprasangaScreen = () => {
   if (loading) {
     return (
       <Fragment>
-        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
-        <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
+        <ScreenSafeArea topColor={colors.background.secondary} style={[styles.container, {backgroundColor: colors.background.primary}]}>
           {/* Header Skeleton */}
           <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
             <FontAwesome5 name="book-open" size={22} color={colors.primary} style={{ marginRight: 10 }} />
@@ -210,15 +210,14 @@ const SatprasangaScreen = () => {
               </View>
             ))}
           </ScrollView>
-        </SafeAreaView>
+        </ScreenSafeArea>
       </Fragment>
     );
   }
 
   return (
     <Fragment>
-      <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
-      <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
+      <ScreenSafeArea topColor={colors.background.secondary} style={[styles.container, {backgroundColor: colors.background.primary}]}>
         {/* Background Image */}
         <ImageBackground 
           source={require('../../../assets/gurujibackground.png')} 
@@ -241,7 +240,7 @@ const SatprasangaScreen = () => {
         <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
           {satprasangaData.map((satprasanga, index) => renderSatprasangaItem(satprasanga, index))}
         </ScrollView>
-      </SafeAreaView>
+      </ScreenSafeArea>
     </Fragment>
   );
 };

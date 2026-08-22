@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
+import ScreenSafeArea from './ScreenSafeArea';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useTheme } from '../providers/ThemeProvider';
 import { AboutItem } from '../hooks/useAboutScreen';
@@ -15,8 +16,7 @@ const AboutDetail: React.FC<AboutDetailProps> = ({ item, onBack }) => {
 
   return (
     <Fragment>
-      <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <ScreenSafeArea topColor={colors.background.secondary} style={[styles.container, { backgroundColor: colors.background.primary }]}>
         {/* Background Image */}
         <ImageBackground 
           source={require('../../assets/gurujibackground.png')} 
@@ -49,7 +49,7 @@ const AboutDetail: React.FC<AboutDetailProps> = ({ item, onBack }) => {
             </View>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </ScreenSafeArea>
     </Fragment>
   );
 };

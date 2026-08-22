@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, ImageBackground, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
+import ScreenSafeArea from './ScreenSafeArea';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useTheme } from '../providers/ThemeProvider';
 import { useLanguage } from '../providers/LanguageContext';
@@ -43,8 +44,7 @@ const AboutModal: React.FC<AboutModalProps> = ({ visible, onClose, aboutData }) 
       onRequestClose={onClose}
     >
       <Fragment>
-        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+        <ScreenSafeArea topColor={colors.background.secondary} style={[styles.container, { backgroundColor: colors.background.primary }]}>
           {/* Background Image */}
           <ImageBackground 
             source={require('../../assets/gurujibackground.png')} 
@@ -91,7 +91,7 @@ const AboutModal: React.FC<AboutModalProps> = ({ visible, onClose, aboutData }) 
             )}
           </View>
           </ScrollView>
-        </SafeAreaView>
+        </ScreenSafeArea>
       </Fragment>
     </Modal>
   );

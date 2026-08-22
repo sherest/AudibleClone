@@ -1,5 +1,6 @@
 import React, {Fragment, useState, useEffect} from 'react';
-import {View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, SafeAreaView, Linking, ImageBackground} from 'react-native';
+import {View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Linking, ImageBackground} from 'react-native';
+import ScreenSafeArea from '../../components/ScreenSafeArea';
 import {useLanguage} from '../../providers/LanguageContext';
 import {useTheme} from '../../providers/ThemeProvider';
 import {FontAwesome5} from '@expo/vector-icons';
@@ -49,8 +50,7 @@ const HomeScreen = () => {
     }, []);
     return (
         <Fragment>
-            <SafeAreaView style={{flex: 0, backgroundColor: colors.background.primary}}></SafeAreaView>
-            <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
+            <ScreenSafeArea topColor={colors.background.primary} style={[styles.container, {backgroundColor: colors.background.primary}]}>
                 {/* Background Image */}
                 <ImageBackground 
                     source={require('../../../assets/gurujibackground.png')} 
@@ -197,7 +197,7 @@ const HomeScreen = () => {
                     visible={settingsVisible}
                     onClose={() => setSettingsVisible(false)}
                 />
-            </SafeAreaView>
+            </ScreenSafeArea>
         </Fragment>
     );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import ScreenSafeArea from '../../components/ScreenSafeArea';
 
 import { useLanguage } from '../../providers/LanguageContext';
 import { useTheme } from '../../providers/ThemeProvider';
@@ -60,8 +61,7 @@ const AboutScreen = () => {
   if (!currentView) {
     return (
       <Fragment>
-        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
-        <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
+        <ScreenSafeArea topColor={colors.background.secondary} style={[styles.container, {backgroundColor: colors.background.primary}]}>
           <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
             <View style={styles.headerLeft}>
               <FontAwesome5 name="info-circle" size={22} color={colors.primary} />
@@ -77,7 +77,7 @@ const AboutScreen = () => {
               </Text>
             </View>
           </View>
-        </SafeAreaView>
+        </ScreenSafeArea>
       </Fragment>
     );
   }
@@ -130,8 +130,7 @@ const AboutScreen = () => {
   if (loading || hasSeenModal === null || !fontsLoaded) {
     return (
       <Fragment>
-        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
-        <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
+        <ScreenSafeArea topColor={colors.background.secondary} style={[styles.container, {backgroundColor: colors.background.primary}]}>
           {/* Header Skeleton */}
           <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
             <View style={styles.headerLeft}>
@@ -159,7 +158,7 @@ const AboutScreen = () => {
               )}
             </View>
           </View>
-        </SafeAreaView>
+        </ScreenSafeArea>
       </Fragment>
     );
   }

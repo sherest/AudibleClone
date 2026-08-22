@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator, Modal, ImageBackground } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator, Modal, ImageBackground } from 'react-native';
+import ScreenSafeArea from '../../components/ScreenSafeArea';
 import { useLanguage } from '../../providers/LanguageContext';
 import { useTheme } from '../../providers/ThemeProvider';
 import { useJoinUs } from '../../providers/JoinUsProvider';
@@ -114,8 +115,7 @@ const CommunityScreen = () => {
   if (loading) {
     return (
       <Fragment>
-        <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
-        <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
+        <ScreenSafeArea topColor={colors.background.secondary} style={[styles.container, {backgroundColor: colors.background.primary}]}>
           {/* Header Skeleton */}
           <View style={[styles.header, {backgroundColor: colors.background.secondary}]}>
             <FontAwesome5 name="users" size={22} color={colors.primary} />
@@ -150,7 +150,7 @@ const CommunityScreen = () => {
               ))}
             </View>
           </ScrollView>
-        </SafeAreaView>
+        </ScreenSafeArea>
       </Fragment>
     );
   }
@@ -279,8 +279,7 @@ const CommunityScreen = () => {
 
   return (
     <Fragment>
-      <SafeAreaView style={{flex: 0, backgroundColor: colors.background.secondary}}></SafeAreaView>
-      <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
+      <ScreenSafeArea topColor={colors.background.secondary} style={[styles.container, {backgroundColor: colors.background.primary}]}>
         {/* Background Image */}
         <ImageBackground 
           source={require('../../../assets/gurujibackground.png')} 
@@ -419,7 +418,7 @@ const CommunityScreen = () => {
             </View>
           </View>
         </Modal>
-      </SafeAreaView>
+      </ScreenSafeArea>
     </Fragment>
   );
 };
