@@ -31,7 +31,7 @@
     "production": {
       "android": {
         "serviceAccountKeyPath": "./google-services-account.json",
-        "track": "internal"
+        "track": "production"
       },
       "ios": {
         "appleId": "your-apple-id@example.com",
