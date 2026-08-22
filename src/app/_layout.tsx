@@ -1,6 +1,6 @@
 import '../../global.css';
 import { Stack } from 'expo-router';
-import { DarkTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
+import { DarkTheme, ThemeProvider as NavigationThemeProvider } from 'expo-router/react-navigation';
 import PlayerProvider from '@/providers/PlayerProvider';
 import { LanguageProvider } from '../providers/LanguageContext';
 import { JoinUsProvider } from '../providers/JoinUsProvider';

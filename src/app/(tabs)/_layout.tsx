@@ -1,6 +1,6 @@
 import {Tabs} from 'expo-router';
 import {Ionicons, MaterialIcons, FontAwesome5} from '@expo/vector-icons';
-import {BottomTabBar} from '@react-navigation/bottom-tabs';
+import {BottomTabBar} from 'expo-router/js-tabs';
 import FloatingPlayer from '@/components/FloatingPlayer';
 import {useEffect, useState} from 'react';
 import {useLanguage} from '../../providers/LanguageContext';
