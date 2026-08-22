@@ -8,12 +8,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#b90101"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.app.lahari.amrita",
@@ -29,11 +23,6 @@
       "icon": "./assets/android-icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/android-adaptive-icon.png",
-        "backgroundColor": "#b90101"
-      },
-      "splash": {
-        "image": "./assets/android-splash-icon.png",
-        "resizeMode": "cover",
         "backgroundColor": "#b90101"
       },
       "permissions": [
@@ -56,7 +45,19 @@
     ],
     "plugins": [
       "expo-router",
-      "expo-splash-screen",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "cover",
+          "backgroundColor": "#b90101",
+          "android": {
+            "image": "./assets/android-splash-icon.png",
+            "resizeMode": "cover",
+            "backgroundColor": "#b90101"
+          }
+        }
+      ],
       [
         "expo-audio",
         {
@@ -74,7 +75,9 @@
           }
         }
       ],
-      "expo-status-bar"
+      "expo-status-bar",
+      "expo-font",
+      "expo-asset"
     ],
     "extra": {
       "eas": {
